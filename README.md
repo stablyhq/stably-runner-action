@@ -26,7 +26,6 @@ steps:
     run: echo "${{ steps.test-action.outputs.success }}"
 ```
 
-
 <details>
 
 <summary>Development</summary>
