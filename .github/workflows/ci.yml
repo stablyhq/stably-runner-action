@@ -5,11 +5,11 @@ on:
   push:
     branches:
       - master
-      - "releases/*"
+      - 'releases/*'
 
 jobs:
-  test-javascript:
-    name: JavaScript Tests
+  test-typescript:
+    name: TypeScript Tests
     runs-on: ubuntu-latest
 
     steps:
@@ -21,7 +21,7 @@ jobs:
         id: setup-node
         uses: actions/setup-node@v3
         with:
-          node-version: 20
+          node-version: 18
           cache: npm
 
       - name: Install Dependencies
@@ -53,11 +53,8 @@ jobs:
         id: test-action
         uses: ./
         with:
-          api_key: ${{ secrets.API_KEY }}
-          project_id: clle9fscu0000jf087maicxbc
-          test_ids: |-
-            clnf3dhi60000me09l8f3zhgn
+          milliseconds: 1000
 
       - name: Print Output
         id: output
-        run: echo "${{ steps.test-action.outputs.success }}"
+        run: echo "${{ steps.test-action.outputs.time }}"

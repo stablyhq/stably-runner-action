@@ -32,7 +32,7 @@
     "package": "ncc build src/index.ts --license licenses.txt",
     "package:watch": "npm run package -- --watch",
     "test": "jest",
-    "all": "npm run format:write && npm run test && npm run package"
+    "all": "npm run format:write && npm run lint && npm run test && npm run package"
   },
   "license": "MIT",
   "jest": {
@@ -75,7 +75,7 @@
     "@typescript-eslint/eslint-plugin": "^6.7.4",
     "@typescript-eslint/parser": "^6.7.4",
     "@vercel/ncc": "^0.38.0",
-    "eslint": "^8.50.0",
+    "eslint": "^8.51.0",
     "eslint-plugin-github": "^4.10.1",
     "eslint-plugin-jest": "^27.4.2",
     "eslint-plugin-jsonc": "^2.9.0",

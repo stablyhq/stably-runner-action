@@ -1,6 +1,6 @@
 # Stably-runner-action
 
-Use this Github action to run tests on https://stably.ai/
+Use this GitHub action to run tests on https://stably.ai/
 
 ## Usage
 ```yaml
