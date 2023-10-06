@@ -3,6 +3,7 @@
 Use this GitHub action to run tests on [stably.ai](https://stably.ai)
 
 ## Usage
+
 ```yaml
 steps:
   - name: Checkout
@@ -51,6 +52,7 @@ steps:
    ```
 
 ## Publishing
+
 1. Create a new branch
 
    ```bash
@@ -79,6 +81,7 @@ For information about versioning your action, see
 [Versioning](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md)
 
 ## Validating the Action
+
 You can now validate the action by referencing it in a workflow file. For
 example, [`ci.yml`](./.github/workflows/ci.yml) demonstrates how to reference an
 action in the same repository. 
