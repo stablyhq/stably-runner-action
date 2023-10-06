@@ -31,8 +31,8 @@
     "lint": "npx eslint . -c ./.github/linters/.eslintrc.yml",
     "package": "ncc build src/index.ts --license licenses.txt",
     "package:watch": "npm run package -- --watch",
-    "test": "(jest && make-coverage-badge --output-path ./badges/coverage.svg) || make-coverage-badge --output-path ./badges/coverage.svg",
-    "all": "npm run format:write && npm run lint && npm run test && npm run package"
+    "test": "jest",
+    "all": "npm run format:write && npm run test && npm run package"
   },
   "license": "MIT",
   "jest": {
@@ -69,6 +69,7 @@
     "@actions/http-client": "2.1.1"
   },
   "devDependencies": {
+    "@babel/eslint-parser": "^7.22.15",
     "@types/jest": "^29.5.5",
     "@types/node": "^20.8.2",
     "@typescript-eslint/eslint-plugin": "^6.7.4",

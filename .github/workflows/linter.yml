@@ -3,10 +3,10 @@ name: Lint Code Base
 on:
   pull_request:
     branches:
-      - main
+      - master
   push:
     branches-ignore:
-      - main
+      - master
 
 jobs:
   lint:

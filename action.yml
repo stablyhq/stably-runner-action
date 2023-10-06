@@ -8,8 +8,16 @@ inputs:
     description: 'Your project id'
     required: true
   api_key:
-    description: 'Your api key'
+    description: 'Your organization's api key'
     required: true
+  test_ids:
+    description: |-
+      Newline separated list of test ids.
+      Use to run a subset of tests
+  domain_overrides:
+    description: |-
+      Newline-separated list of domain overrides key pairs (original:replacement).
+      Use to replace origin URLs when running tests
 
 # Define your outputs here.
 outputs:
@@ -19,3 +27,7 @@ outputs:
 runs:
   using: node20
   main: dist/index.js
+
+branding:
+  icon: 'cloud-lightning'
+  color: 'orange'
