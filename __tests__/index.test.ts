@@ -2,17 +2,16 @@
  * Unit tests for the action's entrypoint, src/index.ts
  */
 
-const { run } = require('../src/main')
+import * as main from '../src/main'
 
 // Mock the action's entrypoint
-jest.mock('../src/main', () => ({
-  run: jest.fn()
-}))
+const runMock = jest.spyOn(main, 'run').mockImplementation()
 
 describe('index', () => {
   it('calls run when imported', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     require('../src/index')
 
-    expect(run).toHaveBeenCalled()
+    expect(runMock).toHaveBeenCalled()
   })
 })

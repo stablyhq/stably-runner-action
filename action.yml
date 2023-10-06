@@ -1,18 +1,20 @@
-name: 'The name of your action here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'stably-runner'
+description: 'Use this Github action to run tests on https://stably.ai/'
+author: 'Stably'
 
 # Define your inputs here.
 inputs:
-  milliseconds:
-    description: 'Your input description here'
+  project_id:
+    description: 'Your project id'
     required: true
-    default: '1000'
+  api_key:
+    description: 'Your api key'
+    required: true
 
 # Define your outputs here.
 outputs:
-  time:
-    description: 'Your output description here'
+  success:
+    description: 'Bool if run was successful'
 
 runs:
   using: node20
