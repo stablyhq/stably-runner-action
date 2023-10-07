@@ -16,7 +16,7 @@ inputs:
       Use to run a subset of tests
   domain_overrides:
     description: |-
-      Newline-separated list of domain overrides key pairs (original:replacement).
+      Newline-separated list of domain overrides (given in pairs -- original first, replacement second).
       Use to replace origin URLs when running tests
 
 # Define your outputs here.

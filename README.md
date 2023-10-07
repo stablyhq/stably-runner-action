@@ -37,7 +37,10 @@ steps:
             TEST_ID_TO_FILTER_1
             TEST_ID_TO_FILTER_2
          domain_overrides: |-
-            ORIGINAL_DOMAIN:REPLACEMENT_DOMAIN
+            ORIGINAL_DOMAIN_1
+            REPLACEMENT_DOMAIN_1
+            ORIGINAL_DOMAIN_2
+            REPLACEMENT_DOMAIN_2
 
   - name: Print Output
     id: output
