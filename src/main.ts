@@ -27,7 +27,7 @@ export async function run(): Promise<void> {
 
     const resp = await httpClient.postJson<{
       results: { testId: string; success?: boolean }[]
-    }>('https://app.stably.ai/run/v1', {
+    }>('https://app.stably.ai/api/run/v1', {
       projectId,
       domainOverrides,
       filter: testIds.length ? { testIds } : undefined
