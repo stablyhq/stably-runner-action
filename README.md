@@ -75,16 +75,14 @@ steps:
 
 6. Merge the pull request into the `master` branch
 
-Your action is now published
+The action should now be published
 
-For information about versioning your action, see
+For information about versioning see
 [Versioning](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md)
 
 ## Validating the Action
 
-You can now validate the action by referencing it in a workflow file. For
-example, [`ci.yml`](./.github/workflows/ci.yml) demonstrates how to reference an
-action in the same repository. 
+[`ci.yml`](./.github/workflows/ci.yml) validates the action
 
 
 </details>
