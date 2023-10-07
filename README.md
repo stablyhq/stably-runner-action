@@ -4,9 +4,22 @@ Use this GitHub action to run tests on [stably.ai](https://stably.ai)
 
 ## Inputs
 
-TODO
+| **Name** | **Required** | **Description** |
+| --- | --- | --- |
+| project_id | X | Your project id |
+| api_key | X | Your api key |
+| test_ids |  | Newline separated list of test ids. Use to run a subset of tests |
+| domain_overrides |  | Newline-separated list of domain overrides key pairs (original:replacement). Use to replace origin URLs when running tests |
 
-## Usage
+
+## Outputs
+
+| **Name** | **Description** |
+| --- | --- |
+| success | Bool if run was successful |
+
+
+## Example Usage
 
 ```yaml
 steps:
