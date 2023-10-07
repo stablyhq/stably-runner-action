@@ -5,14 +5,14 @@ author: 'Stably'
 # Define your inputs here.
 inputs:
   project_id:
-    description: 'Your project id'
+    description: 'Your project ID'
     required: true
   api_key:
-    description: 'Your api key'
+    description: 'Your API key'
     required: true
   test_ids:
     description: |-
-      Newline separated list of test ids.
+      Newline separated list of test IDs.
       Use to run a subset of tests
   domain_overrides:
     description: |-
