@@ -2744,11 +2744,9 @@ async function run() {
         const testIds = (0, core_1.getInput)('test_ids').split(NEWLINE_REGEX).filter(Boolean);
         const domainOverrides = (0, core_1.getInput)('domain_overrides')
             .split(NEWLINE_REGEX)
-            .map(x => {
-            const [original, replacement] = x.split(':');
-            return { original, replacement };
-        })
-            .filter(({ original, replacement }) => Boolean(original && replacement));
+            .reduce(({ res, tempOrig }, cur) => tempOrig
+            ? { res: res.concat({ original: tempOrig, replacement: cur }) }
+            : { res, tempOrig: cur }, { res: [] }).res;
         const httpClient = new http_client_1.HttpClient('stably-runner-action', [
             new auth_1.BearerCredentialHandler(apiKey)
         ]);

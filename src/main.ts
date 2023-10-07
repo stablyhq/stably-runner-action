@@ -15,11 +15,16 @@ export async function run(): Promise<void> {
     const testIds = getInput('test_ids').split(NEWLINE_REGEX).filter(Boolean)
     const domainOverrides = getInput('domain_overrides')
       .split(NEWLINE_REGEX)
-      .map(x => {
-        const [original, replacement] = x.split(':')
-        return { original, replacement }
-      })
-      .filter(({ original, replacement }) => Boolean(original && replacement))
+      .reduce<{
+        res: { original: string; replacement: string }[]
+        tempOrig?: string
+      }>(
+        ({ res, tempOrig }, cur) =>
+          tempOrig
+            ? { res: res.concat({ original: tempOrig, replacement: cur }) }
+            : { res, tempOrig: cur },
+        { res: [] }
+      ).res
 
     const httpClient = new HttpClient('stably-runner-action', [
       new BearerCredentialHandler(apiKey)
