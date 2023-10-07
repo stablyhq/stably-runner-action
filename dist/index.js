@@ -2752,7 +2752,7 @@ async function run() {
         const httpClient = new http_client_1.HttpClient('stably-runner-action', [
             new auth_1.BearerCredentialHandler(apiKey)
         ]);
-        const resp = await httpClient.postJson('https://app.stably.ai/run/v1', {
+        const resp = await httpClient.postJson('https://app.stably.ai/api/run/v1', {
             projectId,
             domainOverrides,
             filter: testIds.length ? { testIds } : undefined
