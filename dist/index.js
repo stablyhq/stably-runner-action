@@ -2744,7 +2744,7 @@ async function run() {
         const testIds = (0, core_1.getInput)('test_ids').split(NEWLINE_REGEX).filter(Boolean);
         const domainOverridesRaw = (0, core_1.getInput)('domain_overrides').split(NEWLINE_REGEX);
         if (domainOverridesRaw.length % 2 !== 0) {
-            (0, core_1.setFailed)("'domain_overrides' must be given in pars (lenght must be even)");
+            (0, core_1.setFailed)("'domain_overrides' must be given in pairs (lenght must be even)");
         }
         const domainOverrides = domainOverridesRaw.reduce(({ res, tempOrig }, cur) => tempOrig
             ? { res: res.concat({ original: tempOrig, replacement: cur }) }

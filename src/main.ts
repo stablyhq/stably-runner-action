@@ -13,22 +13,18 @@ export async function run(): Promise<void> {
     const apiKey = getInput('api_key', { required: true })
     const projectId = getInput('project_id', { required: true })
     const testIds = getInput('test_ids').split(NEWLINE_REGEX).filter(Boolean)
-    const domainOverridesRaw = getInput('domain_overrides').split(NEWLINE_REGEX)
-    if (domainOverridesRaw.length % 2 !== 0) {
-      setFailed(
-        "'domain_overrides' must be given in pars (lenght must be even)"
-      )
-    }
-    const domainOverrides = domainOverridesRaw.reduce<{
-      res: { original: string; replacement: string }[]
-      tempOrig?: string
-    }>(
-      ({ res, tempOrig }, cur) =>
-        tempOrig
-          ? { res: res.concat({ original: tempOrig, replacement: cur }) }
-          : { res, tempOrig: cur },
-      { res: [] }
-    ).res
+    const domainOverrides = getInput('domain_overrides')
+      .split(NEWLINE_REGEX)
+      .reduce<{
+        res: { original: string; replacement: string }[]
+        tempOrig?: string
+      }>(
+        ({ res, tempOrig }, cur) =>
+          tempOrig
+            ? { res: res.concat({ original: tempOrig, replacement: cur }) }
+            : { res, tempOrig: cur },
+        { res: [] }
+      ).res
 
     const httpClient = new HttpClient('stably-runner-action', [
       new BearerCredentialHandler(apiKey)
