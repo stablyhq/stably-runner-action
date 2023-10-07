@@ -2,6 +2,10 @@
 
 Use this GitHub action to run tests on [stably.ai](https://stably.ai)
 
+## Inputs
+
+TODO
+
 ## Usage
 
 ```yaml
