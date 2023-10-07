@@ -8,7 +8,7 @@ inputs:
     description: 'Your project id'
     required: true
   api_key:
-    description: 'Your organization's api key'
+    description: 'Your api key'
     required: true
   test_ids:
     description: |-
