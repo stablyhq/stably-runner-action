@@ -47,6 +47,7 @@ steps:
     run: echo "${{ steps.test-action.outputs.success }}"
 ```
 
+
 <details>
 
 <summary>Development</summary>
@@ -95,16 +96,12 @@ steps:
 
 6. Merge the pull request into the `master` branch
 
-Your action is now published
-
-For information about versioning your action, see
+You can now draft a relase. For information more info see
 [Versioning](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md)
 
 ## Validating the Action
 
-You can now validate the action by referencing it in a workflow file. For
-example, [`ci.yml`](./.github/workflows/ci.yml) demonstrates how to reference an
-action in the same repository. 
+[`ci.yml`](./.github/workflows/ci.yml) is a workflow that runs and validates the action
 
 
 </details>
