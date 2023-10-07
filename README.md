@@ -29,7 +29,7 @@ steps:
 
   - name: Stably Runner Action
     id: stably-runner
-    uses: actions/stably-runner-action@v1
+    uses: actions/stably-runner-action@v2
     with:
          api_key: ${{ secrets.API_KEY }}
          project_id: YOUR_PROJECT_ID
