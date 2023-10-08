@@ -29,7 +29,7 @@ steps:
 
   - name: Stably Runner Action
     id: stably-runner
-    uses: actions/stably-runner-action@v2
+    uses: stablyhq/stably-runner-action@v2
     with:
          api_key: ${{ secrets.API_KEY }}
          project_id: YOUR_PROJECT_ID
@@ -96,8 +96,16 @@ steps:
 
 6. Merge the pull request into the `master` branch
 
-You can now draft a relase. For information more info see
-[Versioning](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md)
+7. Release
+     1. Draft a release via the GitHub UI and ensure you select to also publish to the marketplace. Use SEMVAR
+     2. Make the new release available to those binding to the major version tag: Move the major version tag (v1, v2, etc.) to point to the ref of the current releas
+
+         ```bash
+         git tag -fa v2 -m "Update v2 tag"
+         git push origin v2 --force
+         ```
+   
+   For information more info see [Versioning](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md)
 
 ## Validating the Action
 
