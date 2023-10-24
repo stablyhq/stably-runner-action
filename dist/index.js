@@ -25625,6 +25625,9 @@ async function run() {
         const apiKey = (0, core_1.getInput)('api_key', { required: true });
         const projectId = (0, core_1.getInput)('project_id', { required: true });
         const testIds = (0, core_1.getInput)('test_ids').split(NEWLINE_REGEX).filter(Boolean);
+        const runGroupIds = (0, core_1.getInput)('run_group_ids')
+            .split(NEWLINE_REGEX)
+            .filter(Boolean);
         const domainOverrides = (0, core_1.getInput)('domain_overrides')
             .split(NEWLINE_REGEX)
             .reduce(({ res, tempOrig }, cur) => tempOrig
@@ -25636,7 +25639,10 @@ async function run() {
         const resp = await httpClient.postJson('https://app.stably.ai/api/run/v1', {
             projectId,
             domainOverrides,
-            filter: testIds.length ? { testIds } : undefined
+            filter: {
+                ...(testIds.length ? { testIds } : {}),
+                ...(runGroupIds.length ? { runGroupIds } : {})
+            }
         });
         (0, core_1.debug)(`resp statusCode: ${resp.statusCode}`);
         const numFailedTests = (resp.result?.results || []).filter(x => x.success === false).length;

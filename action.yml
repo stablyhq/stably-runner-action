@@ -14,6 +14,10 @@ inputs:
     description: |-
       Newline separated list of test IDs.
       Use to run a subset of tests
+  run_group_ids:
+    description: |-
+      Newline separated list of run group IDs.
+      Use to run a subset of tests.
   domain_overrides:
     description: |-
       Newline-separated list of domain overrides (given in pairs -- original first, replacement second).

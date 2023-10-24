@@ -55,8 +55,8 @@ jobs:
         with:
           api_key: ${{ secrets.API_KEY }}
           project_id: clle9fscu0000jf087maicxbc
-          test_ids: |-
-            clnupifws0000jv087nzkrs5o
+          run_group_ids: |-
+            clo3w9pcj0001ml08rdits9es
 
       - name: Print Output
         id: output
