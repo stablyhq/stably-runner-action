@@ -3,17 +3,14 @@
 Use this GitHub action to run tests on [stably.ai](https://stably.ai)
 
 ## Inputs
-
 | **Name** | **Required** | **Description** |
 | --- | --- | --- |
 | project_id | X | Your project ID |
 | api_key | X | Your API key |
-| test_ids |  | Newline separated list of test IDs. Use to run a subset of tests |
+| run_group_ids |  | Newline separated list of run group IDs. Use to run a subset of tests. **We highly reccomend using these for organizational purposes** |
 | domain_overrides |  | Newline-separated list of domain overrides (given in pairs -- original first, replacement second). Use to replace origin URLs when running tests |
 
-
 ## Outputs
-
 | **Name** | **Description** |
 | --- | --- |
 | success | Bool if run was successful |
@@ -33,9 +30,9 @@ steps:
     with:
          api_key: ${{ secrets.API_KEY }}
          project_id: YOUR_PROJECT_ID
-         test_ids: |-
-            TEST_ID_TO_FILTER_1
-            TEST_ID_TO_FILTER_2
+         run_group_ids: |-
+            RUN_GROUP_ID_TO_FILTER_1
+            RUN_GROUP_ID_TO_FILTER_2
          domain_overrides: |-
             ORIGINAL_DOMAIN_1
             REPLACEMENT_DOMAIN_1
