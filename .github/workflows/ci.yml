@@ -58,7 +58,7 @@ jobs:
           project-id: clle9fscu0000jf087maicxbc
           run-group-ids: |-
             clo3w9pcj0001ml08rdits9es
-            github-comment: true
+          github-comment: true
 
       - name: Print Output
         id: output

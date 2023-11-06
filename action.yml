@@ -17,6 +17,7 @@ inputs:
   github-comment:
     description: |-
       If enabled, will leave a comment on either the commit or PR with relevant test results
+    default: 'false'
   github-token:
     description: |-
       Use to manually set GitHub token

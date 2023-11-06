@@ -29898,6 +29898,7 @@ const NEWLINE_REGEX = /\r|\n/;
 const TRUE_VALUES = new Set(['true', 'yes', '1']);
 function getBoolInput(name, options) {
     const rawBool = (0, core_1.getInput)(name, options).toLowerCase().trim();
+    (0, core_1.info)(`Got raw bool: ${rawBool}`);
     return TRUE_VALUES.has(rawBool);
 }
 function parseInput() {
@@ -29914,6 +29915,7 @@ function parseInput() {
         : { res, tempOrig: cur }, { res: [] }).res;
     const githubToken = (0, core_1.getInput)('github-token');
     const githubComment = getBoolInput('github-comment');
+    (0, core_1.info)(`github comment via input.ts: ${githubComment}`);
     return {
         apiKey,
         projectId,
