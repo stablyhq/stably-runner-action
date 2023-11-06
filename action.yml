@@ -22,6 +22,12 @@ inputs:
     description: |-
       Newline-separated list of domain overrides (given in pairs -- original first, replacement second).
       Use to replace origin URLs when running tests
+  github-comment:
+    description: |-
+      If enabled, will leave a comment on either the commit or PR with relevant test results
+  github-token:
+    description: |-
+      Use to manually set GitHub token
 
 # Define your outputs here.
 outputs:
