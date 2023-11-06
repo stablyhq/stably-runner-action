@@ -45,6 +45,7 @@ export async function run(): Promise<void> {
     // Set outputs for other workflow steps to use
     setOutput('success', resp.statusCode === 200 && numFailedTests === 0);
 
+    info(`gh cm: ${githubComment}. gh token: ${githubToken}`);
     // Github Commnet Code
     if (githubComment && githubToken) {
       info('Adding GitHub comment');

@@ -10,24 +10,17 @@ inputs:
   api-key:
     description: 'Your API key'
     required: true
-  test-ids:
-    description: |-
-      Newline separated list of test IDs.
-      Use to run a subset of tests
   run-group-ids:
     description: |-
       Newline separated list of run group IDs.
       Use to run a subset of tests.
-  domain-overrides:
-    description: |-
-      Newline-separated list of domain overrides (given in pairs -- original first, replacement second).
-      Use to replace origin URLs when running tests
   github-comment:
     description: |-
       If enabled, will leave a comment on either the commit or PR with relevant test results
   github-token:
     description: |-
       Use to manually set GitHub token
+    default: ${{ github.token }}
 
 # Define your outputs here.
 outputs:
