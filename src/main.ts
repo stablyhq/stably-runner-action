@@ -1,7 +1,8 @@
-import { debug, getInput, setFailed, setOutput } from '@actions/core';
+import { debug, setFailed, setOutput } from '@actions/core';
 import { HttpClient } from '@actions/http-client';
 import { BearerCredentialHandler } from '@actions/http-client/lib/auth';
 import { parseInput } from './input';
+import { addGitHubComment } from './github_commen';
 
 /**
  * The main function for the action.
@@ -42,6 +43,11 @@ export async function run(): Promise<void> {
 
     // Set outputs for other workflow steps to use
     setOutput('success', resp.statusCode === 200 && numFailedTests === 0);
+
+    // Github Commnet Code
+    if (githubComment && githubToken) {
+      await addGitHubComment(githubToken, resp);
+    }
   } catch (error) {
     // Fail the workflow run if an error occurs
     if (error instanceof Error) setFailed(error.message);

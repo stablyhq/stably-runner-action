@@ -38,7 +38,7 @@ export function parseInput() {
     testIds,
     runGroupIds,
     domainOverrides,
-    githubToken,
+    githubToken: githubToken || process.env.GITHUB_TOKEN,
     githubComment
   };
 }
