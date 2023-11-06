@@ -5,10 +5,10 @@ Use this GitHub action to run tests on [stably.ai](https://stably.ai)
 ## Inputs
 | **Name** | **Required** | **Description** |
 | --- | --- | --- |
-| project_id | X | Your project ID |
-| api_key | X | Your API key |
-| run_group_ids |  | Newline separated list of run group IDs. Use to run a subset of tests. **We highly reccomend using these for organizational purposes** |
-| domain_overrides |  | Newline-separated list of domain overrides (given in pairs -- original first, replacement second). Use to replace origin URLs when running tests |
+| project-id | X | Your project ID |
+| api-key | X | Your API key |
+| run-group-ids |  | Newline separated list of run group IDs. Use to run a subset of tests. **We highly reccomend using these for organizational purposes** |
+| domain-overrides |  | Newline-separated list of domain overrides (given in pairs -- original first, replacement second). Use to replace origin URLs when running tests |
 
 ## Outputs
 | **Name** | **Description** |
@@ -28,12 +28,12 @@ steps:
     id: stably-runner
     uses: stablyhq/stably-runner-action@v2
     with:
-         api_key: ${{ secrets.API_KEY }}
-         project_id: YOUR_PROJECT_ID
-         run_group_ids: |-
+         api-key: ${{ secrets.API_KEY }}
+         project-id: YOUR_PROJECT_ID
+         run-group-ids: |-
             RUN_GROUP_ID_TO_FILTER_1
             RUN_GROUP_ID_TO_FILTER_2
-         domain_overrides: |-
+         domain-overrides: |-
             ORIGINAL_DOMAIN_1
             REPLACEMENT_DOMAIN_1
             ORIGINAL_DOMAIN_2

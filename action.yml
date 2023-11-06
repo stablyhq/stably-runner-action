@@ -4,21 +4,21 @@ author: 'Stably'
 
 # Define your inputs here.
 inputs:
-  project_id:
+  project-id:
     description: 'Your project ID'
     required: true
-  api_key:
+  api-key:
     description: 'Your API key'
     required: true
-  test_ids:
+  test-ids:
     description: |-
       Newline separated list of test IDs.
       Use to run a subset of tests
-  run_group_ids:
+  run-group-ids:
     description: |-
       Newline separated list of run group IDs.
       Use to run a subset of tests.
-  domain_overrides:
+  domain-overrides:
     description: |-
       Newline-separated list of domain overrides (given in pairs -- original first, replacement second).
       Use to replace origin URLs when running tests

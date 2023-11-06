@@ -1,8 +1,7 @@
-import { debug, getInput, setFailed, setOutput } from '@actions/core'
-import { HttpClient } from '@actions/http-client'
-import { BearerCredentialHandler } from '@actions/http-client/lib/auth'
-
-const NEWLINE_REGEX = /\r|\n/
+import { debug, getInput, setFailed, setOutput } from '@actions/core';
+import { HttpClient } from '@actions/http-client';
+import { BearerCredentialHandler } from '@actions/http-client/lib/auth';
+import { parseInput } from './input';
 
 /**
  * The main function for the action.
@@ -10,32 +9,22 @@ const NEWLINE_REGEX = /\r|\n/
  */
 export async function run(): Promise<void> {
   try {
-    const apiKey = getInput('api_key', { required: true })
-    const projectId = getInput('project_id', { required: true })
-    const testIds = getInput('test_ids').split(NEWLINE_REGEX).filter(Boolean)
-    const runGroupIds = getInput('run_group_ids')
-      .split(NEWLINE_REGEX)
-      .filter(Boolean)
-
-    const domainOverrides = getInput('domain_overrides')
-      .split(NEWLINE_REGEX)
-      .reduce<{
-        res: { original: string; replacement: string }[]
-        tempOrig?: string
-      }>(
-        ({ res, tempOrig }, cur) =>
-          tempOrig
-            ? { res: res.concat({ original: tempOrig, replacement: cur }) }
-            : { res, tempOrig: cur },
-        { res: [] }
-      ).res
+    const {
+      apiKey,
+      domainOverrides,
+      projectId,
+      runGroupIds,
+      testIds,
+      githubComment,
+      githubToken
+    } = parseInput();
 
     const httpClient = new HttpClient('stably-runner-action', [
       new BearerCredentialHandler(apiKey)
-    ])
+    ]);
 
     const resp = await httpClient.postJson<{
-      results: { testId: string; success?: boolean }[]
+      results: { testId: string; success?: boolean }[];
     }>('https://app.stably.ai/api/run/v1', {
       projectId,
       domainOverrides,
@@ -43,18 +32,18 @@ export async function run(): Promise<void> {
         ...(testIds.length ? { testIds } : {}),
         ...(runGroupIds.length ? { runGroupIds } : {})
       }
-    })
+    });
 
-    debug(`resp statusCode: ${resp.statusCode}`)
+    debug(`resp statusCode: ${resp.statusCode}`);
 
     const numFailedTests = (resp.result?.results || []).filter(
       x => x.success === false
-    ).length
+    ).length;
 
     // Set outputs for other workflow steps to use
-    setOutput('success', resp.statusCode === 200 && numFailedTests === 0)
+    setOutput('success', resp.statusCode === 200 && numFailedTests === 0);
   } catch (error) {
     // Fail the workflow run if an error occurs
-    if (error instanceof Error) setFailed(error.message)
+    if (error instanceof Error) setFailed(error.message);
   }
 }
