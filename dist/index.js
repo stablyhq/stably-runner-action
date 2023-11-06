@@ -29835,6 +29835,7 @@ function wrappy (fn, cb) {
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.addGitHubComment = void 0;
+const core_1 = __nccwpck_require__(2186);
 const github_1 = __nccwpck_require__(5438);
 async function addGitHubComment(githubToken, resp) {
     const octokit = (0, github_1.getOctokit)(githubToken);
@@ -29863,6 +29864,7 @@ async function addGitHubComment(githubToken, resp) {
   This comment is generated from [stably-runner-action](https://github.com/marketplace/actions/stably-runner)
 `;
     if (github_1.context.payload.pull_request) {
+        (0, core_1.info)('Adding GitHub comment to PR');
         await octokit.rest.issues.createComment({
             ...github_1.context.repo,
             body,
@@ -29870,12 +29872,14 @@ async function addGitHubComment(githubToken, resp) {
         });
     }
     else if (github_1.context.eventName === 'push') {
+        (0, core_1.info)('Adding GitHub comment to Commit');
         await octokit.rest.repos.createCommitComment({
             ...github_1.context.repo,
             body,
             commit_sha: github_1.context.payload.after
         });
     }
+    (0, core_1.info)('Done Adding GitHub comment');
 }
 exports.addGitHubComment = addGitHubComment;
 
@@ -29937,6 +29941,7 @@ const http_client_1 = __nccwpck_require__(6255);
 const auth_1 = __nccwpck_require__(5526);
 const input_1 = __nccwpck_require__(6747);
 const github_commen_1 = __nccwpck_require__(4918);
+const console_1 = __nccwpck_require__(6206);
 /**
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
@@ -29961,6 +29966,7 @@ async function run() {
         (0, core_1.setOutput)('success', resp.statusCode === 200 && numFailedTests === 0);
         // Github Commnet Code
         if (githubComment && githubToken) {
+            (0, console_1.info)('Adding GitHub comment');
             await (0, github_commen_1.addGitHubComment)(githubToken, resp);
         }
     }
