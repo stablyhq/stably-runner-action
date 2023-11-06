@@ -3,6 +3,7 @@ import { HttpClient } from '@actions/http-client';
 import { BearerCredentialHandler } from '@actions/http-client/lib/auth';
 import { parseInput } from './input';
 import { addGitHubComment } from './github_commen';
+import { info } from 'console';
 
 /**
  * The main function for the action.
@@ -46,6 +47,7 @@ export async function run(): Promise<void> {
 
     // Github Commnet Code
     if (githubComment && githubToken) {
+      info('Adding GitHub comment');
       await addGitHubComment(githubToken, resp);
     }
   } catch (error) {

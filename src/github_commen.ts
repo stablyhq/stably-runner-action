@@ -41,19 +41,19 @@ export async function addGitHubComment(
 `;
 
   if (context.payload.pull_request) {
-    info('Adding github comment to PR');
+    info('Adding GitHub comment to PR');
     await octokit.rest.issues.createComment({
       ...context.repo,
       body,
       issue_number: context.payload.pull_request.number
     });
   } else if (context.eventName === 'push') {
-    info('Adding github comment to Commit');
+    info('Adding GitHub comment to Commit');
     await octokit.rest.repos.createCommitComment({
       ...context.repo,
       body,
       commit_sha: context.payload.after
     });
   }
-  info('Done Adding github comment');
+  info('Done Adding GitHub comment');
 }
