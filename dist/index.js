@@ -29964,6 +29964,7 @@ async function run() {
         const numFailedTests = (resp.result?.results || []).filter(x => x.success === false).length;
         // Set outputs for other workflow steps to use
         (0, core_1.setOutput)('success', resp.statusCode === 200 && numFailedTests === 0);
+        (0, console_1.info)(`gh cm: ${githubComment}. gh token: ${githubToken}`);
         // Github Commnet Code
         if (githubComment && githubToken) {
             (0, console_1.info)('Adding GitHub comment');
