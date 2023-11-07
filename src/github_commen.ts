@@ -18,19 +18,21 @@ export async function addGitHubComment(
   const undefinedTests = results.filter(x => x.success === undefined);
 
   const body = `
-  🪐 Stably Runner
+  # [Stably](https://stably.ai/) Runner
+
   
-  ${
+  Test Run Result: ${
     resp.statusCode !== 200
       ? '❌ Error - The Action ran into an error while calling the Stably backend. Please re-run'
       : failedTests.length === 0
-      ? `🟢 Success (${successTests.length / results.length})`
-      : `🔴 Failure (${failedTests.length} / ${results.length})`
+      ? `🟢 Success (${successTests.length} / ${results.length} tests passed)`
+      : `🔴 Failure (${failedTests.length} / ${results.length} tests failed)`
   }
   
+
   ${
     failedTests.length > 0
-      ? `##Failed Tests:
+      ? `Failed Tests:\n
       ${listTestMarkDown(failedTests)}`
       : ''
   }
@@ -43,7 +45,7 @@ export async function addGitHubComment(
   }
   
   ---
-  _This comment is generated from [stably-runner-action](https://github.com/marketplace/actions/stably-runner)_
+  _This comment was generated from [stably-runner-action](https://github.com/marketplace/actions/stably-runner)_
 `;
 
   if (context.payload.pull_request) {
