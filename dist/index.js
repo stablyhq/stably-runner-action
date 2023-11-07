@@ -29843,18 +29843,16 @@ async function addGitHubComment(githubToken, resp) {
     const successTests = results.filter(x => x.success === true);
     const undefinedTests = results.filter(x => x.success === undefined);
     const body = `
-  # [Stably](https://stably.ai/) Runner
-
+  🪐 Stably Runner
   
-  Test Run Result: ${resp.statusCode !== 200
+  ${resp.statusCode !== 200
         ? '❌ Error - The Action ran into an error while calling the Stably backend. Please re-run'
         : failedTests.length === 0
-            ? `🟢 Success (${successTests.length} / ${results.length} tests passed)`
-            : `🔴 Failure (${failedTests.length} / ${results.length} tests failed)`}
+            ? `🟢 Success (${successTests.length / results.length})`
+            : `🔴 Failure (${failedTests.length} / ${results.length})`}
   
-
   ${failedTests.length > 0
-        ? `Failed Tests:\n
+        ? `##Failed Tests:
       ${listTestMarkDown(failedTests)}`
         : ''}
 
@@ -29864,7 +29862,7 @@ async function addGitHubComment(githubToken, resp) {
         : ''}
   
   ---
-  _This comment was generated from [stably-runner-action](https://github.com/marketplace/actions/stably-runner)_
+  _This comment is generated from [stably-runner-action](https://github.com/marketplace/actions/stably-runner)_
 `;
     if (github_1.context.payload.pull_request) {
         await octokit.rest.issues.createComment({
