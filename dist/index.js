@@ -29835,36 +29835,36 @@ function wrappy (fn, cb) {
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.addGitHubComment = void 0;
-const core_1 = __nccwpck_require__(2186);
 const github_1 = __nccwpck_require__(5438);
 async function addGitHubComment(githubToken, resp) {
     const octokit = (0, github_1.getOctokit)(githubToken);
-    // let { ref, sha } = context;
-    // let commit = execSync('git log -1 --pretty=format:%B').toString().trim();
-    // if (context.payload.pull_request) {
-    //   const pullRequestPayload = context.payload;
-    //   const pr =
-    //     pullRequestPayload.pull_request || pullRequestPayload.pull_request_target;
-    //   ref = pr.head.ref;
-    //   sha = pr.head.sha;
-    //   const { data: commitData } = await octokit.rest.git.getCommit({
-    //     ...context.repo,
-    //     commit_sha: sha
-    //   });
-    //   commit = commitData.message;
-    // }
-    // info(`commit: ${commit}`);
+    const results = resp.result?.results || [];
+    const failedTests = results.filter(x => x.success === false);
+    const successTests = results.filter(x => x.success === true);
+    const undefinedTests = results.filter(x => x.success === undefined);
     const body = `
   🪐 Stably Runner
   
-  # Does markdown work?
+  ${resp.statusCode !== 200
+        ? '❌ Error - The Action ran into an error while calling the Stably backend. Please re-run'
+        : failedTests.length === 0
+            ? `🟢 Success (${successTests.length / results.length})`
+            : `🔴 Failure (${failedTests.length} / ${results.length})`}
   
-  num results: ${resp.result?.results.length}
+  ${failedTests.length > 0
+        ? `##Failed Tests:
+      ${listTestMarkDown(failedTests)}`
+        : ''}
+
+  ${undefinedTests.length > 0
+        ? `##Unnable to run tests:
+      ${listTestMarkDown(undefinedTests)}`
+        : ''}
   
-  This comment is generated from [stably-runner-action](https://github.com/marketplace/actions/stably-runner)
+  ---
+  _This comment is generated from [stably-runner-action](https://github.com/marketplace/actions/stably-runner)_
 `;
     if (github_1.context.payload.pull_request) {
-        (0, core_1.info)('Adding GitHub comment to PR');
         await octokit.rest.issues.createComment({
             ...github_1.context.repo,
             body,
@@ -29872,16 +29872,19 @@ async function addGitHubComment(githubToken, resp) {
         });
     }
     else if (github_1.context.eventName === 'push') {
-        (0, core_1.info)('Adding GitHub comment to Commit');
         await octokit.rest.repos.createCommitComment({
             ...github_1.context.repo,
             body,
             commit_sha: github_1.context.payload.after
         });
     }
-    (0, core_1.info)('Done Adding GitHub comment');
 }
 exports.addGitHubComment = addGitHubComment;
+function listTestMarkDown(tests) {
+    return tests
+        .map(x => `\t* [${x.testId}](http://app.stably.ai/test/${x.testId})`)
+        .join('\n');
+}
 
 
 /***/ }),
@@ -29898,7 +29901,6 @@ const NEWLINE_REGEX = /\r|\n/;
 const TRUE_VALUES = new Set(['true', 'yes', '1']);
 function getBoolInput(name, options) {
     const rawBool = (0, core_1.getInput)(name, options).toLowerCase().trim();
-    (0, core_1.info)(`Got raw bool: ${rawBool}`);
     return TRUE_VALUES.has(rawBool);
 }
 function parseInput() {
@@ -29915,7 +29917,6 @@ function parseInput() {
         : { res, tempOrig: cur }, { res: [] }).res;
     const githubToken = (0, core_1.getInput)('github-token');
     const githubComment = getBoolInput('github-comment');
-    (0, core_1.info)(`github comment via input.ts: ${githubComment}`);
     return {
         apiKey,
         projectId,

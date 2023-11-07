@@ -1,4 +1,4 @@
-import { InputOptions, getInput, info } from '@actions/core';
+import { InputOptions, getInput } from '@actions/core';
 
 const NEWLINE_REGEX = /\r|\n/;
 const TRUE_VALUES = new Set(['true', 'yes', '1']);
