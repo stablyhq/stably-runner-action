@@ -5,7 +5,6 @@ const TRUE_VALUES = new Set(['true', 'yes', '1']);
 
 function getBoolInput(name: string, options?: InputOptions) {
   const rawBool = getInput(name, options).toLowerCase().trim();
-  info(`Got raw bool: ${rawBool}`);
   return TRUE_VALUES.has(rawBool);
 }
 
@@ -32,7 +31,6 @@ export function parseInput() {
 
   const githubToken = getInput('github-token');
   const githubComment = getBoolInput('github-comment');
-  info(`github comment via input.ts: ${githubComment}`);
 
   return {
     apiKey,

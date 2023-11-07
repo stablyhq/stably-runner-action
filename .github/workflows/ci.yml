@@ -8,6 +8,7 @@ on:
       - 'releases/*'
 permissions:
   pull-requests: write
+  contents: write
 jobs:
   test-typescript:
     name: TypeScript Tests

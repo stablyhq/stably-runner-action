@@ -1,4 +1,3 @@
-import { info } from '@actions/core';
 import { context, getOctokit } from '@actions/github';
 import { TypedResponse } from '@actions/http-client/lib/interfaces';
 
@@ -13,47 +12,62 @@ export async function addGitHubComment(
 ) {
   const octokit = getOctokit(githubToken);
 
-  // let { ref, sha } = context;
-  // let commit = execSync('git log -1 --pretty=format:%B').toString().trim();
-  // if (context.payload.pull_request) {
-  //   const pullRequestPayload = context.payload;
-  //   const pr =
-  //     pullRequestPayload.pull_request || pullRequestPayload.pull_request_target;
-  //   ref = pr.head.ref;
-  //   sha = pr.head.sha;
-
-  //   const { data: commitData } = await octokit.rest.git.getCommit({
-  //     ...context.repo,
-  //     commit_sha: sha
-  //   });
-  //   commit = commitData.message;
-  // }
-  // info(`commit: ${commit}`);
+  const results = resp.result?.results || [];
+  const failedTests = results.filter(x => x.success === false);
+  const successTests = results.filter(x => x.success === true);
+  const undefinedTests = results.filter(x => x.success === undefined);
 
   const body = `
   🪐 Stably Runner
   
-  # Does markdown work?
+  ${
+    resp.statusCode !== 200
+      ? '❌ Error - The Action ran into an error while calling the Stably backend. Please re-run'
+      : failedTests.length === 0
+      ? `🟢 Success (${successTests.length / results.length})`
+      : `🔴 Failure (${failedTests.length} / ${results.length})`
+  }
   
-  num results: ${resp.result?.results.length}
+  ${
+    failedTests.length > 0
+      ? `##Failed Tests:
+      ${listTestMarkDown(failedTests)}`
+      : ''
+  }
+
+  ${
+    undefinedTests.length > 0
+      ? `##Unnable to run tests:
+      ${listTestMarkDown(undefinedTests)}`
+      : ''
+  }
   
-  This comment is generated from [stably-runner-action](https://github.com/marketplace/actions/stably-runner)
+  ---
+  _This comment is generated from [stably-runner-action](https://github.com/marketplace/actions/stably-runner)_
 `;
 
   if (context.payload.pull_request) {
-    info('Adding GitHub comment to PR');
     await octokit.rest.issues.createComment({
       ...context.repo,
       body,
       issue_number: context.payload.pull_request.number
     });
   } else if (context.eventName === 'push') {
-    info('Adding GitHub comment to Commit');
     await octokit.rest.repos.createCommitComment({
       ...context.repo,
       body,
       commit_sha: context.payload.after
     });
   }
-  info('Done Adding GitHub comment');
+}
+
+function listTestMarkDown(
+  tests: {
+    testId: string;
+    success?: boolean | undefined;
+  }[]
+) {
+  return tests
+    .map(x => `\t* [${x.testId}](http://app.stably.ai/test/${x.testId})`)
+    .join('\n');
 }
