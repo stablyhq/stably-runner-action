@@ -8,7 +8,7 @@ Use this GitHub action to run tests on [stably.ai](https://stably.ai)
 | api-key | X | | Your API key |
 | run-group-ids | X | | Newline separated list of run group IDs. Use one or more to select your tests to run. |
 | github-comment | | true | When enabled, will leave a comment on either the commit or PR with relevant test results. Requires proper permissions (see #Permissions section below). |
-| github-token | | `${{ github.token }}` | This token is used for used for leaving the comments on PRs/commits. By default, we'll use the github actions bot token, but you can override this a repo scoped [PAT](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens). |
+| github-token | | `${{ github.token }}` | This token is used for used for leaving the comments on PRs/commits. By default, we'll use the GitHub actions bot token, but you can override this a repository scoped [PAT](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens). |
 
 ## Outputs
 | **Name** | **Description** |
