@@ -37,6 +37,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
+
       - name: Stably Runner Action
          id: stably-runner
          uses: stablyhq/stably-runner-action@v3
