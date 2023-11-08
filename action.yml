@@ -4,9 +4,6 @@ author: 'Stably'
 
 # Define your inputs here.
 inputs:
-  project-id:
-    description: 'Your project ID'
-    required: true
   api-key:
     description: 'Your API key'
     required: true
@@ -14,13 +11,16 @@ inputs:
     description: |-
       Newline separated list of run group IDs.
       Use to run a subset of tests.
+    required: true
   github-comment:
     description: |-
-      If enabled, will leave a comment on either the commit or PR with relevant test results
-    default: 'false'
+      If enabled, will leave a comment on either the commit or PR with relevant test results.
+      Requires proper permissions.
+    default: 'true'
   github-token:
     description: |-
-      Use to manually set GitHub token
+      This token is used for used for leaving the comments on PRs/commits.
+      By default, we'll use the github actions bot token, but you can override this a repo scoped PAT.
     default: ${{ github.token }}
 
 # Define your outputs here.

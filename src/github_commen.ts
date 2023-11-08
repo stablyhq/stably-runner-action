@@ -1,14 +1,10 @@
 import { context, getOctokit } from '@actions/github';
 import { TypedResponse } from '@actions/http-client/lib/interfaces';
+import { RunResponse } from './main';
 
 export async function addGitHubComment(
   githubToken: string,
-  resp: TypedResponse<{
-    results: {
-      testId: string;
-      success?: boolean;
-    }[];
-  }>
+  resp: TypedResponse<RunResponse>
 ) {
   const octokit = getOctokit(githubToken);
 
@@ -65,11 +61,12 @@ export async function addGitHubComment(
 
 function listTestMarkDown(
   tests: {
+    testName: string;
     testId: string;
     success?: boolean | undefined;
   }[]
 ) {
   return tests
-    .map(x => `\t* [${x.testId}](http://app.stably.ai/test/${x.testId})`)
+    .map(x => `\t* [${x.testName}](http://app.stably.ai/test/${x.testId})`)
     .join('\n');
 }

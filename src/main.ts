@@ -1,9 +1,13 @@
 import { debug, setFailed, setOutput } from '@actions/core';
 import { HttpClient } from '@actions/http-client';
 import { BearerCredentialHandler } from '@actions/http-client/lib/auth';
-import { parseInput } from './input';
 import { addGitHubComment } from './github_commen';
-import { info } from 'console';
+import { parseInput } from './input';
+
+export type RunResponse = {
+  projectId: string;
+  results: { testId: string; testName: string; success?: boolean }[];
+};
 
 /**
  * The main function for the action.
@@ -11,30 +15,15 @@ import { info } from 'console';
  */
 export async function run(): Promise<void> {
   try {
-    const {
-      apiKey,
-      domainOverrides,
-      projectId,
-      runGroupIds,
-      testIds,
-      githubComment,
-      githubToken
-    } = parseInput();
+    const { apiKey, runGroupIds, githubComment, githubToken } = parseInput();
 
     const httpClient = new HttpClient('stably-runner-action', [
       new BearerCredentialHandler(apiKey)
     ]);
-
-    const resp = await httpClient.postJson<{
-      results: { testId: string; success?: boolean }[];
-    }>('https://app.stably.ai/api/run/v1', {
-      projectId,
-      domainOverrides,
-      filter: {
-        ...(testIds.length ? { testIds } : {}),
-        ...(runGroupIds.length ? { runGroupIds } : {})
-      }
-    });
+    const resp = await httpClient.postJson<RunResponse>(
+      'https://app.stably.ai/api/run/v1',
+      { runGroupIds }
+    );
 
     debug(`resp statusCode: ${resp.statusCode}`);
 
@@ -45,10 +34,8 @@ export async function run(): Promise<void> {
     // Set outputs for other workflow steps to use
     setOutput('success', resp.statusCode === 200 && numFailedTests === 0);
 
-    info(`gh cm: ${githubComment}. gh token: ${githubToken}`);
     // Github Commnet Code
     if (githubComment && githubToken) {
-      info('Adding GitHub comment');
       await addGitHubComment(githubToken, resp);
     }
   } catch (error) {
