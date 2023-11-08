@@ -29884,7 +29884,7 @@ async function addGitHubComment(githubToken, resp) {
 exports.addGitHubComment = addGitHubComment;
 function listTestMarkDown(tests) {
     return tests
-        .map(x => `\t* [${x.testId}](http://app.stably.ai/test/${x.testId})`)
+        .map(x => `\t* [${x.testName}](http://app.stably.ai/test/${x.testId})`)
         .join('\n');
 }
 
@@ -29907,24 +29907,14 @@ function getBoolInput(name, options) {
 }
 function parseInput() {
     const apiKey = (0, core_1.getInput)('api-key', { required: true });
-    const projectId = (0, core_1.getInput)('project-id', { required: true });
-    const testIds = (0, core_1.getInput)('test-ids').split(NEWLINE_REGEX).filter(Boolean);
-    const runGroupIds = (0, core_1.getInput)('run-group-ids')
+    const runGroupIds = (0, core_1.getInput)('run-group-ids', { required: true })
         .split(NEWLINE_REGEX)
         .filter(Boolean);
-    const domainOverrides = (0, core_1.getInput)('domain-overrides')
-        .split(NEWLINE_REGEX)
-        .reduce(({ res, tempOrig }, cur) => tempOrig
-        ? { res: res.concat({ original: tempOrig, replacement: cur }) }
-        : { res, tempOrig: cur }, { res: [] }).res;
     const githubToken = (0, core_1.getInput)('github-token');
     const githubComment = getBoolInput('github-comment');
     return {
         apiKey,
-        projectId,
-        testIds,
         runGroupIds,
-        domainOverrides,
         githubToken: githubToken || process.env.GITHUB_TOKEN,
         githubComment
     };
@@ -29944,35 +29934,25 @@ exports.run = void 0;
 const core_1 = __nccwpck_require__(2186);
 const http_client_1 = __nccwpck_require__(6255);
 const auth_1 = __nccwpck_require__(5526);
-const input_1 = __nccwpck_require__(6747);
 const github_commen_1 = __nccwpck_require__(4918);
-const console_1 = __nccwpck_require__(6206);
+const input_1 = __nccwpck_require__(6747);
 /**
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
  */
 async function run() {
     try {
-        const { apiKey, domainOverrides, projectId, runGroupIds, testIds, githubComment, githubToken } = (0, input_1.parseInput)();
+        const { apiKey, runGroupIds, githubComment, githubToken } = (0, input_1.parseInput)();
         const httpClient = new http_client_1.HttpClient('stably-runner-action', [
             new auth_1.BearerCredentialHandler(apiKey)
         ]);
-        const resp = await httpClient.postJson('https://app.stably.ai/api/run/v1', {
-            projectId,
-            domainOverrides,
-            filter: {
-                ...(testIds.length ? { testIds } : {}),
-                ...(runGroupIds.length ? { runGroupIds } : {})
-            }
-        });
+        const resp = await httpClient.postJson('https://app.stably.ai/api/run/v1', { runGroupIds });
         (0, core_1.debug)(`resp statusCode: ${resp.statusCode}`);
         const numFailedTests = (resp.result?.results || []).filter(x => x.success === false).length;
         // Set outputs for other workflow steps to use
         (0, core_1.setOutput)('success', resp.statusCode === 200 && numFailedTests === 0);
-        (0, console_1.info)(`gh cm: ${githubComment}. gh token: ${githubToken}`);
         // Github Commnet Code
         if (githubComment && githubToken) {
-            (0, console_1.info)('Adding GitHub comment');
             await (0, github_commen_1.addGitHubComment)(githubToken, resp);
         }
     }
