@@ -6,7 +6,9 @@ on:
     branches:
       - master
       - 'releases/*'
-
+permissions:
+  pull-requests: write
+  contents: write
 jobs:
   test-typescript:
     name: TypeScript Tests
@@ -53,9 +55,8 @@ jobs:
         id: test-action
         uses: ./
         with:
-          api_key: ${{ secrets.API_KEY }}
-          project_id: clle9fscu0000jf087maicxbc
-          run_group_ids: |-
+          api-key: ${{ secrets.API_KEY }}
+          run-group-ids: |-
             clo3w9pcj0001ml08rdits9es
 
       - name: Print Output

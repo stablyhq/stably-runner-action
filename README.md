@@ -3,12 +3,12 @@
 Use this GitHub action to run tests on [stably.ai](https://stably.ai)
 
 ## Inputs
-| **Name** | **Required** | **Description** |
-| --- | --- | --- |
-| project_id | X | Your project ID |
-| api_key | X | Your API key |
-| run_group_ids |  | Newline separated list of run group IDs. Use to run a subset of tests. **We highly reccomend using these for organizational purposes** |
-| domain_overrides |  | Newline-separated list of domain overrides (given in pairs -- original first, replacement second). Use to replace origin URLs when running tests |
+| **Name** | **Required** | **Default** | **Description** |
+| --- | --- | --- | --- |
+| api-key | X | | Your API key |
+| run-group-ids | X | | Newline separated list of run group IDs. Use one or more to select your tests to run. |
+| github-comment | | true | When enabled, will leave a comment on either the commit or PR with relevant test results. Requires proper permissions (see #Permissions section below). |
+| github-token | | `${{ github.token }}` | This token is used for used for leaving the comments on PRs/commits. By default, we'll use the GitHub actions bot token, but you can override this a repository scoped [PAT](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens). |
 
 ## Outputs
 | **Name** | **Description** |
@@ -19,30 +19,59 @@ Use this GitHub action to run tests on [stably.ai](https://stably.ai)
 ## Example Usage
 
 ```yaml
-steps:
-  - name: Checkout
-    id: checkout
-    uses: actions/checkout@v3
+name: Stably Test Runner Example
 
-  - name: Stably Runner Action
-    id: stably-runner
-    uses: stablyhq/stably-runner-action@v2
-    with:
-         api_key: ${{ secrets.API_KEY }}
-         project_id: YOUR_PROJECT_ID
-         run_group_ids: |-
-            RUN_GROUP_ID_TO_FILTER_1
-            RUN_GROUP_ID_TO_FILTER_2
-         domain_overrides: |-
-            ORIGINAL_DOMAIN_1
-            REPLACEMENT_DOMAIN_1
-            ORIGINAL_DOMAIN_2
-            REPLACEMENT_DOMAIN_2
+# Define when you want the action to run
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+# You need to set these permissions if using the `github-comment` option
+permissions:
+  pull-requests: write
+  contents: write
+jobs:
+  stably-test-action:
+    name: Stably Test Runner
+    runs-on: ubuntu-latest
 
-  - name: Print Output
-    id: output
-    run: echo "${{ steps.stably-runner.outputs.success }}"
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
+
+      - name: Stably Runner Action
+         id: stably-runner
+         uses: stablyhq/stably-runner-action@v3
+         with:
+               api-key: ${{ secrets.API_KEY }}
+               run-group-ids: |-
+                  RUN_GROUP_ID_1
+                  RUN_GROUP_ID_2
+
+      - name: Print Output
+         id: output
+         run: echo "${{ steps.stably-runner.outputs.success }}"
 ```
+
+## Permissions
+This action requires write permission to leave PR or commit comments.
+
+You'll want to have the follow permissions:
+```yaml
+permissions:
+  pull-requests: write
+  contents: write
+```
+
+You can declare these at the top of your workflow.
+
+Alternativly, you can modify all workflow permissions by going to `Settings > Actions > General > Workflow permissions` and enabling read and write permissions.
+
+Note: For organizations, you'll have to first set this set/allow these permissions at the organization level
+
+See more info here: https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
 
 
 <details>
