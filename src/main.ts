@@ -15,14 +15,15 @@ export type RunResponse = {
  */
 export async function run(): Promise<void> {
   try {
-    const { apiKey, runGroupIds, githubComment, githubToken } = parseInput();
+    const { apiKey, runGroupIds, domainOverride, githubComment, githubToken } =
+      parseInput();
 
     const httpClient = new HttpClient('stably-runner-action', [
       new BearerCredentialHandler(apiKey)
     ]);
     const resp = await httpClient.postJson<RunResponse>(
       'https://app.stably.ai/api/run/v1',
-      { runGroupIds }
+      { runGroupIds, domainOverrides: [domainOverride] }
     );
 
     debug(`resp statusCode: ${resp.statusCode}`);

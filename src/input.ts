@@ -1,4 +1,4 @@
-import { InputOptions, getInput } from '@actions/core';
+import { InputOptions, getInput, setFailed } from '@actions/core';
 
 const NEWLINE_REGEX = /\r|\n/;
 const TRUE_VALUES = new Set(['true', 'yes', '1']);
@@ -13,12 +13,26 @@ export function parseInput() {
   const runGroupIds = getInput('run-group-ids', { required: true })
     .split(NEWLINE_REGEX)
     .filter(Boolean);
+
+  const rawDomainOverrideInput =
+    getInput('domain_overrides').split(NEWLINE_REGEX);
+  if (rawDomainOverrideInput.length !== 2) {
+    setFailed('Domain override can only be given as a single pair');
+  }
+  const [domainOverrideOriginal, domainOverrideReplacement] =
+    rawDomainOverrideInput;
+  const domainOverride = {
+    original: domainOverrideOriginal,
+    replacement: domainOverrideReplacement
+  };
+
   const githubToken = getInput('github-token');
   const githubComment = getBoolInput('github-comment');
 
   return {
     apiKey,
     runGroupIds,
+    domainOverride,
     githubToken: githubToken || process.env.GITHUB_TOKEN,
     githubComment
   };

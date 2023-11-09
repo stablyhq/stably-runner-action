@@ -7,6 +7,7 @@ Use this GitHub action to run tests on [stably.ai](https://stably.ai)
 | --- | --- | --- | --- |
 | api-key | X | | Your API key |
 | run-group-ids | X | | Newline separated list of run group IDs. Use one or more to select your tests to run. |
+| domain-override | | | Newline-separated tuple (pair) with original first as first line and the replacement second. Use to replace website URLs when running tests |
 | github-comment | | true | When enabled, will leave a comment on either the commit or PR with relevant test results. Requires proper permissions (see #Permissions section below). |
 | github-token | | `${{ github.token }}` | This token is used for used for leaving the comments on PRs/commits. By default, we'll use the GitHub actions bot token, but you can override this a repository scoped [PAT](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens). |
 
@@ -49,6 +50,11 @@ jobs:
                run-group-ids: |-
                   RUN_GROUP_ID_1
                   RUN_GROUP_ID_2
+                  RUN_GROUP_ID_3
+               # domain overrides are optional
+               domain-override: |-
+                  ORIGINAL_WEBSITE_URL
+                  REPLACEMENT_WEBSITE_URL
 
       - name: Print Output
          id: output
