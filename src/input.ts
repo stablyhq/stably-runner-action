@@ -20,7 +20,11 @@ export function parseInput() {
     rawDomainOverrideInput.length > 0 &&
     rawDomainOverrideInput.length !== 2
   ) {
-    setFailed('Domain override can only be given as a single pair');
+    setFailed(
+      `Domain override can only be given as a single pair. Given: ${JSON.stringify(
+        rawDomainOverrideInput
+      )}`
+    );
   }
   const [domainOverrideOriginal, domainOverrideReplacement] =
     rawDomainOverrideInput;
