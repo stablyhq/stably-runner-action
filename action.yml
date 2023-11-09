@@ -12,6 +12,10 @@ inputs:
       Newline separated list of run group IDs.
       Use to run a subset of tests.
     required: true
+  domain-override:
+    description: |-
+      Newline-separated tuple (pair) with original first as first line and the replacement second.
+      Use to replace website URLs when running tests
   github-comment:
     description: |-
       If enabled, will leave a comment on either the commit or PR with relevant test results.
