@@ -14,7 +14,7 @@ export function parseInput() {
     .split(NEWLINE_REGEX)
     .filter(Boolean);
 
-  const rawDomainOverrideInput = getInput('domain_overrides')
+  const rawDomainOverrideInput = getInput('domain-override')
     .split(NEWLINE_REGEX)
     .filter(Boolean);
   if (
