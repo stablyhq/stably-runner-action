@@ -29,7 +29,7 @@ export function parseInput() {
   const [domainOverrideOriginal, domainOverrideReplacement] =
     rawDomainOverrideInput;
   const domainOverride =
-    rawDomainOverrideInput.length == 2
+    rawDomainOverrideInput.length === 2
       ? {
           original: domainOverrideOriginal,
           replacement: domainOverrideReplacement
