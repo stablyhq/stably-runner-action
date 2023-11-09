@@ -29910,11 +29910,21 @@ function parseInput() {
     const runGroupIds = (0, core_1.getInput)('run-group-ids', { required: true })
         .split(NEWLINE_REGEX)
         .filter(Boolean);
+    const rawDomainOverrideInput = (0, core_1.getInput)('domain_overrides').split(NEWLINE_REGEX);
+    if (rawDomainOverrideInput.length !== 2) {
+        (0, core_1.setFailed)('Domain override can only be given as a single pair');
+    }
+    const [domainOverrideOriginal, domainOverrideReplacement] = rawDomainOverrideInput;
+    const domainOverride = {
+        original: domainOverrideOriginal,
+        replacement: domainOverrideReplacement
+    };
     const githubToken = (0, core_1.getInput)('github-token');
     const githubComment = getBoolInput('github-comment');
     return {
         apiKey,
         runGroupIds,
+        domainOverride,
         githubToken: githubToken || process.env.GITHUB_TOKEN,
         githubComment
     };
@@ -29942,11 +29952,11 @@ const input_1 = __nccwpck_require__(6747);
  */
 async function run() {
     try {
-        const { apiKey, runGroupIds, githubComment, githubToken } = (0, input_1.parseInput)();
+        const { apiKey, runGroupIds, domainOverride, githubComment, githubToken } = (0, input_1.parseInput)();
         const httpClient = new http_client_1.HttpClient('stably-runner-action', [
             new auth_1.BearerCredentialHandler(apiKey)
         ]);
-        const resp = await httpClient.postJson('https://app.stably.ai/api/run/v1', { runGroupIds });
+        const resp = await httpClient.postJson('https://app.stably.ai/api/run/v1', { runGroupIds, domainOverrides: [domainOverride] });
         (0, core_1.debug)(`resp statusCode: ${resp.statusCode}`);
         const numFailedTests = (resp.result?.results || []).filter(x => x.success === false).length;
         // Set outputs for other workflow steps to use
