@@ -127,8 +127,8 @@ See more info here: https://docs.github.com/en/actions/using-jobs/assigning-perm
      2. Make the new release available to those binding to the major version tag: Move the major version tag (v1, v2, etc.) to point to the ref of the current releas
 
          ```bash
-         git tag -fa v2 -m "Update v2 tag"
-         git push origin v2 --force
+         git tag -fa v3 -m "Update v3 tag"
+         git push origin v3 --force
          ```
    
    For information more info see [Versioning](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md)
