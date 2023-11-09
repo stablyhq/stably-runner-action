@@ -29910,7 +29910,7 @@ function parseInput() {
     const runGroupIds = (0, core_1.getInput)('run-group-ids', { required: true })
         .split(NEWLINE_REGEX)
         .filter(Boolean);
-    const rawDomainOverrideInput = (0, core_1.getInput)('domain_overrides')
+    const rawDomainOverrideInput = (0, core_1.getInput)('domain-override')
         .split(NEWLINE_REGEX)
         .filter(Boolean);
     if (rawDomainOverrideInput.length > 0 &&
