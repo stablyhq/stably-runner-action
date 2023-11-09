@@ -16,7 +16,10 @@ export function parseInput() {
 
   const rawDomainOverrideInput =
     getInput('domain_overrides').split(NEWLINE_REGEX);
-  if (rawDomainOverrideInput.length !== 2) {
+  if (
+    rawDomainOverrideInput.length > 0 &&
+    rawDomainOverrideInput.length !== 2
+  ) {
     setFailed('Domain override can only be given as a single pair');
   }
   const [domainOverrideOriginal, domainOverrideReplacement] =

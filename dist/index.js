@@ -29911,7 +29911,8 @@ function parseInput() {
         .split(NEWLINE_REGEX)
         .filter(Boolean);
     const rawDomainOverrideInput = (0, core_1.getInput)('domain_overrides').split(NEWLINE_REGEX);
-    if (rawDomainOverrideInput.length !== 2) {
+    if (rawDomainOverrideInput.length > 0 &&
+        rawDomainOverrideInput.length !== 2) {
         (0, core_1.setFailed)('Domain override can only be given as a single pair');
     }
     const [domainOverrideOriginal, domainOverrideReplacement] = rawDomainOverrideInput;
