@@ -4,19 +4,18 @@ const NEWLINE_REGEX = /\r|\n/;
 const TRUE_VALUES = new Set(['true', 'yes', '1']);
 
 function getBoolInput(name: string, options?: InputOptions) {
-  const rawBool = getInput(name, options).toLowerCase().trim();
-  return TRUE_VALUES.has(rawBool);
+  return TRUE_VALUES.has(getInput(name, options).toLowerCase().trim());
+}
+
+function getList(name: string, options?: InputOptions) {
+  return getInput(name, options).split(NEWLINE_REGEX).filter(Boolean);
 }
 
 export function parseInput() {
   const apiKey = getInput('api-key', { required: true });
-  const runGroupIds = getInput('run-group-ids', { required: true })
-    .split(NEWLINE_REGEX)
-    .filter(Boolean);
+  const runGroupIds = getList('run-group-ids', { required: true });
 
-  const rawDomainOverrideInput = getInput('domain-override')
-    .split(NEWLINE_REGEX)
-    .filter(Boolean);
+  const rawDomainOverrideInput = getList('domain-override');
   if (
     rawDomainOverrideInput.length > 0 &&
     rawDomainOverrideInput.length !== 2
@@ -29,10 +28,13 @@ export function parseInput() {
   }
   const [domainOverrideOriginal, domainOverrideReplacement] =
     rawDomainOverrideInput;
-  const domainOverride = {
-    original: domainOverrideOriginal,
-    replacement: domainOverrideReplacement
-  };
+  const domainOverride =
+    rawDomainOverrideInput.length == 2
+      ? {
+          original: domainOverrideOriginal,
+          replacement: domainOverrideReplacement
+        }
+      : undefined;
 
   const githubToken = getInput('github-token');
   const githubComment = getBoolInput('github-comment');

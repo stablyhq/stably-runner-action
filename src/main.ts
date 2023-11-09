@@ -23,7 +23,10 @@ export async function run(): Promise<void> {
     ]);
     const resp = await httpClient.postJson<RunResponse>(
       'https://app.stably.ai/api/run/v1',
-      { runGroupIds, domainOverrides: [domainOverride] }
+      {
+        runGroupIds,
+        ...(domainOverride ? { domainOverrides: [domainOverride] } : {})
+      }
     );
 
     debug(`resp statusCode: ${resp.statusCode}`);
