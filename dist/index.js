@@ -29910,7 +29910,9 @@ function parseInput() {
     const runGroupIds = (0, core_1.getInput)('run-group-ids', { required: true })
         .split(NEWLINE_REGEX)
         .filter(Boolean);
-    const rawDomainOverrideInput = (0, core_1.getInput)('domain_overrides').split(NEWLINE_REGEX);
+    const rawDomainOverrideInput = (0, core_1.getInput)('domain_overrides')
+        .split(NEWLINE_REGEX)
+        .filter(Boolean);
     if (rawDomainOverrideInput.length > 0 &&
         rawDomainOverrideInput.length !== 2) {
         (0, core_1.setFailed)(`Domain override can only be given as a single pair. Given: ${JSON.stringify(rawDomainOverrideInput)}`);
