@@ -21,8 +21,8 @@ export async function addGitHubComment(
     resp.statusCode !== 200
       ? '❌ Error - The Action ran into an error while calling the Stably backend. Please re-run'
       : failedTests.length === 0
-        ? `🟢 Success (${successTests.length} / ${results.length} tests passed)`
-        : `🔴 Failure (${failedTests.length} / ${results.length} tests failed)`
+      ? `🟢 Success (${successTests.length} / ${results.length} tests passed)`
+      : `🔴 Failure (${failedTests.length} / ${results.length} tests failed)`
   }
   
 
