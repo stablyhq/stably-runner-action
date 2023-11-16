@@ -1,6 +1,7 @@
 import { context, getOctokit } from '@actions/github';
 import { TypedResponse } from '@actions/http-client/lib/interfaces';
 import { RunResponse } from './main';
+import dedent from 'ts-dedent';
 
 export async function addGitHubComment(
   githubToken: string,
@@ -13,7 +14,8 @@ export async function addGitHubComment(
   const successTests = results.filter(x => x.success === true);
   const undefinedTests = results.filter(x => x.success === undefined);
 
-  const body = `
+  // prettier-ignore
+  const body = dedent`
   # [Stably](https://stably.ai/) Runner
 
   
@@ -21,21 +23,21 @@ export async function addGitHubComment(
     resp.statusCode !== 200
       ? '❌ Error - The Action ran into an error while calling the Stably backend. Please re-run'
       : failedTests.length === 0
-      ? `🟢 Success (${successTests.length} / ${results.length} tests passed)`
-      : `🔴 Failure (${failedTests.length} / ${results.length} tests failed)`
+      ? `🟢 Success (${successTests.length}/${results.length} tests passed)`
+      : `🔴 Failure (${failedTests.length}/${results.length} tests failed)`
   }
   
 
   ${
     failedTests.length > 0
-      ? `Failed Tests:\n
+      ? dedent`Failed Tests:
       ${listTestMarkDown(failedTests)}`
       : ''
   }
 
   ${
     undefinedTests.length > 0
-      ? `##Unnable to run tests:
+      ? dedent`Unnable to run tests:
       ${listTestMarkDown(undefinedTests)}`
       : ''
   }
@@ -67,6 +69,6 @@ function listTestMarkDown(
   }[]
 ) {
   return tests
-    .map(x => `\t* [${x.testName}](http://app.stably.ai/test/${x.testId})`)
+    .map(x => `  * [${x.testName}](http://app.stably.ai/test/${x.testId})`)
     .join('\n');
 }
