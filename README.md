@@ -44,22 +44,22 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Stably Runner Action
-         id: stably-runner
-         uses: stablyhq/stably-runner-action@v3
-         with:
-               api-key: ${{ secrets.API_KEY }}
-               run-group-ids: |-
-                  RUN_GROUP_ID_1
-                  RUN_GROUP_ID_2
-                  RUN_GROUP_ID_3
-               # domain overrides are optional
-               domain-override: |-
-                  ORIGINAL_WEBSITE_URL
-                  REPLACEMENT_WEBSITE_URL
+        id: stably-runner
+        uses: stablyhq/stably-runner-action@v3
+        with:
+          api-key: ${{ secrets.API_KEY }}
+          run-group-ids: |-
+            RUN_GROUP_ID_1
+            RUN_GROUP_ID_2
+            RUN_GROUP_ID_3
+          # domain overrides are optional
+          domain-override: |-
+            ORIGINAL_WEBSITE_URL
+            REPLACEMENT_WEBSITE_URL
 
       - name: Print Output
-         id: output
-         run: echo "${{ steps.stably-runner.outputs.success }}"
+        id: output
+        run: echo "${{ steps.test-action.outputs.success }}"          
 ```
 
 ## Permissions
