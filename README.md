@@ -3,19 +3,20 @@
 Use this GitHub action to run tests on [stably.ai](https://stably.ai)
 
 ## Inputs
-| **Name** | **Required** | **Default** | **Description** |
-| --- | --- | --- | --- |
-| api-key | X | | Your API key |
-| run-group-ids | X | | Newline separated list of run group IDs. Use one or more to select your tests to run. |
-| domain-override | | | Newline-separated tuple (pair) with original first as first line and the replacement second. Use to replace website URLs when running tests |
-| github-comment | | true | When enabled, will leave a comment on either the commit or PR with relevant test results. Requires proper permissions (see #Permissions section below). |
-| github-token | | `${{ github.token }}` | This token is used for used for leaving the comments on PRs/commits. By default, we'll use the GitHub actions bot token, but you can override this a repository scoped [PAT](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens). |
+
+| **Name**        | **Required** | **Default**           | **Description**                                                                                                                                                                                                                                                                                    |
+| --------------- | ------------ | --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| api-key         | X            |                       | Your API key                                                                                                                                                                                                                                                                                       |
+| run-group-ids   | X            |                       | Newline separated list of run group IDs. Use one or more to select your tests to run.                                                                                                                                                                                                              |
+| domain-override |              |                       | Newline-separated tuple (pair) with original first as first line and the replacement second. Use to replace website URLs when running tests                                                                                                                                                        |
+| github-comment  |              | true                  | When enabled, will leave a comment on either the commit or PR with relevant test results. Requires proper permissions (see #Permissions section below).                                                                                                                                            |
+| github-token    |              | `${{ github.token }}` | This token is used for used for leaving the comments on PRs/commits. By default, we'll use the GitHub actions bot token, but you can override this a repository scoped [PAT](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens). |
 
 ## Outputs
-| **Name** | **Description** |
-| --- | --- |
-| success | Bool if run was successful |
 
+| **Name** | **Description**            |
+| -------- | -------------------------- |
+| success  | Bool if run was successful |
 
 ## Example Usage
 
@@ -62,9 +63,11 @@ jobs:
 ```
 
 ## Permissions
+
 This action requires write permission to leave PR or commit comments.
 
 You'll want to have the follow permissions:
+
 ```yaml
 permissions:
   pull-requests: write
@@ -73,12 +76,15 @@ permissions:
 
 You can declare these at the top of your workflow.
 
-Alternativly, you can modify all workflow permissions by going to `Settings > Actions > General > Workflow permissions` and enabling read and write permissions.
+Alternativly, you can modify all workflow permissions by going to
+`Settings > Actions > General > Workflow permissions` and enabling read and
+write permissions.
 
-Note: For organizations, you'll have to first set this set/allow these permissions at the organization level
+Note: For organizations, you'll have to first set this set/allow these
+permissions at the organization level
 
-See more info here: https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
-
+See more info here:
+https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
 
 <details>
 
@@ -126,22 +132,27 @@ See more info here: https://docs.github.com/en/actions/using-jobs/assigning-perm
    git push -u origin releases/v1
    ```
 
-6. Merge the pull request into the `master` branch
+5. Merge the pull request into the `master` branch
 
-7. Release
-     1. Draft a release via the GitHub UI and ensure you select to also publish to the marketplace. Use SEMVAR
-     2. Make the new release available to those binding to the major version tag: Move the major version tag (v1, v2, etc.) to point to the ref of the current releas
+6. Release
 
-         ```bash
-         git tag -fa v3 -m "Update v3 tag"
-         git push origin v3 --force
-         ```
-   
-   For information more info see [Versioning](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md)
+   1. Draft a release via the GitHub UI and ensure you select to also publish to
+      the marketplace. Use SEMVAR
+   2. Make the new release available to those binding to the major version tag:
+      Move the major version tag (v1, v2, etc.) to point to the ref of the
+      current releas
+
+      ```bash
+      git tag -fa v3 -m "Update v3 tag"
+      git push origin v3 --force
+      ```
+
+   For information more info see
+   [Versioning](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md)
 
 ## Validating the Action
 
-[`ci.yml`](./.github/workflows/ci.yml) is a workflow that runs and validates the action
-
+[`ci.yml`](./.github/workflows/ci.yml) is a workflow that runs and validates the
+action
 
 </details>

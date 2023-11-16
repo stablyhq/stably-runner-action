@@ -1,7 +1,7 @@
 import { debug, setFailed, setOutput } from '@actions/core';
 import { HttpClient } from '@actions/http-client';
 import { BearerCredentialHandler } from '@actions/http-client/lib/auth';
-import { addGitHubComment } from './github_commen';
+import { addGitHubComment } from './github_comment';
 import { parseInput } from './input';
 
 export type RunResponse = {
