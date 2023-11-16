@@ -28471,7 +28471,7 @@ function wrappy (fn, cb) {
 
 /***/ }),
 
-/***/ 4918:
+/***/ 8205:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
@@ -28590,7 +28590,7 @@ exports.run = void 0;
 const core_1 = __nccwpck_require__(2186);
 const http_client_1 = __nccwpck_require__(6255);
 const auth_1 = __nccwpck_require__(5526);
-const github_commen_1 = __nccwpck_require__(4918);
+const github_comment_1 = __nccwpck_require__(8205);
 const input_1 = __nccwpck_require__(6747);
 /**
  * The main function for the action.
@@ -28612,7 +28612,7 @@ async function run() {
         (0, core_1.setOutput)('success', resp.statusCode === 200 && numFailedTests === 0);
         // Github Commnet Code
         if (githubComment && githubToken) {
-            await (0, github_commen_1.addGitHubComment)(githubToken, resp);
+            await (0, github_comment_1.addGitHubComment)(githubToken, resp);
         }
     }
     catch (error) {
