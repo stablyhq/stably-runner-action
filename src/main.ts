@@ -9,6 +9,8 @@ export type RunResponse = {
   results: { testId: string; testName: string; success?: boolean }[];
 };
 
+const ONE_MIN_IN_MS = 60000;
+
 /**
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
@@ -26,7 +28,9 @@ export async function run(): Promise<void> {
       {
         runGroupIds,
         ...(domainOverride ? { domainOverrides: [domainOverride] } : {})
-      }
+      },
+      // We add a little buffer to our server timeout just in case
+      { socketTimeout: 5 * ONE_MIN_IN_MS + 5000 }
     );
 
     debug(`resp statusCode: ${resp.statusCode}`);

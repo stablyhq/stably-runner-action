@@ -28646,6 +28646,7 @@ const http_client_1 = __nccwpck_require__(6255);
 const auth_1 = __nccwpck_require__(5526);
 const github_comment_1 = __nccwpck_require__(8205);
 const input_1 = __nccwpck_require__(6747);
+const ONE_MIN_IN_MS = 60000;
 /**
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
@@ -28659,7 +28660,9 @@ async function run() {
         const resp = await httpClient.postJson('https://app.stably.ai/api/run/v1', {
             runGroupIds,
             ...(domainOverride ? { domainOverrides: [domainOverride] } : {})
-        });
+        }, 
+        // We add a little buffer to our server timeout just in case
+        { socketTimeout: 5 * ONE_MIN_IN_MS + 5000 });
         (0, core_1.debug)(`resp statusCode: ${resp.statusCode}`);
         (0, core_1.debug)(`resp raw: ${JSON.stringify(resp.result)}`);
         const numFailedTests = (resp.result?.results || []).filter(x => x.success === false).length;
