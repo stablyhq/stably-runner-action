@@ -28556,7 +28556,7 @@ async function addGitHubComment(githubToken, resp) {
         : ''}
 
   ${undefinedTests.length > 0
-        ? (0, ts_dedent_1.default) `Unnable to run tests:
+        ? (0, ts_dedent_1.default) `Unable to run tests:
       ${listTestMarkDown(undefinedTests)}`
         : ''}
   
@@ -28661,6 +28661,7 @@ async function run() {
             ...(domainOverride ? { domainOverrides: [domainOverride] } : {})
         });
         (0, core_1.debug)(`resp statusCode: ${resp.statusCode}`);
+        (0, core_1.debug)(`resp raw: ${JSON.stringify(resp.result)}`);
         const numFailedTests = (resp.result?.results || []).filter(x => x.success === false).length;
         // Set outputs for other workflow steps to use
         (0, core_1.setOutput)('success', resp.statusCode === 200 && numFailedTests === 0);

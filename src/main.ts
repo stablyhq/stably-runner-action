@@ -30,6 +30,7 @@ export async function run(): Promise<void> {
     );
 
     debug(`resp statusCode: ${resp.statusCode}`);
+    debug(`resp raw: ${JSON.stringify(resp.result)}`);
 
     const numFailedTests = (resp.result?.results || []).filter(
       x => x.success === false

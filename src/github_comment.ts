@@ -37,7 +37,7 @@ export async function addGitHubComment(
 
   ${
     undefinedTests.length > 0
-      ? dedent`Unnable to run tests:
+      ? dedent`Unable to run tests:
       ${listTestMarkDown(undefinedTests)}`
       : ''
   }

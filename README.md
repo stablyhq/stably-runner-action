@@ -59,7 +59,7 @@ jobs:
 
       - name: Print Output
         id: output
-        run: echo "${{ steps.test-action.outputs.success }}"          
+        run: echo "${{ steps.test-action.outputs.success }}"
 ```
 
 ## Permissions
