@@ -9,6 +9,7 @@ export async function addGitHubComment(
 ) {
   const octokit = getOctokit(githubToken);
 
+  const projectId = resp.result?.projectId || '';
   const results = resp.result?.results || [];
   const failedTests = results.filter(x => x.success === false);
   const successTests = results.filter(x => x.success === true);
@@ -31,14 +32,14 @@ export async function addGitHubComment(
   ${
     failedTests.length > 0
       ? dedent`Failed Tests:
-      ${listTestMarkDown(failedTests)}`
+      ${listTestMarkDown(failedTests, projectId)}`
       : ''
   }
 
   ${
     undefinedTests.length > 0
       ? dedent`Unable to run tests:
-      ${listTestMarkDown(undefinedTests)}`
+      ${listTestMarkDown(undefinedTests, projectId)}`
       : ''
   }
   
@@ -66,9 +67,13 @@ function listTestMarkDown(
     testName: string;
     testId: string;
     success?: boolean | undefined;
-  }[]
+  }[],
+  projectId: string
 ) {
   return tests
-    .map(x => `  * [${x.testName}](http://app.stably.ai/test/${x.testId})`)
+    .map(
+      x =>
+        `  * [${x.testName}](http://app.stably.ai/project/${projectId}/test/${x.testId})`
+    )
     .join('\n');
 }
