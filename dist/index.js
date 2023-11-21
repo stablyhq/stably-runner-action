@@ -28534,6 +28534,7 @@ const github_1 = __nccwpck_require__(5438);
 const ts_dedent_1 = __importDefault(__nccwpck_require__(3604));
 async function addGitHubComment(githubToken, resp) {
     const octokit = (0, github_1.getOctokit)(githubToken);
+    const projectId = resp.result?.projectId || '';
     const results = resp.result?.results || [];
     const failedTests = results.filter(x => x.success === false);
     const successTests = results.filter(x => x.success === true);
@@ -28552,12 +28553,12 @@ async function addGitHubComment(githubToken, resp) {
 
   ${failedTests.length > 0
         ? (0, ts_dedent_1.default) `Failed Tests:
-      ${listTestMarkDown(failedTests)}`
+      ${listTestMarkDown(failedTests, projectId)}`
         : ''}
 
   ${undefinedTests.length > 0
         ? (0, ts_dedent_1.default) `Unable to run tests:
-      ${listTestMarkDown(undefinedTests)}`
+      ${listTestMarkDown(undefinedTests, projectId)}`
         : ''}
   
   ---
@@ -28579,9 +28580,9 @@ async function addGitHubComment(githubToken, resp) {
     }
 }
 exports.addGitHubComment = addGitHubComment;
-function listTestMarkDown(tests) {
+function listTestMarkDown(tests, projectId) {
     return tests
-        .map(x => `  * [${x.testName}](http://app.stably.ai/test/${x.testId})`)
+        .map(x => `  * [${x.testName}](http://app.stably.ai/project/${projectId}/test/${x.testId})`)
         .join('\n');
 }
 
