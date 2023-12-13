@@ -1,4 +1,5 @@
 import { InputOptions, getInput, setFailed } from '@actions/core';
+import { debug } from 'console';
 
 const NEWLINE_REGEX = /\r|\n/;
 const TRUE_VALUES = new Set(['true', 'yes', '1']);
@@ -13,7 +14,17 @@ function getList(name: string, options?: InputOptions) {
 
 export function parseInput() {
   const apiKey = getInput('api-key', { required: true });
-  const runGroupIds = getList('run-group-ids', { required: true });
+
+  // Supporting deprecating of runGroupIds
+  const runGroupIdsInput = getList('run-group-ids');
+  const testGroupIdInput = getInput('test-group-id');
+  const testGroupId = testGroupIdInput || runGroupIdsInput.at(0);
+  if (!testGroupId) {
+    debug(`testGroupId: ${testGroupId}`);
+    debug(`runGroupIdsInput: ${runGroupIdsInput}`);
+    debug(`testGroupIdInput: ${testGroupIdInput}`);
+    setFailed('the `testGroupId` input is required');
+  }
 
   const rawDomainOverrideInput = getList('domain-override');
   if (
@@ -41,7 +52,7 @@ export function parseInput() {
 
   return {
     apiKey,
-    runGroupIds,
+    testGroupId,
     domainOverride,
     githubToken: githubToken || process.env.GITHUB_TOKEN,
     githubComment

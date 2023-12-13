@@ -10,6 +10,7 @@ export async function addGitHubComment(
   const octokit = getOctokit(githubToken);
 
   const projectId = resp.result?.projectId || '';
+  const groupRunId = resp.result?.groupRunId || '';
   const results = resp.result?.results || [];
   const failedTests = results.filter(x => x.success === false);
   const successTests = results.filter(x => x.success === true);
@@ -19,8 +20,8 @@ export async function addGitHubComment(
   const body = dedent`
   # [Stably](https://stably.ai/) Runner
 
-  
-  Test Run Result: ${
+  // TODO: Link to the group run result stuff here
+  [Test Group Run Result](https://app.stably.ai/project/${projectId}/history/g_${groupRunId}): ${
     resp.statusCode !== 200
       ? '❌ Error - The Action ran into an error while calling the Stably backend. Please re-run'
       : failedTests.length === 0
@@ -42,6 +43,7 @@ export async function addGitHubComment(
       ${listTestMarkDown(undefinedTests, projectId)}`
       : ''
   }
+  
   
   ---
   _This comment was generated from [stably-runner-action](https://github.com/marketplace/actions/stably-runner)_

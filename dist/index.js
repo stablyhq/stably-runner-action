@@ -28535,6 +28535,7 @@ const ts_dedent_1 = __importDefault(__nccwpck_require__(3604));
 async function addGitHubComment(githubToken, resp) {
     const octokit = (0, github_1.getOctokit)(githubToken);
     const projectId = resp.result?.projectId || '';
+    const groupRunId = resp.result?.groupRunId || '';
     const results = resp.result?.results || [];
     const failedTests = results.filter(x => x.success === false);
     const successTests = results.filter(x => x.success === true);
@@ -28543,8 +28544,8 @@ async function addGitHubComment(githubToken, resp) {
     const body = (0, ts_dedent_1.default) `
   # [Stably](https://stably.ai/) Runner
 
-  
-  Test Run Result: ${resp.statusCode !== 200
+  // TODO: Link to the group run result stuff here
+  [Test Group Run Result](https://app.stably.ai/project/${projectId}/history/g_${groupRunId}): ${resp.statusCode !== 200
         ? '❌ Error - The Action ran into an error while calling the Stably backend. Please re-run'
         : failedTests.length === 0
             ? `🟢 Success (${successTests.length}/${results.length} tests passed)`
@@ -28560,6 +28561,7 @@ async function addGitHubComment(githubToken, resp) {
         ? (0, ts_dedent_1.default) `Unable to run tests:
       ${listTestMarkDown(undefinedTests, projectId)}`
         : ''}
+  
   
   ---
   _This comment was generated from [stably-runner-action](https://github.com/marketplace/actions/stably-runner)_
@@ -28597,6 +28599,7 @@ function listTestMarkDown(tests, projectId) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.parseInput = void 0;
 const core_1 = __nccwpck_require__(2186);
+const console_1 = __nccwpck_require__(6206);
 const NEWLINE_REGEX = /\r|\n/;
 const TRUE_VALUES = new Set(['true', 'yes', '1']);
 function getBoolInput(name, options) {
@@ -28607,7 +28610,16 @@ function getList(name, options) {
 }
 function parseInput() {
     const apiKey = (0, core_1.getInput)('api-key', { required: true });
-    const runGroupIds = getList('run-group-ids', { required: true });
+    // Supporting deprecating of runGroupIds
+    const runGroupIdsInput = getList('run-group-ids');
+    const testGroupIdInput = (0, core_1.getInput)('test-group-id');
+    const testGroupId = testGroupIdInput || runGroupIdsInput.at(0);
+    if (!testGroupId) {
+        (0, console_1.debug)(`testGroupId: ${testGroupId}`);
+        (0, console_1.debug)(`runGroupIdsInput: ${runGroupIdsInput}`);
+        (0, console_1.debug)(`testGroupIdInput: ${testGroupIdInput}`);
+        (0, core_1.setFailed)('the `testGroupId` input is required');
+    }
     const rawDomainOverrideInput = getList('domain-override');
     if (rawDomainOverrideInput.length > 0 &&
         rawDomainOverrideInput.length !== 2) {
@@ -28624,7 +28636,7 @@ function parseInput() {
     const githubComment = getBoolInput('github-comment');
     return {
         apiKey,
-        runGroupIds,
+        testGroupId,
         domainOverride,
         githubToken: githubToken || process.env.GITHUB_TOKEN,
         githubComment
@@ -28654,12 +28666,12 @@ const ONE_MIN_IN_MS = 60000;
  */
 async function run() {
     try {
-        const { apiKey, runGroupIds, domainOverride, githubComment, githubToken } = (0, input_1.parseInput)();
+        const { apiKey, testGroupId, domainOverride, githubComment, githubToken } = (0, input_1.parseInput)();
         const httpClient = new http_client_1.HttpClient('stably-runner-action', [
             new auth_1.BearerCredentialHandler(apiKey)
         ]);
         const resp = await httpClient.postJson('https://app.stably.ai/api/run/v1', {
-            runGroupIds,
+            testGroupId,
             ...(domainOverride ? { domainOverrides: [domainOverride] } : {})
         }, 
         // We add a little buffer to our server timeout just in case

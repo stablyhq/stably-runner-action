@@ -6,6 +6,7 @@ import { parseInput } from './input';
 
 export type RunResponse = {
   projectId: string;
+  groupRunId: string;
   results: { testId: string; testName: string; success?: boolean }[];
 };
 
@@ -17,7 +18,7 @@ const ONE_MIN_IN_MS = 60000;
  */
 export async function run(): Promise<void> {
   try {
-    const { apiKey, runGroupIds, domainOverride, githubComment, githubToken } =
+    const { apiKey, testGroupId, domainOverride, githubComment, githubToken } =
       parseInput();
 
     const httpClient = new HttpClient('stably-runner-action', [
@@ -26,7 +27,7 @@ export async function run(): Promise<void> {
     const resp = await httpClient.postJson<RunResponse>(
       'https://app.stably.ai/api/run/v1',
       {
-        runGroupIds,
+        testGroupId,
         ...(domainOverride ? { domainOverrides: [domainOverride] } : {})
       },
       // We add a little buffer to our server timeout just in case
