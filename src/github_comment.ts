@@ -19,19 +19,18 @@ export async function upsertGitHubComment(
   const undefinedTests = results.filter(x => x.success === undefined);
 
   const commentIdentiifer = `<!-- stably_${testGroupId} -->`;
+  const groupRunDashboardUrl = `https://app.stably.ai/project/${projectId}/history/g_${groupRunId}`;
 
   // prettier-ignore
   const body = dedent`${commentIdentiifer}
-  # [Stably](https://stably.ai/) Runner
-  ## [Test Group - '${testGroupName}'](https://app.stably.ai/project/${projectId}/testGroup/${testGroupId})
+  # [Stably](https://stably.ai/) Runner - [Test Group - '${testGroupName}'](https://app.stably.ai/project/${projectId}/testGroup/${testGroupId})
 
-  // TODO: Link to the group run result stuff here
-  [Test Group Run Result](https://app.stably.ai/project/${projectId}/history/g_${groupRunId}): ${
+  Test Group Run Result: ${
     resp.statusCode !== 200
       ? '❌ Error - The Action ran into an error while calling the Stably backend. Please re-run'
       : failedTests.length === 0
-      ? `🟢 Success (${successTests.length}/${results.length} tests passed)`
-      : `🔴 Failure (${failedTests.length}/${results.length} tests failed)`
+      ? `🟢 Success (${successTests.length}/${results.length} tests passed) [[dashboard]](${groupRunDashboardUrl})`
+      : `🔴 Failure (${failedTests.length}/${results.length} tests failed) [[dashboard]](${groupRunDashboardUrl})`
   }
   
 
