@@ -1,4 +1,5 @@
 import { InputOptions, getInput, setFailed } from '@actions/core';
+import { debug } from 'console';
 
 const NEWLINE_REGEX = /\r|\n/;
 const TRUE_VALUES = new Set(['true', 'yes', '1']);
@@ -17,8 +18,11 @@ export function parseInput() {
   // Supporting deprecating of runGroupIds
   const runGroupIdsInput = getList('run-group-ids');
   const testGroupIdInput = getInput('test-group-id');
-  const testGroupId = testGroupIdInput ?? runGroupIdsInput.at(0);
+  const testGroupId = testGroupIdInput || runGroupIdsInput.at(0);
   if (!testGroupId) {
+    debug(`testGroupId: ${testGroupId}`);
+    debug(`runGroupIdsInput: ${runGroupIdsInput}`);
+    debug(`testGroupIdInput: ${testGroupIdInput}`);
     setFailed('the `testGroupId` input is required');
   }
 
