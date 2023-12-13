@@ -51,12 +51,24 @@ jobs:
         id: checkout
         uses: actions/checkout@v4
 
+      - name: Test Local Action (Deprecated version)
+        id: test-action-deprecated
+        uses: ./
+        with:
+          api-key: ${{ secrets.API_KEY }}
+          run-group-id: |-
+            clo3w9pcj0001ml08rdits9es
+
+      - name: Print Output
+        id: output-deprecated
+        run: echo "${{ steps.test-action-deprecated.outputs.success }}"
+
       - name: Test Local Action
         id: test-action
         uses: ./
         with:
           api-key: ${{ secrets.API_KEY }}
-          run-group-id: clo3w9pcj0001ml08rdits9es
+          test-group-id: clo3w9pcj0001ml08rdits9es
 
       - name: Print Output
         id: output

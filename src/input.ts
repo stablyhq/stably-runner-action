@@ -13,7 +13,14 @@ function getList(name: string, options?: InputOptions) {
 
 export function parseInput() {
   const apiKey = getInput('api-key', { required: true });
-  const runGroupId = getInput('run-group-id', { required: true });
+
+  // Supporting deprecating of runGroupIds
+  const runGroupIdsInput = getList('run-group-ids');
+  const testGroupIdInput = getInput('test-group-id');
+  const testGroupId = testGroupIdInput ?? runGroupIdsInput.at(0);
+  if (!testGroupId) {
+    setFailed('the `testGroupId` input is required');
+  }
 
   const rawDomainOverrideInput = getList('domain-override');
   if (
@@ -41,7 +48,7 @@ export function parseInput() {
 
   return {
     apiKey,
-    runGroupId,
+    testGroupId,
     domainOverride,
     githubToken: githubToken || process.env.GITHUB_TOKEN,
     githubComment
