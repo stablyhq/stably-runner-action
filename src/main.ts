@@ -1,12 +1,13 @@
 import { debug, setFailed, setOutput } from '@actions/core';
 import { HttpClient } from '@actions/http-client';
 import { BearerCredentialHandler } from '@actions/http-client/lib/auth';
-import { addGitHubComment } from './github_comment';
+import { upsertGitHubComment } from './github_comment';
 import { parseInput } from './input';
 
 export type RunResponse = {
   projectId: string;
   groupRunId: string;
+  testGroupName: string;
   results: { testId: string; testName: string; success?: boolean }[];
 };
 
@@ -46,7 +47,7 @@ export async function run(): Promise<void> {
 
     // Github Commnet Code
     if (githubComment && githubToken) {
-      await addGitHubComment(githubToken, resp);
+      await upsertGitHubComment(testGroupId, githubToken, resp);
     }
   } catch (error) {
     // Fail the workflow run if an error occurs
