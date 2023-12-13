@@ -48,7 +48,7 @@ jobs:
         uses: stablyhq/stably-runner-action@v3
         with:
           api-key: ${{ secrets.API_KEY }}
-          run-group-id: RUN_GROUP_ID
+          test-group-id: TEST_GROUP_ID
           # domain overrides are optional
           domain-override: |-
             ORIGINAL_WEBSITE_URL
