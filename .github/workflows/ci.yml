@@ -56,8 +56,7 @@ jobs:
         uses: ./
         with:
           api-key: ${{ secrets.API_KEY }}
-          run-group-ids: |-
-            clo3w9pcj0001ml08rdits9es
+          run-group-id: clo3w9pcj0001ml08rdits9es
 
       - name: Print Output
         id: output

@@ -13,7 +13,7 @@ function getList(name: string, options?: InputOptions) {
 
 export function parseInput() {
   const apiKey = getInput('api-key', { required: true });
-  const runGroupIds = getList('run-group-ids', { required: true });
+  const runGroupId = getInput('run-group-id', { required: true });
 
   const rawDomainOverrideInput = getList('domain-override');
   if (
@@ -41,7 +41,7 @@ export function parseInput() {
 
   return {
     apiKey,
-    runGroupIds,
+    runGroupId,
     domainOverride,
     githubToken: githubToken || process.env.GITHUB_TOKEN,
     githubComment

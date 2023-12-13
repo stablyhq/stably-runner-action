@@ -7,10 +7,8 @@ inputs:
   api-key:
     description: 'Your API key'
     required: true
-  run-group-ids:
-    description: |-
-      Newline separated list of run group IDs.
-      Use to run a subset of tests.
+  run-group-id:
+    description: The run group ID to execute
     required: true
   domain-override:
     description: |-
