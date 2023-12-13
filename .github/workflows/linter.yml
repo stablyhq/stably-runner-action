@@ -44,4 +44,5 @@ jobs:
           VALIDATE_JSCPD: false
           VALIDATE_MARKDOWN: false
           VALIDATE_NATURAL_LANGUAGE: false
+          VALIDATE_GITHUB_ACTIONS: false
           FILTER_REGEX_EXCLUDE: .*dist/.*
