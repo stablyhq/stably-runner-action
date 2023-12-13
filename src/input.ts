@@ -24,6 +24,7 @@ export function parseInput() {
     debug(`runGroupIdsInput: ${runGroupIdsInput}`);
     debug(`testGroupIdInput: ${testGroupIdInput}`);
     setFailed('the `testGroupId` input is required');
+    throw Error('the `testGroupId` input is required');
   }
 
   const rawDomainOverrideInput = getList('domain-override');

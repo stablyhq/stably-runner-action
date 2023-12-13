@@ -28529,20 +28529,23 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.addGitHubComment = void 0;
+exports.upsertGitHubComment = void 0;
 const github_1 = __nccwpck_require__(5438);
 const ts_dedent_1 = __importDefault(__nccwpck_require__(3604));
-async function addGitHubComment(githubToken, resp) {
+async function upsertGitHubComment(testGroupId, githubToken, resp) {
     const octokit = (0, github_1.getOctokit)(githubToken);
     const projectId = resp.result?.projectId || '';
     const groupRunId = resp.result?.groupRunId || '';
+    const testGroupName = resp.result?.testGroupName || '';
     const results = resp.result?.results || [];
     const failedTests = results.filter(x => x.success === false);
     const successTests = results.filter(x => x.success === true);
     const undefinedTests = results.filter(x => x.success === undefined);
+    const commentIdentiifer = `<!-- stably_${testGroupId} -->`;
     // prettier-ignore
-    const body = (0, ts_dedent_1.default) `
+    const body = (0, ts_dedent_1.default) `${commentIdentiifer}
   # [Stably](https://stably.ai/) Runner
+  ## [Test Group - '${testGroupName}'](https://app.stably.ai/project/${projectId}/testGroup/${testGroupId})
 
   // TODO: Link to the group run result stuff here
   [Test Group Run Result](https://app.stably.ai/project/${projectId}/history/g_${groupRunId}): ${resp.statusCode !== 200
@@ -28566,22 +28569,52 @@ async function addGitHubComment(githubToken, resp) {
   ---
   _This comment was generated from [stably-runner-action](https://github.com/marketplace/actions/stably-runner)_
 `;
-    if (github_1.context.payload.pull_request) {
-        await octokit.rest.issues.createComment({
+    // Check if existing comment exists
+    const { data: comments } = github_1.context.payload.pull_request
+        ? await octokit.rest.issues.listComments({
             ...github_1.context.repo,
-            body,
             issue_number: github_1.context.payload.pull_request.number
-        });
-    }
-    else if (github_1.context.eventName === 'push') {
-        await octokit.rest.repos.createCommitComment({
+        })
+        : await octokit.rest.repos.listCommentsForCommit({
             ...github_1.context.repo,
-            body,
             commit_sha: github_1.context.payload.after
         });
+    const existingCommentId = comments.find(comment => comment?.body?.startsWith(commentIdentiifer))?.id;
+    // Create or update commit/PR comment
+    if (github_1.context.payload.pull_request) {
+        if (existingCommentId) {
+            await octokit.rest.issues.updateComment({
+                ...github_1.context.repo,
+                comment_id: existingCommentId,
+                body
+            });
+        }
+        else {
+            await octokit.rest.issues.createComment({
+                ...github_1.context.repo,
+                body,
+                issue_number: github_1.context.payload.pull_request.number
+            });
+        }
+    }
+    else if (github_1.context.eventName === 'push') {
+        if (existingCommentId) {
+            await octokit.rest.repos.updateCommitComment({
+                ...github_1.context.repo,
+                comment_id: existingCommentId,
+                body
+            });
+        }
+        else {
+            await octokit.rest.repos.createCommitComment({
+                ...github_1.context.repo,
+                body,
+                commit_sha: github_1.context.payload.after
+            });
+        }
     }
 }
-exports.addGitHubComment = addGitHubComment;
+exports.upsertGitHubComment = upsertGitHubComment;
 function listTestMarkDown(tests, projectId) {
     return tests
         .map(x => `  * [${x.testName}](http://app.stably.ai/project/${projectId}/test/${x.testId})`)
@@ -28619,6 +28652,7 @@ function parseInput() {
         (0, console_1.debug)(`runGroupIdsInput: ${runGroupIdsInput}`);
         (0, console_1.debug)(`testGroupIdInput: ${testGroupIdInput}`);
         (0, core_1.setFailed)('the `testGroupId` input is required');
+        throw Error('the `testGroupId` input is required');
     }
     const rawDomainOverrideInput = getList('domain-override');
     if (rawDomainOverrideInput.length > 0 &&
@@ -28683,7 +28717,7 @@ async function run() {
         (0, core_1.setOutput)('success', resp.statusCode === 200 && numFailedTests === 0);
         // Github Commnet Code
         if (githubComment && githubToken) {
-            await (0, github_comment_1.addGitHubComment)(githubToken, resp);
+            await (0, github_comment_1.upsertGitHubComment)(testGroupId, githubToken, resp);
         }
     }
     catch (error) {
