@@ -28643,9 +28643,13 @@ function getList(name, options) {
 function parseInput() {
     const apiKey = (0, core_1.getInput)('api-key', { required: true });
     // Supporting deprecating of runGroupIds
-    const testGroupId = (0, core_1.getInput)('test-group-id', { required: true });
+    const runGroupIdsInput = getList('run-group-ids');
+    const testGroupIdInput = (0, core_1.getInput)('test-group-id');
+    const testGroupId = testGroupIdInput || runGroupIdsInput.at(0);
     if (!testGroupId) {
         (0, console_1.debug)(`testGroupId: ${testGroupId}`);
+        (0, console_1.debug)(`runGroupIdsInput: ${runGroupIdsInput}`);
+        (0, console_1.debug)(`testGroupIdInput: ${testGroupIdInput}`);
         (0, core_1.setFailed)('the `testGroupId` input is required');
         throw Error('the `testGroupId` input is required');
     }
