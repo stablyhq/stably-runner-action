@@ -16,13 +16,9 @@ export function parseInput() {
   const apiKey = getInput('api-key', { required: true });
 
   // Supporting deprecating of runGroupIds
-  const runGroupIdsInput = getList('run-group-ids');
-  const testGroupIdInput = getInput('test-group-id');
-  const testGroupId = testGroupIdInput || runGroupIdsInput.at(0);
+  const testGroupId = getInput('test-group-id', { required: true });
   if (!testGroupId) {
     debug(`testGroupId: ${testGroupId}`);
-    debug(`runGroupIdsInput: ${runGroupIdsInput}`);
-    debug(`testGroupIdInput: ${testGroupIdInput}`);
     setFailed('the `testGroupId` input is required');
     throw Error('the `testGroupId` input is required');
   }
