@@ -31,6 +31,11 @@ inputs:
       This token is used for used for leaving the comments on PRs/commits.
       By default, we'll use the github actions bot token, but you can override this a repo scoped PAT.
     default: ${{ github.token }}
+  async:
+    description: |-
+      If set, will launch the tests but not wait for them to finish and the action will always output success.
+      Note: Github comments will not function if this is set
+    default: 'false'
 
 # Define your outputs here.
 outputs:

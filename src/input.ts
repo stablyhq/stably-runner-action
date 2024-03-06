@@ -51,11 +51,14 @@ export function parseInput() {
   const githubToken = getInput('github-token');
   const githubComment = getBoolInput('github-comment');
 
+  const runInAsyncMode = getBoolInput('async');
+
   return {
     apiKey,
     testGroupId,
     domainOverride,
     githubToken: githubToken || process.env.GITHUB_TOKEN,
-    githubComment
+    githubComment,
+    runInAsyncMode
   };
 }

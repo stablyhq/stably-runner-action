@@ -19,35 +19,46 @@ const ONE_MIN_IN_MS = 60000;
  */
 export async function run(): Promise<void> {
   try {
-    const { apiKey, testGroupId, domainOverride, githubComment, githubToken } =
-      parseInput();
+    const {
+      apiKey,
+      domainOverride,
+      githubComment,
+      githubToken,
+      runInAsyncMode,
+      testGroupId
+    } = parseInput();
 
     const httpClient = new HttpClient('stably-runner-action', [
       new BearerCredentialHandler(apiKey)
     ]);
-    const resp = await httpClient.postJson<RunResponse>(
-      'https://app.stably.ai/api/run/v1',
+    const respPromise = httpClient.postJson<RunResponse>(
+      'https://us-west1-lovecaster-f3c68.cloudfunctions.net/run',
       {
         testGroupId,
         ...(domainOverride ? { domainOverrides: [domainOverride] } : {})
       },
       // We add a little buffer to our server timeout just in case
-      { socketTimeout: 5 * ONE_MIN_IN_MS + 5000 }
+      { socketTimeout: 60 * ONE_MIN_IN_MS + 5000 }
     );
 
-    debug(`resp statusCode: ${resp.statusCode}`);
-    debug(`resp raw: ${JSON.stringify(resp.result)}`);
+    if (runInAsyncMode) {
+      setOutput('success', true);
+      return;
+    } else {
+      const resp = await respPromise;
+      debug(`resp statusCode: ${resp.statusCode}`);
+      debug(`resp raw: ${JSON.stringify(resp.result)}`);
 
-    const numFailedTests = (resp.result?.results || []).filter(
-      x => x.success === false
-    ).length;
+      const numFailedTests = (resp.result?.results || []).filter(
+        x => x.success === false
+      ).length;
 
-    // Set outputs for other workflow steps to use
-    setOutput('success', resp.statusCode === 200 && numFailedTests === 0);
+      setOutput('success', resp.statusCode === 200 && numFailedTests === 0);
 
-    // Github Commnet Code
-    if (githubComment && githubToken) {
-      await upsertGitHubComment(testGroupId, githubToken, resp);
+      // Github Commnet Code
+      if (githubComment && githubToken) {
+        await upsertGitHubComment(testGroupId, githubToken, resp);
+      }
     }
   } catch (error) {
     // Fail the workflow run if an error occurs
