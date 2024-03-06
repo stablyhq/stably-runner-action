@@ -28667,12 +28667,14 @@ function parseInput() {
         : undefined;
     const githubToken = (0, core_1.getInput)('github-token');
     const githubComment = getBoolInput('github-comment');
+    const runInAsyncMode = getBoolInput('async');
     return {
         apiKey,
         testGroupId,
         domainOverride,
         githubToken: githubToken || process.env.GITHUB_TOKEN,
-        githubComment
+        githubComment,
+        runInAsyncMode
     };
 }
 exports.parseInput = parseInput;
@@ -28699,24 +28701,30 @@ const ONE_MIN_IN_MS = 60000;
  */
 async function run() {
     try {
-        const { apiKey, testGroupId, domainOverride, githubComment, githubToken } = (0, input_1.parseInput)();
+        const { apiKey, domainOverride, githubComment, githubToken, runInAsyncMode, testGroupId } = (0, input_1.parseInput)();
         const httpClient = new http_client_1.HttpClient('stably-runner-action', [
             new auth_1.BearerCredentialHandler(apiKey)
         ]);
-        const resp = await httpClient.postJson('https://app.stably.ai/api/run/v1', {
+        const respPromise = httpClient.postJson('https://us-west1-lovecaster-f3c68.cloudfunctions.net/run', {
             testGroupId,
             ...(domainOverride ? { domainOverrides: [domainOverride] } : {})
         }, 
         // We add a little buffer to our server timeout just in case
-        { socketTimeout: 5 * ONE_MIN_IN_MS + 5000 });
-        (0, core_1.debug)(`resp statusCode: ${resp.statusCode}`);
-        (0, core_1.debug)(`resp raw: ${JSON.stringify(resp.result)}`);
-        const numFailedTests = (resp.result?.results || []).filter(x => x.success === false).length;
-        // Set outputs for other workflow steps to use
-        (0, core_1.setOutput)('success', resp.statusCode === 200 && numFailedTests === 0);
-        // Github Commnet Code
-        if (githubComment && githubToken) {
-            await (0, github_comment_1.upsertGitHubComment)(testGroupId, githubToken, resp);
+        { socketTimeout: 60 * ONE_MIN_IN_MS + 5000 });
+        if (runInAsyncMode) {
+            (0, core_1.setOutput)('success', true);
+            return;
+        }
+        else {
+            const resp = await respPromise;
+            (0, core_1.debug)(`resp statusCode: ${resp.statusCode}`);
+            (0, core_1.debug)(`resp raw: ${JSON.stringify(resp.result)}`);
+            const numFailedTests = (resp.result?.results || []).filter(x => x.success === false).length;
+            (0, core_1.setOutput)('success', resp.statusCode === 200 && numFailedTests === 0);
+            // Github Commnet Code
+            if (githubComment && githubToken) {
+                await (0, github_comment_1.upsertGitHubComment)(testGroupId, githubToken, resp);
+            }
         }
     }
     catch (error) {
