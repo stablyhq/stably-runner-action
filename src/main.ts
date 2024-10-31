@@ -49,12 +49,16 @@ export async function run(): Promise<void> {
           result: x as RunResponse,
           statusCode: 200
         }))
-        .catch(() => ({
+        .catch(e => ({
           result: undefined,
-          statusCode: 500
+          statusCode: 500,
+          error: e
         }));
 
       debug(`resp statusCode: ${resp.statusCode}`);
+      if (resp.statusCode !== 200 && 'error' in resp) {
+        debug(`resp error: ${resp.error}`);
+      }
       debug(`resp raw: ${JSON.stringify(resp.result)}`);
 
       const numFailedTests = (resp.result?.results || []).filter(

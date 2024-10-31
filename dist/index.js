@@ -28786,11 +28786,15 @@ async function run() {
                 result: x,
                 statusCode: 200
             }))
-                .catch(() => ({
+                .catch(e => ({
                 result: undefined,
-                statusCode: 500
+                statusCode: 500,
+                error: e
             }));
             (0, core_1.debug)(`resp statusCode: ${resp.statusCode}`);
+            if (resp.statusCode !== 200 && 'error' in resp) {
+                (0, core_1.debug)(`resp error: ${resp.error}`);
+            }
             (0, core_1.debug)(`resp raw: ${JSON.stringify(resp.result)}`);
             const numFailedTests = (resp.result?.results || []).filter(x => x.success === false).length;
             (0, core_1.setOutput)('success', resp.statusCode === 200 && numFailedTests === 0);
