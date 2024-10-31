@@ -3,6 +3,8 @@ import { HttpClient } from '@actions/http-client';
 import { BearerCredentialHandler } from '@actions/http-client/lib/auth';
 import { upsertGitHubComment } from './github_comment';
 import { parseInput } from './input';
+import { url } from 'inspector';
+import { fetchSSE } from './fetch-sse';
 
 export type RunResponse = {
   projectId: string;
@@ -10,8 +12,6 @@ export type RunResponse = {
   testGroupName: string;
   results: { testId: string; testName: string; success?: boolean }[];
 };
-
-const ONE_MIN_IN_MS = 60000;
 
 /**
  * The main function for the action.
@@ -31,21 +31,30 @@ export async function run(): Promise<void> {
     const httpClient = new HttpClient('stably-runner-action', [
       new BearerCredentialHandler(apiKey)
     ]);
-    const respPromise = httpClient.postJson<RunResponse>(
-      'https://us-west1-lovecaster-f3c68.cloudfunctions.net/run',
-      {
+    const respPromise = fetchSSE({
+      httpClient,
+      url: 'https://app.stably.ai/api/runner/run',
+      payload: {
         testGroupId,
         ...(domainOverride ? { domainOverrides: [domainOverride] } : {})
-      },
-      // We add a little buffer to our server timeout just in case
-      { socketTimeout: 60 * ONE_MIN_IN_MS + 5000 }
-    );
+      }
+    });
 
     if (runInAsyncMode) {
       setOutput('success', true);
       return;
     } else {
-      const resp = await respPromise;
+      // We insert some status code to mimic earlier code
+      const resp = await respPromise
+        .then(x => ({
+          result: x as RunResponse,
+          statusCode: 200
+        }))
+        .catch(() => ({
+          result: undefined,
+          statusCode: 500
+        }));
+
       debug(`resp statusCode: ${resp.statusCode}`);
       debug(`resp raw: ${JSON.stringify(resp.result)}`);
 

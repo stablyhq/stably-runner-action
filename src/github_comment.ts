@@ -6,7 +6,7 @@ import dedent from 'ts-dedent';
 export async function upsertGitHubComment(
   testGroupId: string,
   githubToken: string,
-  resp: TypedResponse<RunResponse>
+  resp: { result?: RunResponse; statusCode: number }
 ) {
   const octokit = getOctokit(githubToken);
 
