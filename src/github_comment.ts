@@ -1,7 +1,6 @@
 import { context, getOctokit } from '@actions/github';
-import { TypedResponse } from '@actions/http-client/lib/interfaces';
-import { RunResponse } from './main';
 import dedent from 'ts-dedent';
+import { RunResponse } from './main';
 
 export async function upsertGitHubComment(
   testGroupId: string,

@@ -3,7 +3,6 @@ import { HttpClient } from '@actions/http-client';
 import { BearerCredentialHandler } from '@actions/http-client/lib/auth';
 import { upsertGitHubComment } from './github_comment';
 import { parseInput } from './input';
-import { url } from 'inspector';
 import { fetchSSE } from './fetch-sse';
 
 export type RunResponse = {

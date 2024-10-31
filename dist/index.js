@@ -28520,6 +28520,68 @@ function wrappy (fn, cb) {
 
 /***/ }),
 
+/***/ 3869:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.fetchSSE = void 0;
+const ONE_HOUR_IN_MS = 3600000;
+const SSE_DATA_PREFIX = 'data: ';
+// Fetch last event from SSE stream
+async function fetchSSE({ httpClient, payload, url }) {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve, reject) => {
+        try {
+            const response = await httpClient.post(url, JSON.stringify(payload), {
+                'Content-Type': 'application/json',
+                Accept: 'text/event-stream',
+                // Note 100% sure this does anything, but we'll keep it here
+                socketTimeout: 5 * ONE_HOUR_IN_MS
+            });
+            if (response.message.statusCode !== 200) {
+                throw new Error(`HTTP error! status: ${response.message.statusCode}`);
+            }
+            if (!response.message.readable) {
+                throw new Error('Stream not readable');
+            }
+            let lastMessage = undefined;
+            let buffer = '';
+            for await (const chunk of response.message) {
+                buffer += chunk.toString();
+                // Split on double newlines to separate SSE messages
+                const messages = buffer.split('\n\n');
+                // Keep the last item in buffer if it's incomplete
+                buffer = messages.pop() || '';
+                for (const message of messages) {
+                    // Check if it's a data message and extract the content
+                    if (message.startsWith(SSE_DATA_PREFIX)) {
+                        lastMessage = message;
+                    }
+                }
+            }
+            if (!lastMessage) {
+                throw new Error('Last stream message empty');
+            }
+            // Removes 'data: ' prefix, only leaving us with JSON string
+            const data = JSON.parse(lastMessage.slice(SSE_DATA_PREFIX.length).trim());
+            // TODO: Would be nicer to use zod here
+            if (data.status !== 'success') {
+                throw new Error('Stream did not end in success');
+            }
+            resolve(data.result);
+        }
+        catch (error) {
+            reject(error);
+        }
+    });
+}
+exports.fetchSSE = fetchSSE;
+
+
+/***/ }),
+
 /***/ 8205:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -28694,7 +28756,7 @@ const http_client_1 = __nccwpck_require__(6255);
 const auth_1 = __nccwpck_require__(5526);
 const github_comment_1 = __nccwpck_require__(8205);
 const input_1 = __nccwpck_require__(6747);
-const ONE_MIN_IN_MS = 60000;
+const fetch_sse_1 = __nccwpck_require__(3869);
 /**
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
@@ -28705,18 +28767,29 @@ async function run() {
         const httpClient = new http_client_1.HttpClient('stably-runner-action', [
             new auth_1.BearerCredentialHandler(apiKey)
         ]);
-        const respPromise = httpClient.postJson('https://us-west1-lovecaster-f3c68.cloudfunctions.net/run', {
-            testGroupId,
-            ...(domainOverride ? { domainOverrides: [domainOverride] } : {})
-        }, 
-        // We add a little buffer to our server timeout just in case
-        { socketTimeout: 60 * ONE_MIN_IN_MS + 5000 });
+        const respPromise = (0, fetch_sse_1.fetchSSE)({
+            httpClient,
+            url: 'https://app.stably.ai/api/runner/run',
+            payload: {
+                testGroupId,
+                ...(domainOverride ? { domainOverrides: [domainOverride] } : {})
+            }
+        });
         if (runInAsyncMode) {
             (0, core_1.setOutput)('success', true);
             return;
         }
         else {
-            const resp = await respPromise;
+            // We insert some status code to mimic earlier code
+            const resp = await respPromise
+                .then(x => ({
+                result: x,
+                statusCode: 200
+            }))
+                .catch(() => ({
+                result: undefined,
+                statusCode: 500
+            }));
             (0, core_1.debug)(`resp statusCode: ${resp.statusCode}`);
             (0, core_1.debug)(`resp raw: ${JSON.stringify(resp.result)}`);
             const numFailedTests = (resp.result?.results || []).filter(x => x.success === false).length;

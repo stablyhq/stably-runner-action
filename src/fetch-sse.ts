@@ -11,8 +11,11 @@ export async function fetchSSE({
 }: {
   httpClient: HttpClient;
   url: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   payload: any;
-}): Promise<any> {
+}): // eslint-disable-next-line @typescript-eslint/no-explicit-any
+Promise<any> {
+  // eslint-disable-next-line no-async-promise-executor
   return new Promise(async (resolve, reject) => {
     try {
       const response = await httpClient.post(url, JSON.stringify(payload), {
@@ -43,20 +46,19 @@ export async function fetchSSE({
         for (const message of messages) {
           // Check if it's a data message and extract the content
           if (message.startsWith(SSE_DATA_PREFIX)) {
-            // TODO: rm debug
-            console.debug('msg: ', message);
             lastMessage = message;
           }
         }
       }
-      console.debug('Done w/ all msgs');
       if (!lastMessage) {
         throw new Error('Last stream message empty');
       }
       // Removes 'data: ' prefix, only leaving us with JSON string
-      const data: { status: string; result: any } = JSON.parse(
-        lastMessage.slice(SSE_DATA_PREFIX.length).trim()
-      );
+      const data: {
+        status: string;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        result: any;
+      } = JSON.parse(lastMessage.slice(SSE_DATA_PREFIX.length).trim());
       // TODO: Would be nicer to use zod here
       if (data.status !== 'success') {
         throw new Error('Stream did not end in success');
