@@ -1,5 +1,4 @@
 import type { HttpClient } from '@actions/http-client';
-import { debug } from 'console';
 
 const ONE_HOUR_IN_MS = 3600000;
 const SSE_DATA_PREFIX = 'data: ';
@@ -48,7 +47,6 @@ Promise<any> {
           // Check if it's a data message and extract the content
           if (message.startsWith(SSE_DATA_PREFIX)) {
             lastMessage = message;
-            debug(`SSE MSG: ${message}}`);
           }
         }
       }
@@ -63,7 +61,7 @@ Promise<any> {
       } = JSON.parse(lastMessage.slice(SSE_DATA_PREFIX.length).trim());
       // TODO: Would be nicer to use zod here
       if (data.status !== 'success') {
-        throw new Error('Stream did not end in success');
+        throw new Error(`Stream did not end in success: ${data}`);
       }
       resolve(data.result);
     } catch (error) {

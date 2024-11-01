@@ -28521,13 +28521,12 @@ function wrappy (fn, cb) {
 /***/ }),
 
 /***/ 3869:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+/***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.fetchSSE = void 0;
-const console_1 = __nccwpck_require__(6206);
 const ONE_HOUR_IN_MS = 3600000;
 const SSE_DATA_PREFIX = 'data: ';
 // Fetch last event from SSE stream
@@ -28559,7 +28558,6 @@ async function fetchSSE({ httpClient, payload, url }) {
                     // Check if it's a data message and extract the content
                     if (message.startsWith(SSE_DATA_PREFIX)) {
                         lastMessage = message;
-                        (0, console_1.debug)(`SSE MSG: ${message}}`);
                     }
                 }
             }
@@ -28570,7 +28568,7 @@ async function fetchSSE({ httpClient, payload, url }) {
             const data = JSON.parse(lastMessage.slice(SSE_DATA_PREFIX.length).trim());
             // TODO: Would be nicer to use zod here
             if (data.status !== 'success') {
-                throw new Error('Stream did not end in success');
+                throw new Error(`Stream did not end in success: ${data}`);
             }
             resolve(data.result);
         }
