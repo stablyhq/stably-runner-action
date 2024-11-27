@@ -28794,7 +28794,7 @@ async function run() {
             (0, core_1.debug)(`resp statusCode: ${resp.statusCode}`);
             if (resp.statusCode !== 200 && 'error' in resp) {
                 (0, core_1.debug)(`resp error: ${resp.error}`);
-                (0, core_1.setFailed)(`Request failed with status code ${resp.statusCode}: ${resp.error}`);
+                (0, core_1.setFailed)(`Request failed with status code ${resp.statusCode}: ${JSON.stringify(resp.error, null, 2)}`);
                 return;
             }
             (0, core_1.debug)(`resp raw: ${JSON.stringify(resp.result)}`);

@@ -59,7 +59,11 @@ export async function run(): Promise<void> {
       if (resp.statusCode !== 200 && 'error' in resp) {
         debug(`resp error: ${resp.error}`);
         setFailed(
-          `Request failed with status code ${resp.statusCode}: ${resp.error}`
+          `Request failed with status code ${resp.statusCode}: ${JSON.stringify(
+            resp.error,
+            null,
+            2
+          )}`
         );
         return;
       }
