@@ -1,4 +1,5 @@
 import type { HttpClient } from '@actions/http-client';
+import { debug } from 'console';
 
 const ONE_HOUR_IN_MS = 3600000;
 const SSE_DATA_PREFIX = 'data: ';
@@ -44,6 +45,7 @@ Promise<any> {
         buffer = messages.pop() || '';
 
         for (const message of messages) {
+          debug(`SSE message: ${message}}`);
           // Check if it's a data message and extract the content
           if (message.startsWith(SSE_DATA_PREFIX)) {
             lastMessage = message;

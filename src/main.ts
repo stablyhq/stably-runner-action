@@ -52,7 +52,7 @@ export async function run(): Promise<void> {
         .catch(e => ({
           result: undefined,
           statusCode: 500,
-          error: e
+          error: `${e}`
         }));
 
       debug(`resp statusCode: ${resp.statusCode}`);

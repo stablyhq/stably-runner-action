@@ -28521,12 +28521,13 @@ function wrappy (fn, cb) {
 /***/ }),
 
 /***/ 3869:
-/***/ ((__unused_webpack_module, exports) => {
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.fetchSSE = void 0;
+const console_1 = __nccwpck_require__(6206);
 const ONE_HOUR_IN_MS = 3600000;
 const SSE_DATA_PREFIX = 'data: ';
 // Fetch last event from SSE stream
@@ -28555,6 +28556,7 @@ async function fetchSSE({ httpClient, payload, url }) {
                 // Keep the last item in buffer if it's incomplete
                 buffer = messages.pop() || '';
                 for (const message of messages) {
+                    (0, console_1.debug)(`SSE message: ${message}}`);
                     // Check if it's a data message and extract the content
                     if (message.startsWith(SSE_DATA_PREFIX)) {
                         lastMessage = message;
@@ -28789,7 +28791,7 @@ async function run() {
                 .catch(e => ({
                 result: undefined,
                 statusCode: 500,
-                error: e
+                error: `${e}`
             }));
             (0, core_1.debug)(`resp statusCode: ${resp.statusCode}`);
             if (resp.statusCode !== 200 && 'error' in resp) {
