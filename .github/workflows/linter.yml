@@ -11,7 +11,7 @@ on:
 jobs:
   lint:
     name: Lint Code Base
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2204
 
     permissions:
       contents: read
@@ -25,7 +25,7 @@ jobs:
 
       - name: Setup Node.js
         id: setup-node
-        uses: actions/setup-node@v3
+        uses: useblacksmith/setup-node@v5
         with:
           node-version: 18
           cache: npm

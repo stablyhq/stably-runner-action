@@ -12,7 +12,7 @@ permissions:
 jobs:
   test-typescript:
     name: TypeScript Tests
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2204
 
     steps:
       - name: Checkout
@@ -21,7 +21,7 @@ jobs:
 
       - name: Setup Node.js
         id: setup-node
-        uses: actions/setup-node@v4
+        uses: useblacksmith/setup-node@v5
         with:
           node-version: 20
           cache: npm
@@ -44,7 +44,7 @@ jobs:
 
   test-action:
     name: GitHub Actions Test
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2204
 
     steps:
       - name: Checkout
