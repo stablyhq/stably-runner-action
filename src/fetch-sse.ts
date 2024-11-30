@@ -1,5 +1,5 @@
 import type { HttpClient } from '@actions/http-client';
-import { debug } from 'console';
+import { debug } from '@actions/core';
 
 const ONE_HOUR_IN_MS = 3600000;
 const SSE_DATA_PREFIX = 'data: ';

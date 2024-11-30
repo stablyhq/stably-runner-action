@@ -28527,7 +28527,7 @@ function wrappy (fn, cb) {
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.fetchSSE = void 0;
-const console_1 = __nccwpck_require__(6206);
+const core_1 = __nccwpck_require__(2186);
 const ONE_HOUR_IN_MS = 3600000;
 const SSE_DATA_PREFIX = 'data: ';
 // Fetch last event from SSE stream
@@ -28556,7 +28556,7 @@ async function fetchSSE({ httpClient, payload, url }) {
                 // Keep the last item in buffer if it's incomplete
                 buffer = messages.pop() || '';
                 for (const message of messages) {
-                    (0, console_1.debug)(`SSE message: ${message}}`);
+                    (0, core_1.debug)(`SSE message: ${message}}`);
                     // Check if it's a data message and extract the content
                     if (message.startsWith(SSE_DATA_PREFIX)) {
                         lastMessage = message;
