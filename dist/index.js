@@ -28570,7 +28570,7 @@ async function fetchSSE({ httpClient, payload, url }) {
             const data = JSON.parse(lastMessage.slice(SSE_DATA_PREFIX.length).trim());
             // TODO: Would be nicer to use zod here
             if (data.status !== 'success') {
-                throw new Error(`Stream did not end in success: ${data}`);
+                throw new Error(`Stream did not end in success: ${JSON.stringify(data, null, 2)}`);
             }
             resolve(data.result);
         }
