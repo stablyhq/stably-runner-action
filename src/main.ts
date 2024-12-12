@@ -20,7 +20,7 @@ export async function run(): Promise<void> {
   try {
     const {
       apiKey,
-      domainOverride,
+      urlReplacement,
       githubComment,
       githubToken,
       runInAsyncMode,
@@ -35,7 +35,7 @@ export async function run(): Promise<void> {
       url: 'https://app.stably.ai/api/runner/run',
       payload: {
         testGroupId,
-        ...(domainOverride ? { domainOverrides: [domainOverride] } : {})
+        ...(urlReplacement ? { domainOverrides: [urlReplacement] } : {})
       }
     });
 

@@ -27,24 +27,29 @@ export function parseInput() {
     throw Error('the `testGroupId` input is required');
   }
 
-  const rawDomainOverrideInput = getList('domain-override');
+  // @deprecated
+  const deprecatedRawUrlReplacementInput = getList('domain-override');
+  const newRawUrlReplacementInput = getList('url-replacement');
+  const rawUrlReplacementInput =
+    newRawUrlReplacementInput.length > 0
+      ? newRawUrlReplacementInput
+      : deprecatedRawUrlReplacementInput;
   if (
-    rawDomainOverrideInput.length > 0 &&
-    rawDomainOverrideInput.length !== 2
+    rawUrlReplacementInput.length > 0 &&
+    rawUrlReplacementInput.length !== 2
   ) {
     setFailed(
-      `Domain override can only be given as a single pair. Given: ${JSON.stringify(
-        rawDomainOverrideInput
+      `URL replacment can only be given as a single pair. Given: ${JSON.stringify(
+        rawUrlReplacementInput
       )}`
     );
   }
-  const [domainOverrideOriginal, domainOverrideReplacement] =
-    rawDomainOverrideInput;
-  const domainOverride =
-    rawDomainOverrideInput.length === 2
+  const [urlReplacementOriginal, urlReplacementNew] = rawUrlReplacementInput;
+  const urlReplacement =
+    rawUrlReplacementInput.length === 2
       ? {
-          original: domainOverrideOriginal,
-          replacement: domainOverrideReplacement
+          original: urlReplacementOriginal,
+          replacement: urlReplacementNew
         }
       : undefined;
 
@@ -56,7 +61,7 @@ export function parseInput() {
   return {
     apiKey,
     testGroupId,
-    domainOverride,
+    urlReplacement,
     githubToken: githubToken || process.env.GITHUB_TOKEN,
     githubComment,
     runInAsyncMode

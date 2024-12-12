@@ -28717,16 +28717,21 @@ function parseInput() {
         (0, core_1.setFailed)('the `testGroupId` input is required');
         throw Error('the `testGroupId` input is required');
     }
-    const rawDomainOverrideInput = getList('domain-override');
-    if (rawDomainOverrideInput.length > 0 &&
-        rawDomainOverrideInput.length !== 2) {
-        (0, core_1.setFailed)(`Domain override can only be given as a single pair. Given: ${JSON.stringify(rawDomainOverrideInput)}`);
+    // @deprecated
+    const deprecatedRawUrlReplacementInput = getList('domain-override');
+    const newRawUrlReplacementInput = getList('url-replacement');
+    const rawUrlReplacementInput = newRawUrlReplacementInput.length > 0
+        ? newRawUrlReplacementInput
+        : deprecatedRawUrlReplacementInput;
+    if (rawUrlReplacementInput.length > 0 &&
+        rawUrlReplacementInput.length !== 2) {
+        (0, core_1.setFailed)(`URL replacment can only be given as a single pair. Given: ${JSON.stringify(rawUrlReplacementInput)}`);
     }
-    const [domainOverrideOriginal, domainOverrideReplacement] = rawDomainOverrideInput;
-    const domainOverride = rawDomainOverrideInput.length === 2
+    const [urlReplacementOriginal, urlReplacementNew] = rawUrlReplacementInput;
+    const urlReplacement = rawUrlReplacementInput.length === 2
         ? {
-            original: domainOverrideOriginal,
-            replacement: domainOverrideReplacement
+            original: urlReplacementOriginal,
+            replacement: urlReplacementNew
         }
         : undefined;
     const githubToken = (0, core_1.getInput)('github-token');
@@ -28735,7 +28740,7 @@ function parseInput() {
     return {
         apiKey,
         testGroupId,
-        domainOverride,
+        urlReplacement,
         githubToken: githubToken || process.env.GITHUB_TOKEN,
         githubComment,
         runInAsyncMode
@@ -28765,7 +28770,7 @@ const fetch_sse_1 = __nccwpck_require__(3869);
  */
 async function run() {
     try {
-        const { apiKey, domainOverride, githubComment, githubToken, runInAsyncMode, testGroupId } = (0, input_1.parseInput)();
+        const { apiKey, urlReplacement, githubComment, githubToken, runInAsyncMode, testGroupId } = (0, input_1.parseInput)();
         const httpClient = new http_client_1.HttpClient('stably-runner-action', [
             new auth_1.BearerCredentialHandler(apiKey)
         ]);
@@ -28774,7 +28779,7 @@ async function run() {
             url: 'https://app.stably.ai/api/runner/run',
             payload: {
                 testGroupId,
-                ...(domainOverride ? { domainOverrides: [domainOverride] } : {})
+                ...(urlReplacement ? { domainOverrides: [urlReplacement] } : {})
             }
         });
         if (runInAsyncMode) {
