@@ -24970,23 +24970,27 @@ module.exports = {
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.runTestGroup = void 0;
-const apiEndpoint = 'https://api.stably.ai/v1';
+const apiEndpoint = 'https://api.stably.ai';
 async function runTestGroup(testGroup, options) {
     const body = options.urlReplacement
         ? { urlReplacements: [options.urlReplacement] }
         : {};
-    const response = await fetch(buildEndpoint(`/testGroup/${testGroup}/run`), {
+    const url = buildEndpoint(`/v1/testGroup/${testGroup}/run`);
+    console.info(`executing POST to ${url}`);
+    const response = await fetch(url, {
         method: 'POST',
         body: JSON.stringify(body)
     });
     if (response.status !== 200) {
-        throw new Error(`Test group execution failed. Got status ${response.status} and response: ${response.text()}`);
+        throw new Error(`Test group execution failed. Got status ${response.status} and response: ${await response.text()}`);
     }
     return (await response.json());
 }
 exports.runTestGroup = runTestGroup;
 function buildEndpoint(path) {
-    return new URL(path, apiEndpoint).href;
+    const url = new URL(path, apiEndpoint);
+    console.log(url.href);
+    return url.href;
 }
 
 
@@ -25080,6 +25084,7 @@ async function run() {
         const shouldTunnel = urlReplacement?.replacement.startsWith('http://localhost');
         console.info(`is local replacement: ${shouldTunnel}`);
         if (urlReplacement && shouldTunnel) {
+            process.env.TUNNELMOLE_QUIET_MODE = '1';
             const tunnelUrl = await (0, tunnel_1.startTunnel)(urlReplacement.replacement);
             urlReplacement.replacement = tunnelUrl;
         }
