@@ -50,9 +50,9 @@ export async function run(): Promise<void> {
     setOutput('success', success);
 
     // Github Commnet Code
-    if (githubComment && githubToken) {
-      await upsertGitHubComment(testSuiteId, githubToken, response);
-    }
+    // if (githubComment && githubToken) {
+    //   await upsertGitHubComment(testGroupId, githubToken, resp);
+    // }
   } catch (error) {
     // Fail the workflow run if an error occurs
     if (error instanceof Error) setFailed(error.message);
