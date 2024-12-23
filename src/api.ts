@@ -29,7 +29,7 @@ export async function runTestGroup(
   const response = await fetch(url, {
     method: 'POST',
     body: JSON.stringify(body),
-    headers: { 'x-stably-api-key': apiKey }
+    headers: { 'Content-Type': 'application/json', 'x-stably-api-key': apiKey }
   });
 
   if (response.status !== 200) {
