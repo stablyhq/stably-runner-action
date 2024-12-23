@@ -32,7 +32,7 @@ export async function runTestGroup(
     throw new Error(
       `Test group execution failed. Got status ${
         response.status
-      } and response: ${response.text()}`
+      } and response: ${await response.text()}`
     );
   }
 
