@@ -39,73 +39,19 @@ export async function run(): Promise<void> {
     console.info(`is local replacement: ${shouldTunnel}`);
 
     if (urlReplacement && shouldTunnel) {
-      try {
-        const tunnelUrl = await startTunnel(urlReplacement.replacement);
-        urlReplacement.replacement = tunnelUrl;
-
-        console.info(`new url: ${tunnelUrl}`);
-        console.info(`urlReplacement: ${urlReplacement}`);
-
-        const response = await runTestGroup(testGroupId, {
-          urlReplacement
-        });
-        const success = response.results.every(result => result.success);
-        setOutput('success', success);
-      } catch (e) {
-        debug(`API error: ${e}`);
-        setOutput('success', false);
-      }
+      const tunnelUrl = await startTunnel(urlReplacement.replacement);
+      urlReplacement.replacement = tunnelUrl;
     }
 
-    const respPromise = fetchSSE({
-      httpClient,
-      url: 'https://app.stably.ai/api/runner/run',
-      payload: {
-        testSuiteId,
-        ...(urlReplacement ? { domainOverrides: [urlReplacement] } : {})
-      }
+    const response = await runTestGroup(testSuiteId, {
+      urlReplacement
     });
+    const success = response.results.every(result => result.success);
+    setOutput('success', success);
 
-    if (runInAsyncMode) {
-      setOutput('success', true);
-      return;
-    } else {
-      // We insert some status code to mimic earlier code
-      const resp = await respPromise
-        .then(x => ({
-          result: x as RunResponse,
-          statusCode: 200
-        }))
-        .catch(e => ({
-          result: undefined,
-          statusCode: 500,
-          error: `${e}`
-        }));
-
-      debug(`resp statusCode: ${resp.statusCode}`);
-      if (resp.statusCode !== 200 && 'error' in resp) {
-        debug(`resp error: ${resp.error}`);
-        setFailed(
-          `Request failed with status code ${resp.statusCode}: ${JSON.stringify(
-            resp.error,
-            null,
-            2
-          )}`
-        );
-        return;
-      }
-      debug(`resp raw: ${JSON.stringify(resp.result)}`);
-
-      const numFailedTests = (resp.result?.results || []).filter(
-        x => x.success === false
-      ).length;
-
-      setOutput('success', resp.statusCode === 200 && numFailedTests === 0);
-
-      // Github Commnet Code
-      if (githubComment && githubToken) {
-        await upsertGitHubComment(testSuiteId, githubToken, resp);
-      }
+    // Github Commnet Code
+    if (githubComment && githubToken) {
+      await upsertGitHubComment(testSuiteId, githubToken, response);
     }
   } catch (error) {
     // Fail the workflow run if an error occurs
