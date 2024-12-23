@@ -24980,7 +24980,7 @@ async function runTestGroup(testGroup, apiKey, options) {
     const response = await fetch(url, {
         method: 'POST',
         body: JSON.stringify(body),
-        headers: { Authorization: `Bearer ${apiKey}` }
+        headers: { 'x-stably-api-key': apiKey }
     });
     if (response.status !== 200) {
         throw new Error(`Test group execution failed. Got status ${response.status} and response: ${await response.text()}`);
