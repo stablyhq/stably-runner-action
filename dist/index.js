@@ -24971,7 +24971,7 @@ module.exports = {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.runTestGroup = void 0;
 const apiEndpoint = 'https://api.stably.ai';
-async function runTestGroup(testGroup, options) {
+async function runTestGroup(testGroup, apiKey, options) {
     const body = options.urlReplacement
         ? { urlReplacements: [options.urlReplacement] }
         : {};
@@ -24979,7 +24979,8 @@ async function runTestGroup(testGroup, options) {
     console.info(`executing POST to ${url}. Body: ${JSON.stringify(body)}`);
     const response = await fetch(url, {
         method: 'POST',
-        body: JSON.stringify(body)
+        body: JSON.stringify(body),
+        headers: { Authorization: `Bearer ${apiKey}` }
     });
     if (response.status !== 200) {
         throw new Error(`Test group execution failed. Got status ${response.status} and response: ${await response.text()}`);
@@ -25088,7 +25089,7 @@ async function run() {
             const tunnelUrl = await (0, tunnel_1.startTunnel)(urlReplacement.replacement);
             urlReplacement.replacement = tunnelUrl;
         }
-        const response = await (0, api_1.runTestGroup)(testSuiteId, {
+        const response = await (0, api_1.runTestGroup)(testSuiteId, apiKey, {
             urlReplacement
         });
         const success = response.results.every(result => result.success);

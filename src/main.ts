@@ -43,7 +43,7 @@ export async function run(): Promise<void> {
       urlReplacement.replacement = tunnelUrl;
     }
 
-    const response = await runTestGroup(testSuiteId, {
+    const response = await runTestGroup(testSuiteId, apiKey, {
       urlReplacement
     });
     const success = response.results.every(result => result.success);

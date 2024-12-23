@@ -17,6 +17,7 @@ type RunTestOptions = {
 
 export async function runTestGroup(
   testGroup: string,
+  apiKey: string,
   options: RunTestOptions
 ): Promise<RunTestResponse> {
   const body = options.urlReplacement
@@ -27,7 +28,8 @@ export async function runTestGroup(
   console.info(`executing POST to ${url}. Body: ${JSON.stringify(body)}`);
   const response = await fetch(url, {
     method: 'POST',
-    body: JSON.stringify(body)
+    body: JSON.stringify(body),
+    headers: { Authorization: `Bearer ${apiKey}` }
   });
 
   if (response.status !== 200) {
