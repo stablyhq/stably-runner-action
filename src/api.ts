@@ -23,13 +23,12 @@ export async function runTestGroup(
     ? { urlReplacements: [options.urlReplacement] }
     : {};
 
-  const response = await fetch(
-    buildEndpoint(`/v1/testGroup/${testGroup}/run`),
-    {
-      method: 'POST',
-      body: JSON.stringify(body)
-    }
-  );
+  const url = buildEndpoint(`/v1/testGroup/${testGroup}/run`);
+  console.log(url);
+  const response = await fetch(url, {
+    method: 'POST',
+    body: JSON.stringify(body)
+  });
 
   if (response.status !== 200) {
     throw new Error(
