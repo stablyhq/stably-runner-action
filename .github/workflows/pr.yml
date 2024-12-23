@@ -1,0 +1,31 @@
+name: Pull Request
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    name: Build and Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
+
+      - name: Start nginx
+        uses: addnab/docker-run-action@v3
+        with:
+          image: nginx:latest
+
+      - name: Test changes
+        uses: ./
+        with:
+          api-key: ${{ secrets.API_KEY }}
+          run-group-ids: |-
+            cm51jnwks0001l103b5lrprjs
+          url-replacement: |-
+            https://app.stably.ai
+            http://localhost:80
+        

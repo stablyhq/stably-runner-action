@@ -1,9 +1,12 @@
 import { debug, setFailed, setOutput } from '@actions/core';
 import { HttpClient } from '@actions/http-client';
 import { BearerCredentialHandler } from '@actions/http-client/lib/auth';
+import { tunnelmole } from 'tunnelmole';
 import { upsertGitHubComment } from './github_comment';
 import { parseInput } from './input';
 import { fetchSSE } from './fetch-sse';
+import { runTestGroup } from './api';
+import { startTunnel } from './tunnel';
 
 export type RunResponse = {
   projectId: string;
@@ -30,6 +33,26 @@ export async function run(): Promise<void> {
     const httpClient = new HttpClient('stably-runner-action', [
       new BearerCredentialHandler(apiKey)
     ]);
+
+    const shouldTunnel =
+      urlReplacement?.replacement.startsWith('http://localhost');
+
+    if (urlReplacement && shouldTunnel) {
+      try {
+        const tunnelUrl = await startTunnel(urlReplacement.replacement);
+        urlReplacement.replacement = tunnelUrl;
+
+        const response = await runTestGroup(testGroupId, {
+          urlReplacement: urlReplacement
+        });
+        const success = response.results.every(result => result.success);
+        setOutput('success', success);
+      } catch (e) {
+        debug(`API error: ${e}`);
+        setOutput('success', false);
+      }
+    }
+
     const respPromise = fetchSSE({
       httpClient,
       url: 'https://app.stably.ai/api/runner/run',
