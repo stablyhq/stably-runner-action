@@ -22,8 +22,7 @@ jobs:
         uses: ./
         with:
           api-key: ${{ secrets.API_KEY }}
-          run-group-ids: |-
-            cm51jnwks0001l103b5lrprjs
+          run-group-id: cm51jnwks0001l103b5lrprjs
           replacement-url: |-
             https://app.stably.ai
             http://localhost:80

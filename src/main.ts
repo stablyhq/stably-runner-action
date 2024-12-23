@@ -36,10 +36,15 @@ export async function run(): Promise<void> {
     const shouldTunnel =
       urlReplacement?.replacement.startsWith('http://localhost');
 
+    debug(`is local replacement: ${shouldTunnel}`);
+
     if (urlReplacement && shouldTunnel) {
       try {
         const tunnelUrl = await startTunnel(urlReplacement.replacement);
         urlReplacement.replacement = tunnelUrl;
+
+        debug(`new url: ${tunnelUrl}`);
+        debug(`urlReplacement: ${urlReplacement}`);
 
         const response = await runTestGroup(testGroupId, {
           urlReplacement
