@@ -23,6 +23,6 @@ jobs:
         with:
           api-key: ${{ secrets.API_KEY }}
           test-group-id: cm51jnwks0001l103b5lrprjs
-          replacement-url: |-
+          url-replacement: |-
             https://app.stably.ai
             http://localhost:80
