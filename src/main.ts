@@ -1,7 +1,6 @@
 import { debug, setFailed, setOutput } from '@actions/core';
 import { HttpClient } from '@actions/http-client';
 import { BearerCredentialHandler } from '@actions/http-client/lib/auth';
-import { tunnelmole } from 'tunnelmole';
 import { upsertGitHubComment } from './github_comment';
 import { parseInput } from './input';
 import { fetchSSE } from './fetch-sse';
