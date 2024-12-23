@@ -1,4 +1,4 @@
-const apiEndpoint = 'https://api.stably.ai/v1';
+const apiEndpoint = 'https://api.stably.ai';
 
 type RunTestResponse = {
   projectId: string;
@@ -23,10 +23,13 @@ export async function runTestGroup(
     ? { urlReplacements: [options.urlReplacement] }
     : {};
 
-  const response = await fetch(buildEndpoint(`/testGroup/${testGroup}/run`), {
-    method: 'POST',
-    body: JSON.stringify(body)
-  });
+  const response = await fetch(
+    buildEndpoint(`/v1/testGroup/${testGroup}/run`),
+    {
+      method: 'POST',
+      body: JSON.stringify(body)
+    }
+  );
 
   if (response.status !== 200) {
     throw new Error(
@@ -40,5 +43,8 @@ export async function runTestGroup(
 }
 
 function buildEndpoint(path: string) {
-  return new URL(path, apiEndpoint).href;
+  const url = new URL(path, apiEndpoint);
+
+  console.log(url.href);
+  return url.href;
 }

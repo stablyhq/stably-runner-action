@@ -3,7 +3,6 @@ import { HttpClient } from '@actions/http-client';
 import { BearerCredentialHandler } from '@actions/http-client/lib/auth';
 import { upsertGitHubComment } from './github_comment';
 import { parseInput } from './input';
-import { fetchSSE } from './fetch-sse';
 import { runTestGroup } from './api';
 import { startTunnel } from './tunnel';
 
