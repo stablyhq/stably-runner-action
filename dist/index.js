@@ -25121,7 +25121,7 @@ async function startTunnel(localEndpoint) {
     const { tunnelmole } = await __nccwpck_require__.e(/* import() */ 468).then(__nccwpck_require__.bind(__nccwpck_require__, 4468));
     const port = new URL(localEndpoint).port;
     const url = await tunnelmole({
-        port: Number(port)
+        port: Number(port) || 80
     });
     return url;
 }
