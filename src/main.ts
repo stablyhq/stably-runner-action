@@ -46,16 +46,18 @@ export async function run(): Promise<void> {
       urlReplacement
     });
 
-    console.info('finished running', response.results);
-    const success = response.results.every(result => result.success);
+    const success = response.execution.results.every(result => result.success);
     setOutput('success', success);
 
-    console.info('it should end here');
+    // Github Comment Code
+    if (githubComment && githubToken) {
+      await upsertGitHubComment(testSuiteId, githubToken, {
+        statusCode: response.statusCode,
+        result: response.execution
+      });
+    }
+
     process.exit(0);
-    // Github Commnet Code
-    // if (githubComment && githubToken) {
-    //   await upsertGitHubComment(testGroupId, githubToken, resp);
-    // }
   } catch (error) {
     // Fail the workflow run if an error occurs
     if (error instanceof Error) setFailed(error.message);

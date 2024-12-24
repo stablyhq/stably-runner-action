@@ -2,8 +2,8 @@ const apiEndpoint = 'https://api.stably.ai';
 
 type RunTestResponse = {
   projectId: string;
-  groupRunId: string;
-  testGroupName: string;
+  testSuiteRunId: string;
+  testSuiteName: string;
   results: {
     testId: string;
     testName: string;
@@ -19,7 +19,7 @@ export async function runTestGroup(
   testGroup: string,
   apiKey: string,
   options: RunTestOptions
-): Promise<RunTestResponse> {
+): Promise<{ statusCode: number; execution: RunTestResponse }> {
   const body = options.urlReplacement
     ? { urlReplacements: [options.urlReplacement] }
     : {};
@@ -32,15 +32,12 @@ export async function runTestGroup(
     headers: { 'Content-Type': 'application/json', 'x-stably-api-key': apiKey }
   });
 
-  if (response.status !== 200) {
-    throw new Error(
-      `Test group execution failed. Got status ${
-        response.status
-      } and response: ${await response.text()}`
-    );
-  }
+  const result = await response.json();
 
-  return (await response.json()) satisfies RunTestResponse;
+  return {
+    statusCode: response.status,
+    execution: result
+  };
 }
 
 function buildEndpoint(path: string) {
