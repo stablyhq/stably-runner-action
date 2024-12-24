@@ -17,13 +17,14 @@ export type RunResponse = {
  */
 export async function run(): Promise<void> {
   try {
-    const { apiKey, urlReplacement, githubComment, githubToken, testSuiteId } =
-      parseInput();
-
-    const httpClient = new HttpClient('stably-runner-action', [
-      new BearerCredentialHandler(apiKey)
-    ]);
-
+    const {
+      apiKey,
+      urlReplacement,
+      githubComment,
+      githubToken,
+      testSuiteId,
+      runInAsyncMode
+    } = parseInput();
     const shouldTunnel =
       urlReplacement?.replacement.startsWith('http://localhost');
 
@@ -36,8 +37,12 @@ export async function run(): Promise<void> {
       urlReplacement
     });
 
-    const success = response.execution.results.every(result => result.success);
-    setOutput('success', success);
+    if (!runInAsyncMode) {
+      const success = response.execution!.results.every(
+        result => result.success
+      );
+      setOutput('success', success);
+    }
 
     // Github Comment Code
     if (githubComment && githubToken) {

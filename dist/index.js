@@ -29248,16 +29248,21 @@ async function runTestGroup(testGroup, apiKey, options) {
         ? { urlReplacements: [options.urlReplacement] }
         : {};
     const url = buildEndpoint(`/v1/testGroup/${testGroup}/run`);
-    const response = await fetch(url, {
+    const apiCallPromise = fetch(url, {
         method: 'POST',
         body: JSON.stringify(body),
         headers: { 'Content-Type': 'application/json', 'x-stably-api-key': apiKey }
     });
-    const result = await response.json();
-    return {
-        statusCode: response.status,
-        execution: result
-    };
+    if (!options.asyncMode) {
+        const response = await apiCallPromise;
+        const result = await response.json();
+        return {
+            statusCode: response.status,
+            execution: result
+        };
+    }
+    // in async mode, we don't wait for the response, so we consider it's Ok
+    return { statusCode: 200 };
 }
 exports.runTestGroup = runTestGroup;
 function buildEndpoint(path) {
@@ -29442,8 +29447,6 @@ exports.parseInput = parseInput;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.run = void 0;
 const core_1 = __nccwpck_require__(2186);
-const http_client_1 = __nccwpck_require__(6255);
-const auth_1 = __nccwpck_require__(5526);
 const github_comment_1 = __nccwpck_require__(8205);
 const input_1 = __nccwpck_require__(6747);
 const api_1 = __nccwpck_require__(8229);
@@ -29454,10 +29457,7 @@ const tunnel_1 = __nccwpck_require__(4952);
  */
 async function run() {
     try {
-        const { apiKey, urlReplacement, githubComment, githubToken, testSuiteId } = (0, input_1.parseInput)();
-        const httpClient = new http_client_1.HttpClient('stably-runner-action', [
-            new auth_1.BearerCredentialHandler(apiKey)
-        ]);
+        const { apiKey, urlReplacement, githubComment, githubToken, testSuiteId, runInAsyncMode } = (0, input_1.parseInput)();
         const shouldTunnel = urlReplacement?.replacement.startsWith('http://localhost');
         if (urlReplacement && shouldTunnel) {
             const tunnelUrl = await (0, tunnel_1.startTunnel)(urlReplacement.replacement);
@@ -29466,8 +29466,10 @@ async function run() {
         const response = await (0, api_1.runTestGroup)(testSuiteId, apiKey, {
             urlReplacement
         });
-        const success = response.execution.results.every(result => result.success);
-        (0, core_1.setOutput)('success', success);
+        if (!runInAsyncMode) {
+            const success = response.execution.results.every(result => result.success);
+            (0, core_1.setOutput)('success', success);
+        }
         // Github Comment Code
         if (githubComment && githubToken) {
             await (0, github_comment_1.upsertGitHubComment)(testSuiteId, githubToken, {

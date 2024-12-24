@@ -13,30 +13,37 @@ type RunTestResponse = {
 
 type RunTestOptions = {
   urlReplacement?: { original: string; replacement: string };
+  asyncMode?: boolean;
 };
 
 export async function runTestGroup(
   testGroup: string,
   apiKey: string,
   options: RunTestOptions
-): Promise<{ statusCode: number; execution: RunTestResponse }> {
+): Promise<{ statusCode: number; execution?: RunTestResponse }> {
   const body = options.urlReplacement
     ? { urlReplacements: [options.urlReplacement] }
     : {};
 
   const url = buildEndpoint(`/v1/testGroup/${testGroup}/run`);
-  const response = await fetch(url, {
+  const apiCallPromise = fetch(url, {
     method: 'POST',
     body: JSON.stringify(body),
     headers: { 'Content-Type': 'application/json', 'x-stably-api-key': apiKey }
   });
 
-  const result = await response.json();
+  if (!options.asyncMode) {
+    const response = await apiCallPromise;
+    const result = await response.json();
 
-  return {
-    statusCode: response.status,
-    execution: result
-  };
+    return {
+      statusCode: response.status,
+      execution: result
+    };
+  }
+
+  // in async mode, we don't wait for the response, so we consider it's Ok
+  return { statusCode: 200 };
 }
 
 function buildEndpoint(path: string) {
