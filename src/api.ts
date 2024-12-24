@@ -25,7 +25,6 @@ export async function runTestGroup(
     : {};
 
   const url = buildEndpoint(`/v1/testGroup/${testGroup}/run`);
-  console.info(`executing POST to ${url}. Body: ${JSON.stringify(body)}`);
   const response = await fetch(url, {
     method: 'POST',
     body: JSON.stringify(body),

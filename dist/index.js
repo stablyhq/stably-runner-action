@@ -29248,7 +29248,6 @@ async function runTestGroup(testGroup, apiKey, options) {
         ? { urlReplacements: [options.urlReplacement] }
         : {};
     const url = buildEndpoint(`/v1/testGroup/${testGroup}/run`);
-    console.info(`executing POST to ${url}. Body: ${JSON.stringify(body)}`);
     const response = await fetch(url, {
         method: 'POST',
         body: JSON.stringify(body),
@@ -29460,7 +29459,6 @@ async function run() {
             new auth_1.BearerCredentialHandler(apiKey)
         ]);
         const shouldTunnel = urlReplacement?.replacement.startsWith('http://localhost');
-        console.info(`is local replacement: ${shouldTunnel}`);
         if (urlReplacement && shouldTunnel) {
             const tunnelUrl = await (0, tunnel_1.startTunnel)(urlReplacement.replacement);
             urlReplacement.replacement = tunnelUrl;
