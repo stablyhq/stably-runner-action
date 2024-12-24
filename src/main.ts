@@ -51,6 +51,7 @@ export async function run(): Promise<void> {
     setOutput('success', success);
 
     console.info('it should end here');
+    process.exit(0);
     // Github Commnet Code
     // if (githubComment && githubToken) {
     //   await upsertGitHubComment(testGroupId, githubToken, resp);

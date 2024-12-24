@@ -25095,6 +25095,7 @@ async function run() {
         const success = response.results.every(result => result.success);
         (0, core_1.setOutput)('success', success);
         console.info('it should end here');
+        process.exit(0);
         // Github Commnet Code
         // if (githubComment && githubToken) {
         //   await upsertGitHubComment(testGroupId, githubToken, resp);
