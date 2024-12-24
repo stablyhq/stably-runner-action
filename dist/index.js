@@ -25091,8 +25091,10 @@ async function run() {
         const response = await (0, api_1.runTestGroup)(testSuiteId, apiKey, {
             urlReplacement
         });
+        console.info('finished running', response.results);
         const success = response.results.every(result => result.success);
         (0, core_1.setOutput)('success', success);
+        console.info('it should end here');
         // Github Commnet Code
         // if (githubComment && githubToken) {
         //   await upsertGitHubComment(testGroupId, githubToken, resp);
