@@ -1,4 +1,4 @@
-import { debug, setFailed, setOutput } from '@actions/core';
+import { setFailed, setOutput } from '@actions/core';
 import { HttpClient } from '@actions/http-client';
 import { BearerCredentialHandler } from '@actions/http-client/lib/auth';
 import { upsertGitHubComment } from './github_comment';
@@ -19,14 +19,8 @@ export type RunResponse = {
  */
 export async function run(): Promise<void> {
   try {
-    const {
-      apiKey,
-      urlReplacement,
-      githubComment,
-      githubToken,
-      runInAsyncMode,
-      testSuiteId
-    } = parseInput();
+    const { apiKey, urlReplacement, githubComment, githubToken, testSuiteId } =
+      parseInput();
 
     const httpClient = new HttpClient('stably-runner-action', [
       new BearerCredentialHandler(apiKey)

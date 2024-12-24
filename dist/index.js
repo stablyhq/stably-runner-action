@@ -29455,7 +29455,7 @@ const tunnel_1 = __nccwpck_require__(4952);
  */
 async function run() {
     try {
-        const { apiKey, urlReplacement, githubComment, githubToken, runInAsyncMode, testSuiteId } = (0, input_1.parseInput)();
+        const { apiKey, urlReplacement, githubComment, githubToken, testSuiteId } = (0, input_1.parseInput)();
         const httpClient = new http_client_1.HttpClient('stably-runner-action', [
             new auth_1.BearerCredentialHandler(apiKey)
         ]);
