@@ -25085,7 +25085,6 @@ async function run() {
         const shouldTunnel = urlReplacement?.replacement.startsWith('http://localhost');
         console.info(`is local replacement: ${shouldTunnel}`);
         if (urlReplacement && shouldTunnel) {
-            process.env.TUNNELMOLE_QUIET_MODE = '1';
             const tunnelUrl = await (0, tunnel_1.startTunnel)(urlReplacement.replacement);
             urlReplacement.replacement = tunnelUrl;
         }
@@ -25118,6 +25117,7 @@ exports.run = run;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.startTunnel = void 0;
 async function startTunnel(localEndpoint) {
+    // process.env.TUNNELMOLE_QUIET_MODE = '1';
     const { tunnelmole } = await __nccwpck_require__.e(/* import() */ 468).then(__nccwpck_require__.bind(__nccwpck_require__, 4468));
     const port = new URL(localEndpoint).port;
     const url = await tunnelmole({

@@ -38,7 +38,6 @@ export async function run(): Promise<void> {
     console.info(`is local replacement: ${shouldTunnel}`);
 
     if (urlReplacement && shouldTunnel) {
-      process.env.TUNNELMOLE_QUIET_MODE = '1';
       const tunnelUrl = await startTunnel(urlReplacement.replacement);
       urlReplacement.replacement = tunnelUrl;
     }
