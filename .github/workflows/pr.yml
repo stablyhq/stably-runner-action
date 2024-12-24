@@ -21,6 +21,8 @@ jobs:
         with:
           api-key: ${{ secrets.API_KEY }}
           test-group-id: cm51jnwks0001l103b5lrprjs
+          github-comment: true
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
           url-replacement: |-
             https://nginx.com
             http://localhost:8080

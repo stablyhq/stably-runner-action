@@ -56,10 +56,12 @@ export async function run(): Promise<void> {
         result: response.execution
       });
     }
-
-    process.exit(0);
   } catch (error) {
     // Fail the workflow run if an error occurs
     if (error instanceof Error) setFailed(error.message);
+  } finally {
+    // Make sure the process exits
+    // This is done to prevent the tunnel from hanging the thread
+    process.exit(0);
   }
 }

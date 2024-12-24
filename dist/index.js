@@ -29477,12 +29477,16 @@ async function run() {
                 result: response.execution
             });
         }
-        process.exit(0);
     }
     catch (error) {
         // Fail the workflow run if an error occurs
         if (error instanceof Error)
             (0, core_1.setFailed)(error.message);
+    }
+    finally {
+        // Make sure the process exits
+        // This is done to prevent the tunnel from hanging the thread
+        process.exit(0);
     }
 }
 exports.run = run;
