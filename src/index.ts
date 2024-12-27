@@ -1,7 +1,5 @@
-/**
- * The entrypoint for the action.
- */
-import { run } from './main';
+import { githubRun } from '@stablyhq/runner-sdk';
 
-// eslint-disable-next-line @typescript-eslint/no-floating-promises
-run();
+export async function run() {
+  return await githubRun();
+}
