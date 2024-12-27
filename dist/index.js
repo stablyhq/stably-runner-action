@@ -40733,11 +40733,11 @@ function wrappy (fn, cb) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.runTestGroup = void 0;
 const apiEndpoint = 'https://api.stably.ai';
-async function runTestGroup(testGroup, apiKey, options) {
+async function runTestGroup(testSuiteId, apiKey, options) {
     const body = options.urlReplacement
         ? { urlReplacements: [options.urlReplacement] }
         : {};
-    const url = buildEndpoint(`/v1/testGroup/${testGroup}/run`);
+    const url = buildEndpoint(`/v1/testSuite/${testSuiteId}/run`);
     const apiCallPromise = fetch(url, {
         method: 'POST',
         body: JSON.stringify(body),
@@ -40887,13 +40887,17 @@ function getList(name, options) {
 function parseInput() {
     const apiKey = (0, core_1.getInput)('api-key', { required: true });
     // Supporting deprecating of runGroupIds
-    const testGroupIdInput = (0, core_1.getInput)('test-group-id');
     const testSuiteIdInput = (0, core_1.getInput)('test-suite-id');
-    const testSuiteId = testSuiteIdInput || testGroupIdInput;
+    const runGroupIdsInput = getList('run-group-ids');
+    const testGroupIdInput = (0, core_1.getInput)('test-group-id');
+    const testSuiteId = testSuiteIdInput || testGroupIdInput || runGroupIdsInput.at(0);
     if (!testSuiteId) {
         (0, console_1.debug)(`testGroupId: ${testSuiteId}`);
-        (0, core_1.setFailed)('the `testSuiteId` input is required');
-        throw Error('the `testSuiteId` input is required');
+        (0, console_1.debug)(`testSuiteId: ${testSuiteIdInput}`);
+        (0, console_1.debug)(`runGroupIdsInput: ${runGroupIdsInput}`);
+        (0, console_1.debug)(`testGroupIdInput: ${testGroupIdInput}`);
+        (0, core_1.setFailed)('the `testGroupId` input is required');
+        throw Error('the `testGroupId` input is required');
     }
     // @deprecated
     const deprecatedRawUrlReplacementInput = getList('domain-override');
@@ -40959,13 +40963,13 @@ async function run() {
         if (!runInAsyncMode) {
             const success = response.execution.results.every(result => result.success);
             (0, core_1.setOutput)('success', success);
-        }
-        // Github Comment Code
-        if (githubComment && githubToken) {
-            await (0, github_comment_1.upsertGitHubComment)(testSuiteId, githubToken, {
-                statusCode: response.statusCode,
-                result: response.execution
-            });
+            // Github Comment Code
+            if (githubComment && githubToken) {
+                await (0, github_comment_1.upsertGitHubComment)(testSuiteId, githubToken, {
+                    statusCode: response.statusCode,
+                    result: response.execution
+                });
+            }
         }
     }
     catch (error) {

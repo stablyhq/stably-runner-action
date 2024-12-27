@@ -25,6 +25,7 @@ export async function run(): Promise<void> {
       testSuiteId,
       runInAsyncMode
     } = parseInput();
+
     const shouldTunnel =
       urlReplacement?.replacement.startsWith('http://localhost');
 
@@ -42,14 +43,14 @@ export async function run(): Promise<void> {
         result => result.success
       );
       setOutput('success', success);
-    }
 
-    // Github Comment Code
-    if (githubComment && githubToken) {
-      await upsertGitHubComment(testSuiteId, githubToken, {
-        statusCode: response.statusCode,
-        result: response.execution
-      });
+      // Github Comment Code
+      if (githubComment && githubToken) {
+        await upsertGitHubComment(testSuiteId, githubToken, {
+          statusCode: response.statusCode,
+          result: response.execution
+        });
+      }
     }
   } catch (error) {
     // Fail the workflow run if an error occurs

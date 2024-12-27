@@ -17,7 +17,7 @@ type RunTestOptions = {
 };
 
 export async function runTestGroup(
-  testGroup: string,
+  testSuiteId: string,
   apiKey: string,
   options: RunTestOptions
 ): Promise<{ statusCode: number; execution?: RunTestResponse }> {
@@ -25,7 +25,7 @@ export async function runTestGroup(
     ? { urlReplacements: [options.urlReplacement] }
     : {};
 
-  const url = buildEndpoint(`/v1/testGroup/${testGroup}/run`);
+  const url = buildEndpoint(`/v1/testSuite/${testSuiteId}/run`);
   const apiCallPromise = fetch(url, {
     method: 'POST',
     body: JSON.stringify(body),

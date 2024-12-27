@@ -16,13 +16,18 @@ export function parseInput() {
   const apiKey = getInput('api-key', { required: true });
 
   // Supporting deprecating of runGroupIds
-  const testGroupIdInput = getInput('test-group-id');
   const testSuiteIdInput = getInput('test-suite-id');
-  const testSuiteId = testSuiteIdInput || testGroupIdInput;
+  const runGroupIdsInput = getList('run-group-ids');
+  const testGroupIdInput = getInput('test-group-id');
+  const testSuiteId =
+    testSuiteIdInput || testGroupIdInput || runGroupIdsInput.at(0);
   if (!testSuiteId) {
     debug(`testGroupId: ${testSuiteId}`);
-    setFailed('the `testSuiteId` input is required');
-    throw Error('the `testSuiteId` input is required');
+    debug(`testSuiteId: ${testSuiteIdInput}`);
+    debug(`runGroupIdsInput: ${runGroupIdsInput}`);
+    debug(`testGroupIdInput: ${testGroupIdInput}`);
+    setFailed('the `testGroupId` input is required');
+    throw Error('the `testGroupId` input is required');
   }
 
   // @deprecated
