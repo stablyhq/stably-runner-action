@@ -65,7 +65,7 @@
     ]
   },
   "dependencies": {
-    "@stablyhq/runner-sdk": "^1.0.1"
+    "@stablyhq/runner-sdk": "^1.0.2"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.23.3",

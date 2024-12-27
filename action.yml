@@ -16,6 +16,10 @@ inputs:
       instead.'
   test-group-id:
     description: The test group ID to execute
+    deprecationMessage:
+      'We renamed test groups to test suites. Use test-suite-id instead.'
+  test-suite-id:
+    description: The test suite ID to execute
     required: true
   domain-override:
     description: |-
