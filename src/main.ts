@@ -2,7 +2,7 @@ import { setFailed, setOutput } from '@actions/core';
 import { upsertGitHubComment } from './github_comment';
 import { parseInput } from './input';
 import { runTestGroup } from './api';
-import { startTunnel } from './tunnel';
+import { startTunnel } from '@stablyhq/runner-sdk';
 
 export type RunResponse = {
   projectId: string;
