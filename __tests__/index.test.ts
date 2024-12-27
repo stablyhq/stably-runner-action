@@ -2,7 +2,7 @@
  * Unit tests for the action's entrypoint, src/index.ts
  */
 
-import * as main from '../src/main';
+import * as main from '../src';
 
 // Mock the action's entrypoint
 const runMock = jest.spyOn(main, 'run').mockImplementation();
