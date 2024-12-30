@@ -16,15 +16,13 @@ export function parseInput() {
   const apiKey = getInput('api-key', { required: true });
 
   // Supporting deprecating of runGroupIds
-  const runGroupIdsInput = getList('run-group-ids');
   const testGroupIdInput = getInput('test-group-id');
-  const testGroupId = testGroupIdInput || runGroupIdsInput.at(0);
-  if (!testGroupId) {
-    debug(`testGroupId: ${testGroupId}`);
-    debug(`runGroupIdsInput: ${runGroupIdsInput}`);
-    debug(`testGroupIdInput: ${testGroupIdInput}`);
-    setFailed('the `testGroupId` input is required');
-    throw Error('the `testGroupId` input is required');
+  const testSuiteIdInput = getInput('test-suite-id');
+  const testSuiteId = testSuiteIdInput || testGroupIdInput;
+  if (!testSuiteId) {
+    debug(`testGroupId: ${testSuiteId}`);
+    setFailed('the `testSuiteId` input is required');
+    throw Error('the `testSuiteId` input is required');
   }
 
   // @deprecated
@@ -60,7 +58,7 @@ export function parseInput() {
 
   return {
     apiKey,
-    testGroupId,
+    testSuiteId,
     urlReplacement,
     githubToken: githubToken || process.env.GITHUB_TOKEN,
     githubComment,

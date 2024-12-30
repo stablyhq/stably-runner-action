@@ -7,8 +7,8 @@ import { fetchSSE } from './fetch-sse';
 
 export type RunResponse = {
   projectId: string;
-  groupRunId: string;
-  testGroupName: string;
+  testSuiteRunId: string;
+  testSuiteName: string;
   results: { testId: string; testName: string; success?: boolean }[];
 };
 
@@ -24,7 +24,7 @@ export async function run(): Promise<void> {
       githubComment,
       githubToken,
       runInAsyncMode,
-      testGroupId
+      testSuiteId
     } = parseInput();
 
     const httpClient = new HttpClient('stably-runner-action', [
@@ -34,7 +34,7 @@ export async function run(): Promise<void> {
       httpClient,
       url: 'https://app.stably.ai/api/runner/run',
       payload: {
-        testGroupId,
+        testSuiteId,
         ...(urlReplacement ? { domainOverrides: [urlReplacement] } : {})
       }
     });
@@ -77,7 +77,7 @@ export async function run(): Promise<void> {
 
       // Github Commnet Code
       if (githubComment && githubToken) {
-        await upsertGitHubComment(testGroupId, githubToken, resp);
+        await upsertGitHubComment(testSuiteId, githubToken, resp);
       }
     }
   } catch (error) {

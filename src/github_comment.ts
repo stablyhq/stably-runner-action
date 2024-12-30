@@ -3,33 +3,33 @@ import dedent from 'ts-dedent';
 import { RunResponse } from './main';
 
 export async function upsertGitHubComment(
-  testGroupId: string,
+  testSuiteId: string,
   githubToken: string,
   resp: { result?: RunResponse; statusCode: number }
 ) {
   const octokit = getOctokit(githubToken);
 
   const projectId = resp.result?.projectId || '';
-  const groupRunId = resp.result?.groupRunId || '';
-  const testGroupName = resp.result?.testGroupName || '';
+  const testSuiteRunId = resp.result?.testSuiteRunId || '';
+  const testSuiteName = resp.result?.testSuiteName || '';
   const results = resp.result?.results || [];
   const failedTests = results.filter(x => x.success === false);
   const successTests = results.filter(x => x.success === true);
   const undefinedTests = results.filter(x => x.success === undefined);
 
-  const commentIdentiifer = `<!-- stably_${testGroupId} -->`;
-  const groupRunDashboardUrl = `https://app.stably.ai/project/${projectId}/history/g_${groupRunId}`;
+  const commentIdentiifer = `<!-- stably_${testSuiteId} -->`;
+  const suiteRunDashboardUrl = `https://app.stably.ai/project/${projectId}/history/g_${testSuiteRunId}`;
 
   // prettier-ignore
   const body = dedent`${commentIdentiifer}
-  # [Stably](https://stably.ai/) Runner - [Test Group - '${testGroupName}'](https://app.stably.ai/project/${projectId}/testGroup/${testGroupId})
+  # [Stably](https://stably.ai/) Runner - [Test Suite - '${testSuiteName}'](https://app.stably.ai/project/${projectId}/testSuite/${testSuiteId})
 
-  Test Group Run Result: ${
+  Test Suite Run Result: ${
     resp.statusCode !== 200
       ? '❌ Error - The Action ran into an error while calling the Stably backend. Please re-run'
       : failedTests.length === 0
-      ? `🟢 Success (${successTests.length}/${results.length} tests passed) [[dashboard]](${groupRunDashboardUrl})`
-      : `🔴 Failure (${failedTests.length}/${results.length} tests failed) [[dashboard]](${groupRunDashboardUrl})`
+      ? `🟢 Success (${successTests.length}/${results.length} tests passed) [[dashboard]](${suiteRunDashboardUrl})`
+      : `🔴 Failure (${failedTests.length}/${results.length} tests failed) [[dashboard]](${suiteRunDashboardUrl})`
   }
   
 

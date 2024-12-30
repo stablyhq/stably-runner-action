@@ -7,7 +7,7 @@ Use this GitHub action to run tests on [stably.ai](https://stably.ai)
 | **Name**        | **Required** | **Default**           | **Description**                                                                                                                                                                                                                                                                                    |
 | --------------- | ------------ | --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | api-key         | ✅            |                       | Your API key                                                                                                                                                                                                                                                                                       |
-| test-group-id   | ✅            |                       | Identifier for the test group to execute.                                                                                                                                                                                                                                                          |
+| test-suite-id   | ✅            |                       | Identifier for the test suite to execute.                                                                                                                                                                                                                                                          |
 | url-replacement |              |                       | Newline-separated tuple (pair) with original first as first line and the replacement second. Use to replace website URLs when running tests.                                                                                                                                                       |
 | github-comment  |              | true                  | When enabled, will leave a comment on either the commit or PR with relevant test results. Requires proper permissions (see #Permissions section below).                                                                                                                                            |
 | github-token    |              | `${{ github.token }}` | This token is used for used for leaving the comments on PRs/commits. By default, we'll use the GitHub actions bot token, but you can override this a repository scoped [PAT](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens). |
@@ -49,7 +49,7 @@ jobs:
         uses: stablyhq/stably-runner-action@v3
         with:
           api-key: ${{ secrets.API_KEY }}
-          test-group-id: TEST_GROUP_ID
+          test-suite-id: TEST_SUITE_ID
           # setting a URL replacement is optional
           url-replacement: |-
             ORIGINAL_WEBSITE_URL
