@@ -28,7 +28,7 @@ export async function run(): Promise<void> {
 
     const shouldTunnel =
       urlReplacement &&
-      new URL(urlReplacement.replacement).host === 'localhost';
+      new URL(urlReplacement.replacement).hostname === 'localhost';
 
     if (urlReplacement && shouldTunnel) {
       const tunnelUrl = await startTunnel(urlReplacement.replacement);
