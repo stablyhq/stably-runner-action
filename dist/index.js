@@ -40948,7 +40948,7 @@ async function run() {
     try {
         const { apiKey, urlReplacement, githubComment, githubToken, testSuiteId, runInAsyncMode } = (0, input_1.parseInput)();
         const shouldTunnel = urlReplacement &&
-            new URL(urlReplacement.replacement).host === 'localhost';
+            new URL(urlReplacement.replacement).hostname === 'localhost';
         if (urlReplacement && shouldTunnel) {
             const tunnelUrl = await (0, runner_sdk_1.startTunnel)(urlReplacement.replacement);
             urlReplacement.replacement = tunnelUrl;
