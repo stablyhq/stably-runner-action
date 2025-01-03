@@ -1,9 +1,8 @@
-import { debug, setFailed, setOutput } from '@actions/core';
-import { HttpClient } from '@actions/http-client';
-import { BearerCredentialHandler } from '@actions/http-client/lib/auth';
+import { setFailed, setOutput } from '@actions/core';
 import { upsertGitHubComment } from './github_comment';
 import { parseInput } from './input';
-import { fetchSSE } from './fetch-sse';
+import { runTestGroup } from './api';
+import { startTunnel } from '@stablyhq/runner-sdk';
 
 export type RunResponse = {
   projectId: string;
@@ -23,65 +22,43 @@ export async function run(): Promise<void> {
       urlReplacement,
       githubComment,
       githubToken,
-      runInAsyncMode,
-      testSuiteId
+      testSuiteId,
+      runInAsyncMode
     } = parseInput();
 
-    const httpClient = new HttpClient('stably-runner-action', [
-      new BearerCredentialHandler(apiKey)
-    ]);
-    const respPromise = fetchSSE({
-      httpClient,
-      url: 'https://app.stably.ai/api/runner/run',
-      payload: {
-        testSuiteId,
-        ...(urlReplacement ? { domainOverrides: [urlReplacement] } : {})
-      }
+    const shouldTunnel =
+      urlReplacement &&
+      new URL(urlReplacement.replacement).hostname === 'localhost';
+
+    if (urlReplacement && shouldTunnel) {
+      const tunnel = await startTunnel(urlReplacement.replacement);
+      urlReplacement.replacement = tunnel.url;
+    }
+
+    const response = await runTestGroup(testSuiteId, apiKey, {
+      urlReplacement
     });
 
-    if (runInAsyncMode) {
-      setOutput('success', true);
-      return;
-    } else {
-      // We insert some status code to mimic earlier code
-      const resp = await respPromise
-        .then(x => ({
-          result: x as RunResponse,
-          statusCode: 200
-        }))
-        .catch(e => ({
-          result: undefined,
-          statusCode: 500,
-          error: `${e}`
-        }));
+    if (!runInAsyncMode) {
+      const success = response.execution!.results.every(
+        result => result.success
+      );
+      setOutput('success', success);
 
-      debug(`resp statusCode: ${resp.statusCode}`);
-      if (resp.statusCode !== 200 && 'error' in resp) {
-        debug(`resp error: ${resp.error}`);
-        setFailed(
-          `Request failed with status code ${resp.statusCode}: ${JSON.stringify(
-            resp.error,
-            null,
-            2
-          )}`
-        );
-        return;
-      }
-      debug(`resp raw: ${JSON.stringify(resp.result)}`);
-
-      const numFailedTests = (resp.result?.results || []).filter(
-        x => x.success === false
-      ).length;
-
-      setOutput('success', resp.statusCode === 200 && numFailedTests === 0);
-
-      // Github Commnet Code
+      // Github Comment Code
       if (githubComment && githubToken) {
-        await upsertGitHubComment(testSuiteId, githubToken, resp);
+        await upsertGitHubComment(testSuiteId, githubToken, {
+          statusCode: response.statusCode,
+          result: response.execution
+        });
       }
     }
   } catch (error) {
     // Fail the workflow run if an error occurs
     if (error instanceof Error) setFailed(error.message);
+  } finally {
+    // Make sure the process exits
+    // This is done to prevent the tunnel from hanging the thread
+    process.exit(0);
   }
 }

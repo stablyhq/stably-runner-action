@@ -1,0 +1,32 @@
+name: Test local environment in a Pull request environment
+
+on:
+  pull_request:
+
+permissions:
+  pull-requests: write
+  contents: write
+
+jobs:
+  build:
+    name: Build and Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
+
+      - name: Start nginx
+        run: docker compose -f test/docker-compose.yaml up -d
+
+      - name: Test changes
+        uses: ./
+        with:
+          api-key: ${{ secrets.API_KEY }}
+          test-suite-id: cm51jnwks0001l103b5lrprjs
+          github-comment: true
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          url-replacement: |-
+            https://nginx.com
+            http://localhost:8080
