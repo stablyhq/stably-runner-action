@@ -60,6 +60,24 @@ jobs:
         run: echo "${{ steps.test-action.outputs.success }}"
 ```
 
+## Testing in pull requests
+
+You can use the `url-replacement` option to enable local testing. To use it, you must create a replace the original URL for your test and replace it with the exposed endpoint you create in the CI. For example, if you are running your product on port `3000` on your CI environment, you must replace the original URL with `http://localhost:3000`.
+
+Considering we have an existing test suite that we run in production (`https://example.com`), you can test your local application running on `http://localhost:3000` using this configuration:
+
+```yaml
+- name: Stably Runner Action
+   id: stably-runner
+   uses: stablyhq/stably-runner-action@v3
+   with:
+      api-key: ${{ secrets.API_KEY }}
+      test-suite-id: TEST_SUITE_ID
+      url-replacement: |-
+      https://example.com
+      http://localhost:3000
+```
+
 ## Permissions
 
 This action requires write permission to leave PR or commit comments.
