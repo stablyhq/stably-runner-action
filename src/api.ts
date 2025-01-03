@@ -25,7 +25,7 @@ export async function runTestGroup(
     ? { urlReplacements: [options.urlReplacement] }
     : {};
 
-  const url = buildEndpoint(`/v1/testSuite/${testSuiteId}/run`);
+  const url = new URL(`/v1/testSuite/${testSuiteId}/run`, API_ENDPOINT).href;
   const apiCallPromise = fetch(url, {
     method: 'POST',
     body: JSON.stringify(body),
@@ -44,11 +44,4 @@ export async function runTestGroup(
 
   // in async mode, we don't wait for the response, so we consider it's Ok
   return { statusCode: 200 };
-}
-
-function buildEndpoint(path: string) {
-  const url = new URL(path, apiEndpoint);
-
-  console.log(url.href);
-  return url.href;
 }
