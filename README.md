@@ -62,9 +62,15 @@ jobs:
 
 ## Testing in pull requests
 
-You can use the `url-replacement` option to enable local testing. To use it, you must create a replace the original URL for your test and replace it with the exposed endpoint you create in the CI. For example, if you are running your product on port `3000` on your CI environment, you must replace the original URL with `http://localhost:3000`.
+You can use the `url-replacement` option to enable local testing. To use it, you
+must create a replace the original URL for your test and replace it with the
+exposed endpoint you create in the CI. For example, if you are running your
+product on port `3000` on your CI environment, you must replace the original URL
+with `http://localhost:3000`.
 
-Considering we have an existing test suite that we run in production (`https://example.com`), you can test your local application running on `http://localhost:3000` using this configuration:
+Considering we have an existing test suite that we run in production
+(`https://example.com`), you can test your local application running on
+`http://localhost:3000` using this configuration:
 
 ```yaml
 - name: Stably Runner Action

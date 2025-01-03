@@ -40741,7 +40741,7 @@ async function runTestGroup(testSuiteId, apiKey, options) {
     const apiCallPromise = fetch(url, {
         method: 'POST',
         body: JSON.stringify(body),
-        headers: { 'Content-Type': 'application/json', 'x-stably-api-key': apiKey }
+        headers: { 'Content-Type': 'application/json', authorization: apiKey }
     });
     if (!options.asyncMode) {
         const response = await apiCallPromise;
