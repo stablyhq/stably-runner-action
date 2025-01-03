@@ -1,5 +1,7 @@
 const API_ENDPOINT = 'https://api.stably.ai';
 
+import { HttpClient } from '@actions/http-client';
+
 type RunTestResponse = {
   projectId: string;
   testSuiteRunId: string;
@@ -21,24 +23,26 @@ export async function runTestGroup(
   apiKey: string,
   options: RunTestOptions
 ): Promise<{ statusCode: number; execution?: RunTestResponse }> {
+  const httpClient = new HttpClient('github-action');
+
   const body = options.urlReplacement
     ? { urlReplacements: [options.urlReplacement] }
     : {};
 
   const url = new URL(`/v1/testSuite/${testSuiteId}/run`, API_ENDPOINT).href;
-  const apiCallPromise = fetch(url, {
-    method: 'POST',
-    body: JSON.stringify(body),
-    headers: { 'Content-Type': 'application/json', authorization: apiKey }
+  const apiCallPromise = httpClient.post(url, JSON.stringify(body), {
+    'Content-Type': 'application/json',
+    authorization: apiKey
   });
 
   if (!options.asyncMode) {
     const response = await apiCallPromise;
-    const result = await response.json();
+    const result = await response.readBody();
+    const resultJson = JSON.parse(result);
 
     return {
-      statusCode: response.status,
-      execution: result
+      statusCode: response.message.statusCode || 0,
+      execution: resultJson
     };
   }
 
