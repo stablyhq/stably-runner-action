@@ -1,4 +1,4 @@
-name: Pull Request
+name: Test local environment in a Pull request environment
 
 on:
   pull_request:

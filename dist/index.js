@@ -40732,12 +40732,12 @@ function wrappy (fn, cb) {
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.runTestGroup = void 0;
-const apiEndpoint = 'https://api.stably.ai';
+const API_ENDPOINT = 'https://api.stably.ai';
 async function runTestGroup(testSuiteId, apiKey, options) {
     const body = options.urlReplacement
         ? { urlReplacements: [options.urlReplacement] }
         : {};
-    const url = buildEndpoint(`/v1/testSuite/${testSuiteId}/run`);
+    const url = new URL(`/v1/testSuite/${testSuiteId}/run`, API_ENDPOINT).href;
     const apiCallPromise = fetch(url, {
         method: 'POST',
         body: JSON.stringify(body),
@@ -40755,11 +40755,6 @@ async function runTestGroup(testSuiteId, apiKey, options) {
     return { statusCode: 200 };
 }
 exports.runTestGroup = runTestGroup;
-function buildEndpoint(path) {
-    const url = new URL(path, apiEndpoint);
-    console.log(url.href);
-    return url.href;
-}
 
 
 /***/ }),
@@ -40952,7 +40947,8 @@ const runner_sdk_1 = __nccwpck_require__(906);
 async function run() {
     try {
         const { apiKey, urlReplacement, githubComment, githubToken, testSuiteId, runInAsyncMode } = (0, input_1.parseInput)();
-        const shouldTunnel = urlReplacement?.replacement.startsWith('http://localhost');
+        const shouldTunnel = urlReplacement &&
+            new URL(urlReplacement.replacement).host === 'localhost';
         if (urlReplacement && shouldTunnel) {
             const tunnelUrl = await (0, runner_sdk_1.startTunnel)(urlReplacement.replacement);
             urlReplacement.replacement = tunnelUrl;
