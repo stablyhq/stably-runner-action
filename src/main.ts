@@ -31,8 +31,8 @@ export async function run(): Promise<void> {
       new URL(urlReplacement.replacement).hostname === 'localhost';
 
     if (urlReplacement && shouldTunnel) {
-      const tunnelUrl = await startTunnel(urlReplacement.replacement);
-      urlReplacement.replacement = tunnelUrl;
+      const tunnel = await startTunnel(urlReplacement.replacement);
+      urlReplacement.replacement = tunnel.url;
     }
 
     const response = await runTestGroup(testSuiteId, apiKey, {
