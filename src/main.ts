@@ -27,7 +27,7 @@ export async function run(): Promise<void> {
     } = parseInput();
 
     const shouldTunnel =
-      urlReplacement?.replacement.startsWith('http://localhost');
+      urlReplacement  && new URL(urlReplacement).host === 'localhost';
 
     if (urlReplacement && shouldTunnel) {
       const tunnelUrl = await startTunnel(urlReplacement.replacement);

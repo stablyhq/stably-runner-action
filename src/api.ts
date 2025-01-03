@@ -1,4 +1,4 @@
-const apiEndpoint = 'https://api.stably.ai';
+const API_ENDPOINT = 'https://api.stably.ai';
 
 type RunTestResponse = {
   projectId: string;
