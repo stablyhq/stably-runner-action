@@ -1,6 +1,6 @@
-const API_ENDPOINT = 'https://api.stably.ai';
-
 import { HttpClient } from '@actions/http-client';
+
+const API_ENDPOINT = 'https://api.stably.ai';
 
 type RunTestResponse = {
   projectId: string;

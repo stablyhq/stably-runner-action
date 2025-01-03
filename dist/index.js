@@ -29293,8 +29293,8 @@ function wrappy (fn, cb) {
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.runTestGroup = void 0;
-const API_ENDPOINT = 'https://api.stably.ai';
 const http_client_1 = __nccwpck_require__(6255);
+const API_ENDPOINT = 'https://api.stably.ai';
 async function runTestGroup(testSuiteId, apiKey, options) {
     const httpClient = new http_client_1.HttpClient('github-action');
     const body = options.urlReplacement
