@@ -68,7 +68,7 @@
     "@actions/core": "^1.11.1",
     "@actions/github": "^6.0.0",
     "@actions/http-client": "^2.2.3",
-    "@stablyhq/runner-sdk": "^1.0.4",
+    "@stablyhq/runner-sdk": "^1.0.5",
     "ts-dedent": "^2.2.0"
   },
   "devDependencies": {
