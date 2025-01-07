@@ -29294,16 +29294,18 @@ function wrappy (fn, cb) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.runTestGroup = void 0;
 const http_client_1 = __nccwpck_require__(6255);
+const auth_1 = __nccwpck_require__(5526);
 const API_ENDPOINT = 'https://api.stably.ai';
 async function runTestGroup(testSuiteId, apiKey, options) {
-    const httpClient = new http_client_1.HttpClient('github-action');
+    const httpClient = new http_client_1.HttpClient('github-action', [
+        new auth_1.BearerCredentialHandler(apiKey)
+    ]);
     const body = options.urlReplacement
         ? { urlReplacements: [options.urlReplacement] }
         : {};
     const url = new URL(`/v1/testSuite/${testSuiteId}/run`, API_ENDPOINT).href;
     const apiCallPromise = httpClient.post(url, JSON.stringify(body), {
-        'Content-Type': 'application/json',
-        authorization: apiKey
+        'Content-Type': 'application/json'
     });
     if (!options.asyncMode) {
         const response = await apiCallPromise;
