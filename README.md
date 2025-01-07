@@ -80,8 +80,8 @@ Considering we have an existing test suite that we run in production
       api-key: ${{ secrets.API_KEY }}
       test-suite-id: TEST_SUITE_ID
       url-replacement: |-
-      https://example.com
-      http://localhost:3000
+         https://example.com
+         http://localhost:3000
 ```
 
 ## Permissions

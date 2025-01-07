@@ -1,4 +1,5 @@
 import { HttpClient } from '@actions/http-client';
+import { BearerCredentialHandler } from '@actions/http-client/lib/auth';
 
 const API_ENDPOINT = 'https://api.stably.ai';
 
@@ -23,7 +24,9 @@ export async function runTestGroup(
   apiKey: string,
   options: RunTestOptions
 ): Promise<{ statusCode: number; execution?: RunTestResponse }> {
-  const httpClient = new HttpClient('github-action');
+  const httpClient = new HttpClient('github-action', [
+    new BearerCredentialHandler(apiKey)
+  ]);
 
   const body = options.urlReplacement
     ? { urlReplacements: [options.urlReplacement] }
@@ -31,8 +34,7 @@ export async function runTestGroup(
 
   const url = new URL(`/v1/testSuite/${testSuiteId}/run`, API_ENDPOINT).href;
   const apiCallPromise = httpClient.post(url, JSON.stringify(body), {
-    'Content-Type': 'application/json',
-    authorization: apiKey
+    'Content-Type': 'application/json'
   });
 
   if (!options.asyncMode) {
