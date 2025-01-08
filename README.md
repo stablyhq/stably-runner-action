@@ -76,10 +76,10 @@ Considering we have an existing test suite that we run in production
    uses: stablyhq/stably-runner-action@v3
    with:
       api-key: ${{ secrets.API_KEY }}
-      test-suite-id: TEST_SUITE_ID
+      test-suite-id: TEST_SUITE_ID # Replace this with your test suite id
       url-replacement: |-
-         https://example.com
-         http://localhost:3000
+         https://example.com # Replace this with the endpoint tested by your tests
+         http://localhost:3000 # Replace this with the endpoint you exposed inside your CI environment
 ```
 
 ## Permissions
