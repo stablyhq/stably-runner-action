@@ -29297,9 +29297,8 @@ const http_client_1 = __nccwpck_require__(6255);
 const auth_1 = __nccwpck_require__(5526);
 const API_ENDPOINT = 'https://api.stably.ai';
 async function runTestGroup(testSuiteId, apiKey, options) {
-    const httpClient = new http_client_1.HttpClient('github-action', [
-        new auth_1.BearerCredentialHandler(apiKey)
-    ]);
+    const httpClient = new http_client_1.HttpClient('github-action', [new auth_1.BearerCredentialHandler(apiKey)], { socketTimeout: 24 * 60 * 60 * 1000 } // 24h timeout
+    );
     const body = options.urlReplacement
         ? { urlReplacements: [options.urlReplacement] }
         : {};

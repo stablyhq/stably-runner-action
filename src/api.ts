@@ -24,9 +24,11 @@ export async function runTestGroup(
   apiKey: string,
   options: RunTestOptions
 ): Promise<{ statusCode: number; execution?: RunTestResponse }> {
-  const httpClient = new HttpClient('github-action', [
-    new BearerCredentialHandler(apiKey)
-  ]);
+  const httpClient = new HttpClient(
+    'github-action',
+    [new BearerCredentialHandler(apiKey)],
+    { socketTimeout: 24 * 60 * 60 * 1000 } // 24h timeout
+  );
 
   const body = options.urlReplacement
     ? { urlReplacements: [options.urlReplacement] }
