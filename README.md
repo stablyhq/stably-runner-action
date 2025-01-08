@@ -60,16 +60,14 @@ jobs:
         run: echo "${{ steps.test-action.outputs.success }}"
 ```
 
-## Testing in pull requests
+## Testing containerized/localized applications
 
-You can use the `url-replacement` option to enable local testing. To use it, you
-must create a replace the original URL for your test and replace it with the
-exposed endpoint you create in the CI. For example, if you are running your
-product on port `3000` on your CI environment, you must replace the original URL
-with `http://localhost:3000`.
+You can use the `url-replacement` option to enable containrized/local testing by replacing the original URL 
+with a localhost URL.
+
 
 Considering we have an existing test suite that we run in production
-(`https://example.com`), you can test your local application running on
+(`https://example.com`), you can test your local application running in your CI at
 `http://localhost:3000` using this configuration:
 
 ```yaml
