@@ -27,7 +27,7 @@ export async function runTestGroup(
   const httpClient = new HttpClient(
     'github-action',
     [new BearerCredentialHandler(apiKey)],
-    { socketTimeout: 24 * 60 * 1000 } // 24h timeout
+    { socketTimeout: 24 * 60 * 60 * 1000 } // 24h timeout
   );
 
   const body = options.urlReplacement
