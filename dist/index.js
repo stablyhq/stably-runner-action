@@ -29292,33 +29292,33 @@ function wrappy (fn, cb) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.runTestGroup = void 0;
+exports.runTestSuite = void 0;
+const core_1 = __nccwpck_require__(2186);
 const http_client_1 = __nccwpck_require__(6255);
 const auth_1 = __nccwpck_require__(5526);
 const API_ENDPOINT = 'https://api.stably.ai';
-async function runTestGroup(testSuiteId, apiKey, options) {
+async function runTestSuite({ testSuiteId, apiKey, options }) {
     const httpClient = new http_client_1.HttpClient('github-action', [new auth_1.BearerCredentialHandler(apiKey)], { socketTimeout: 24 * 60 * 60 * 1000 } // 24h timeout
     );
     const body = options.urlReplacement
         ? { urlReplacements: [options.urlReplacement] }
         : {};
     const url = new URL(`/v1/testSuite/${testSuiteId}/run`, API_ENDPOINT).href;
-    const apiCallPromise = httpClient.post(url, JSON.stringify(body), {
+    const response = await httpClient.post(url, JSON.stringify(body), {
         'Content-Type': 'application/json'
     });
-    if (!options.asyncMode) {
-        const response = await apiCallPromise;
-        const result = await response.readBody();
-        const resultJson = JSON.parse(result);
-        return {
-            statusCode: response.message.statusCode || 0,
-            execution: resultJson
-        };
+    const result = await response.readBody();
+    (0, core_1.debug)(`runTestSuite Response StatusCode: ${response.message.statusCode}`);
+    // Check for invalid status code or no result
+    if ((response.message.statusCode &&
+        (response.message.statusCode < 200 ||
+            response.message.statusCode >= 300)) ||
+        !result) {
+        throw new Error(`runTestSuite failed with status code ${response.message.statusCode}`);
     }
-    // in async mode, we don't wait for the response, so we consider it's Ok
-    return { statusCode: 200 };
+    return JSON.parse(result);
 }
-exports.runTestGroup = runTestGroup;
+exports.runTestSuite = runTestSuite;
 
 
 /***/ }),
@@ -29350,7 +29350,7 @@ async function upsertGitHubComment(testSuiteId, githubToken, resp) {
     const body = (0, ts_dedent_1.default) `${commentIdentiifer}
   # [Stably](https://stably.ai/) Runner - [Test Suite - '${testSuiteName}'](https://app.stably.ai/project/${projectId}/testSuite/${testSuiteId})
 
-  Test Suite Run Result: ${resp.statusCode !== 200
+  Test Suite Run Result: ${resp.error
         ? '❌ Error - The Action ran into an error while calling the Stably backend. Please re-run'
         : failedTests.length === 0
             ? `🟢 Success (${successTests.length}/${results.length} tests passed) [[dashboard]](${suiteRunDashboardUrl})`
@@ -29500,10 +29500,10 @@ exports.parseInput = parseInput;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.run = void 0;
 const core_1 = __nccwpck_require__(2186);
+const runner_sdk_1 = __nccwpck_require__(906);
+const api_1 = __nccwpck_require__(8229);
 const github_comment_1 = __nccwpck_require__(8205);
 const input_1 = __nccwpck_require__(6747);
-const api_1 = __nccwpck_require__(8229);
-const runner_sdk_1 = __nccwpck_require__(906);
 /**
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
@@ -29517,18 +29517,31 @@ async function run() {
             const tunnel = await (0, runner_sdk_1.startTunnel)(urlReplacement.replacement);
             urlReplacement.replacement = tunnel.url;
         }
-        const response = await (0, api_1.runTestGroup)(testSuiteId, apiKey, {
-            urlReplacement
+        const runResultPromise = (0, api_1.runTestSuite)({
+            testSuiteId,
+            apiKey,
+            options: {
+                urlReplacement
+            }
         });
         if (!runInAsyncMode) {
-            const success = response.execution.results.every(result => result.success);
-            (0, core_1.setOutput)('success', success);
-            // Github Comment Code
-            if (githubComment && githubToken) {
-                await (0, github_comment_1.upsertGitHubComment)(testSuiteId, githubToken, {
-                    statusCode: response.statusCode,
-                    result: response.execution
-                });
+            try {
+                const runResult = await runResultPromise;
+                const success = runResult.results.every(x => x.success);
+                (0, core_1.setOutput)('success', success);
+                // Github Comment Code
+                if (githubComment && githubToken) {
+                    await (0, github_comment_1.upsertGitHubComment)(testSuiteId, githubToken, {
+                        result: runResult
+                    });
+                }
+            }
+            catch (e) {
+                if (githubComment && githubToken) {
+                    await (0, github_comment_1.upsertGitHubComment)(testSuiteId, githubToken, {
+                        error: true
+                    });
+                }
             }
         }
     }

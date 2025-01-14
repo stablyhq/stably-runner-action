@@ -5,7 +5,7 @@ import { RunResponse } from './main';
 export async function upsertGitHubComment(
   testSuiteId: string,
   githubToken: string,
-  resp: { result?: RunResponse; statusCode: number }
+  resp: { result?: RunResponse; error?: boolean }
 ) {
   const octokit = getOctokit(githubToken);
 
@@ -25,7 +25,7 @@ export async function upsertGitHubComment(
   # [Stably](https://stably.ai/) Runner - [Test Suite - '${testSuiteName}'](https://app.stably.ai/project/${projectId}/testSuite/${testSuiteId})
 
   Test Suite Run Result: ${
-    resp.statusCode !== 200
+    resp.error 
       ? '❌ Error - The Action ran into an error while calling the Stably backend. Please re-run'
       : failedTests.length === 0
       ? `🟢 Success (${successTests.length}/${results.length} tests passed) [[dashboard]](${suiteRunDashboardUrl})`
