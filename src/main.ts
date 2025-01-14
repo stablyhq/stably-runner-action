@@ -61,6 +61,7 @@ export async function run(): Promise<void> {
             error: true
           });
         }
+        setOutput('success', false);
       }
     }
   } catch (error) {

@@ -29542,6 +29542,7 @@ async function run() {
                         error: true
                     });
                 }
+                (0, core_1.setOutput)('success', false);
             }
         }
     }
