@@ -62,13 +62,12 @@ jobs:
 
 ## Testing containerized/localized applications
 
-You can use the `url-replacement` option to enable containrized/local testing by replacing the original URL 
-with a localhost URL.
-
+You can use the `url-replacement` option to enable containrized/local testing by
+replacing the original URL with a localhost URL.
 
 Considering we have an existing test suite that we run in production
-(`https://example.com`), you can test your local application running in your CI at
-`http://localhost:3000` using this configuration:
+(`https://example.com`), you can test your local application running in your CI
+at `http://localhost:3000` using this configuration:
 
 ```yaml
 - name: Stably Runner Action
