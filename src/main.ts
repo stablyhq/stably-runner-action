@@ -1,8 +1,8 @@
 import { setFailed, setOutput } from '@actions/core';
+import { startTunnel } from '@stablyhq/runner-sdk';
+import { runTestSuite } from './api';
 import { upsertGitHubComment } from './github_comment';
 import { parseInput } from './input';
-import { runTestGroup } from './api';
-import { startTunnel } from '@stablyhq/runner-sdk';
 
 export type RunResponse = {
   projectId: string;
@@ -35,22 +35,32 @@ export async function run(): Promise<void> {
       urlReplacement.replacement = tunnel.url;
     }
 
-    const response = await runTestGroup(testSuiteId, apiKey, {
-      urlReplacement
+    const runResultPromise = runTestSuite({
+      testSuiteId,
+      apiKey,
+      options: {
+        urlReplacement
+      }
     });
 
     if (!runInAsyncMode) {
-      const success = response.execution!.results.every(
-        result => result.success
-      );
-      setOutput('success', success);
+      try {
+        const runResult = await runResultPromise;
+        const success = runResult.results.every(x => x.success);
+        setOutput('success', success);
 
-      // Github Comment Code
-      if (githubComment && githubToken) {
-        await upsertGitHubComment(testSuiteId, githubToken, {
-          statusCode: response.statusCode,
-          result: response.execution
-        });
+        // Github Comment Code
+        if (githubComment && githubToken) {
+          await upsertGitHubComment(testSuiteId, githubToken, {
+            result: runResult
+          });
+        }
+      } catch (e) {
+        if (githubComment && githubToken) {
+          await upsertGitHubComment(testSuiteId, githubToken, {
+            error: true
+          });
+        }
       }
     }
   } catch (error) {
