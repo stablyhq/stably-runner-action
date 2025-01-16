@@ -1,4 +1,4 @@
-import { setFailed, setOutput } from '@actions/core';
+import { debug, setFailed, setOutput } from '@actions/core';
 import { startTunnel } from '@stablyhq/runner-sdk';
 import { runTestSuite } from './api';
 import { upsertGitHubComment } from './github_comment';
@@ -43,26 +43,24 @@ export async function run(): Promise<void> {
       }
     });
 
-    if (!runInAsyncMode) {
-      try {
-        const runResult = await runResultPromise;
-        const success = runResult.results.every(x => x.success);
-        setOutput('success', success);
+    if (runInAsyncMode) {
+      return;
+    }
 
-        // Github Comment Code
-        if (githubComment && githubToken) {
-          await upsertGitHubComment(testSuiteId, githubToken, {
-            result: runResult
-          });
-        }
-      } catch (e) {
-        if (githubComment && githubToken) {
-          await upsertGitHubComment(testSuiteId, githubToken, {
-            error: true
-          });
-        }
-        setOutput('success', false);
+    try {
+      const runResult = await runResultPromise;
+      const success = runResult.results.every(x => x.success);
+      setOutput('success', success);
+
+      // Github Comment Code
+      if (githubComment && githubToken) {
+        await upsertGitHubComment(testSuiteId, githubToken, {
+          result: runResult
+        });
       }
+    } catch (e) {
+      debug(`API call error: ${e}`);
+      setFailed(e instanceof Error ? e.message : `An unknown error occurred`);
     }
   } catch (error) {
     // Fail the workflow run if an error occurs
@@ -70,6 +68,6 @@ export async function run(): Promise<void> {
   } finally {
     // Make sure the process exits
     // This is done to prevent the tunnel from hanging the thread
-    process.exit(0);
+    process.exit();
   }
 }

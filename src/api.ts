@@ -41,6 +41,10 @@ export async function runTestSuite({
         response.message.statusCode >= 300)) ||
     !result
   ) {
+    // Throw nicer message for auth issues
+    if (response.message.statusCode === 401) {
+      throw new Error('Invalid API key (unable to authenticate)');
+    }
     throw new Error(
       `runTestSuite failed with status code ${response.message.statusCode}`
     );
