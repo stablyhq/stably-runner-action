@@ -29524,26 +29524,23 @@ async function run() {
                 urlReplacement
             }
         });
-        if (!runInAsyncMode) {
-            try {
-                const runResult = await runResultPromise;
-                const success = runResult.results.every(x => x.success);
-                (0, core_1.setOutput)('success', success);
-                // Github Comment Code
-                if (githubComment && githubToken) {
-                    await (0, github_comment_1.upsertGitHubComment)(testSuiteId, githubToken, {
-                        result: runResult
-                    });
-                }
+        if (runInAsyncMode) {
+            return;
+        }
+        try {
+            const runResult = await runResultPromise;
+            const success = runResult.results.every(x => x.success);
+            (0, core_1.setOutput)('success', success);
+            // Github Comment Code
+            if (githubComment && githubToken) {
+                await (0, github_comment_1.upsertGitHubComment)(testSuiteId, githubToken, {
+                    result: runResult
+                });
             }
-            catch (e) {
-                if (githubComment && githubToken) {
-                    await (0, github_comment_1.upsertGitHubComment)(testSuiteId, githubToken, {
-                        error: true
-                    });
-                }
-                (0, core_1.setOutput)('success', false);
-            }
+        }
+        catch (e) {
+            (0, core_1.debug)(`API call error: ${e}`);
+            (0, core_1.setFailed)(e instanceof Error ? e.message : `An unknown error occurred`);
         }
     }
     catch (error) {
