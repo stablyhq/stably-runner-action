@@ -68,6 +68,6 @@ export async function run(): Promise<void> {
   } finally {
     // Make sure the process exits
     // This is done to prevent the tunnel from hanging the thread
-    process.exit(0);
+    process.exit();
   }
 }
