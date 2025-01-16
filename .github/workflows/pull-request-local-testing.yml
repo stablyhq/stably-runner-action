@@ -23,7 +23,7 @@ jobs:
       - name: Test changes
         uses: ./
         with:
-          api-key: ${{ secrets.API_KEY }}
+          api-key: wrong-api-key
           test-suite-id: cm51jnwks0001l103b5lrprjs
           github-comment: true
           githubToken: ${{ secrets.GITHUB_TOKEN }}
