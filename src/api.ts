@@ -1,4 +1,4 @@
-import { debug } from '@actions/core';
+import { debug, info } from '@actions/core';
 import { HttpClient } from '@actions/http-client';
 import { BearerCredentialHandler } from '@actions/http-client/lib/auth';
 import { RunResponse } from './main';
@@ -27,7 +27,7 @@ export async function runTestSuite({
     { socketTimeout: 24 * 60 * 60 * 1000 } // 24h timeout
   );
 
-  debug(`githubMetadata: ${JSON.stringify(githubMetadata)}`);
+  info(`githubMetadata: ${JSON.stringify(githubMetadata)}`);
 
   const body = options.urlReplacement
     ? { urlReplacements: [options.urlReplacement] }
