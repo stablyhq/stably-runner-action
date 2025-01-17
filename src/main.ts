@@ -3,6 +3,7 @@ import { startTunnel } from '@stablyhq/runner-sdk';
 import { runTestSuite } from './api';
 import { upsertGitHubComment } from './github_comment';
 import { parseInput } from './input';
+import { fetchMetadata } from './fetch-metadata';
 
 export type RunResponse = {
   projectId: string;
@@ -35,12 +36,15 @@ export async function run(): Promise<void> {
       urlReplacement.replacement = tunnel.url;
     }
 
+    const metadata = await fetchMetadata(githubToken);
+
     const runResultPromise = runTestSuite({
       testSuiteId,
       apiKey,
       options: {
         urlReplacement
-      }
+      },
+      githubMetadata: metadata
     });
 
     if (runInAsyncMode) {

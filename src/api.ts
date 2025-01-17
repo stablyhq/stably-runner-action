@@ -2,26 +2,32 @@ import { debug } from '@actions/core';
 import { HttpClient } from '@actions/http-client';
 import { BearerCredentialHandler } from '@actions/http-client/lib/auth';
 import { RunResponse } from './main';
+import { GithubMetadata } from './fetch-metadata';
 
 const API_ENDPOINT = 'https://api.stably.ai';
 
 export async function runTestSuite({
   testSuiteId,
   apiKey,
-  options
+  options,
+  githubMetadata
 }: {
   testSuiteId: string;
   apiKey: string;
   options: {
     urlReplacement?: { original: string; replacement: string };
     asyncMode?: boolean;
+    disableNotifications?: boolean;
   };
+  githubMetadata?: GithubMetadata;
 }): Promise<RunResponse> {
   const httpClient = new HttpClient(
     'github-action',
     [new BearerCredentialHandler(apiKey)],
     { socketTimeout: 24 * 60 * 60 * 1000 } // 24h timeout
   );
+
+  debug(`githubMetadata: ${JSON.stringify(githubMetadata)}`);
 
   const body = options.urlReplacement
     ? { urlReplacements: [options.urlReplacement] }
