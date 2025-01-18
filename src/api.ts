@@ -1,4 +1,4 @@
-import { debug, info } from '@actions/core';
+import { debug } from '@actions/core';
 import { HttpClient } from '@actions/http-client';
 import { BearerCredentialHandler } from '@actions/http-client/lib/auth';
 import { RunResponse } from './main';
