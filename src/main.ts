@@ -37,6 +37,7 @@ export async function run(): Promise<void> {
     }
 
     const metadata = await fetchMetadata(githubToken);
+    debug(`github metadata: ${JSON.stringify(metadata, null, 2)}`);
 
     const runResultPromise = runTestSuite({
       testSuiteId,

@@ -27,7 +27,6 @@ export async function runTestSuite({
     { socketTimeout: 24 * 60 * 60 * 1000 } // 24h timeout
   );
 
-  info(`githubMetadata: ${JSON.stringify(githubMetadata)}`);
 
   const body = options.urlReplacement
     ? { urlReplacements: [options.urlReplacement] }
