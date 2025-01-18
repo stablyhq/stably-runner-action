@@ -1,3 +1,4 @@
+import { debug } from '@actions/core';
 import { context, getOctokit } from '@actions/github';
 
 export type GithubMetadata = {
@@ -21,12 +22,18 @@ export async function fetchMetadata(
   const branchName = context.ref.replace('refs/heads/', '');
   const commitSha = context.sha;
 
-  // requires read permissions to repo
-  const { data: commitData } = await octokit.rest.repos.getCommit({
-    owner: context.repo.owner,
-    repo: context.repo.repo,
-    ref: commitSha
-  });
+  let commitData;
+  try {
+    const response = await octokit.rest.repos.getCommit({
+      owner: context.repo.owner,
+      repo: context.repo.repo,
+      ref: commitSha
+    });
+    commitData = response.data;
+  } catch (error) {
+    debug(`Failed to fetch commit data: ${error}`);
+    return;
+  }
 
   return {
     branch: branchName,
