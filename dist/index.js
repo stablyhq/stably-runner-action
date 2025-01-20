@@ -29297,9 +29297,10 @@ const core_1 = __nccwpck_require__(2186);
 const http_client_1 = __nccwpck_require__(6255);
 const auth_1 = __nccwpck_require__(5526);
 const API_ENDPOINT = 'https://api.stably.ai';
-async function runTestSuite({ testSuiteId, apiKey, options }) {
+async function runTestSuite({ testSuiteId, apiKey, options, githubMetadata }) {
     const httpClient = new http_client_1.HttpClient('github-action', [new auth_1.BearerCredentialHandler(apiKey)], { socketTimeout: 24 * 60 * 60 * 1000 } // 24h timeout
     );
+    (0, core_1.debug)(`Github Metadata: ${JSON.stringify(githubMetadata)}`);
     const body = options.urlReplacement
         ? { urlReplacements: [options.urlReplacement] }
         : {};
@@ -29323,6 +29324,40 @@ async function runTestSuite({ testSuiteId, apiKey, options }) {
     return JSON.parse(result);
 }
 exports.runTestSuite = runTestSuite;
+
+
+/***/ }),
+
+/***/ 829:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.fetchMetadata = void 0;
+const github_1 = __nccwpck_require__(5438);
+async function fetchMetadata(githubToken) {
+    if (!githubToken) {
+        return;
+    }
+    const octokit = (0, github_1.getOctokit)(githubToken);
+    const branchName = github_1.context.ref.replace('refs/heads/', '');
+    const commitSha = github_1.context.sha;
+    const { data: commitData } = await octokit.rest.repos.getCommit({
+        owner: github_1.context.repo.owner,
+        repo: github_1.context.repo.repo,
+        ref: commitSha
+    });
+    return {
+        branch: branchName,
+        commit: {
+            sha: commitSha,
+            timestamp: commitData?.commit?.author?.date,
+            message: commitData?.commit?.message
+        }
+    };
+}
+exports.fetchMetadata = fetchMetadata;
 
 
 /***/ }),
@@ -29508,6 +29543,7 @@ const runner_sdk_1 = __nccwpck_require__(906);
 const api_1 = __nccwpck_require__(8229);
 const github_comment_1 = __nccwpck_require__(8205);
 const input_1 = __nccwpck_require__(6747);
+const fetch_metadata_1 = __nccwpck_require__(829);
 /**
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
@@ -29521,12 +29557,14 @@ async function run() {
             const tunnel = await (0, runner_sdk_1.startTunnel)(urlReplacement.replacement);
             urlReplacement.replacement = tunnel.url;
         }
+        const githubMetadata = await (0, fetch_metadata_1.fetchMetadata)(githubToken);
         const runResultPromise = (0, api_1.runTestSuite)({
             testSuiteId,
             apiKey,
             options: {
                 urlReplacement
-            }
+            },
+            githubMetadata
         });
         if (runInAsyncMode) {
             return;
