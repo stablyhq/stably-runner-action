@@ -1,8 +1,24 @@
 import { debug } from '@actions/core';
 import { HttpClient } from '@actions/http-client';
 import { BearerCredentialHandler } from '@actions/http-client/lib/auth';
-import { RunResponse } from './main';
 import { GithubMetadata } from './fetch-metadata';
+
+export enum TestStatus {
+  PASSED = 'PASSED',
+  FAILED = 'FAILED',
+  RUNNING = 'RUNNING',
+  ERROR = 'ERROR',
+  FLAKY = 'FLAKY',
+  CANCELLED = 'CANCELLED',
+  SKIPPED = 'SKIPPED'
+}
+
+export type RunResponse = {
+  projectId: string;
+  testSuiteRunId: string;
+  testSuiteName: string;
+  results: { testId: string; testName: string; status?: TestStatus }[];
+};
 
 const API_ENDPOINT = 'https://api.stably.ai';
 

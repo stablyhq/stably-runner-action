@@ -1,16 +1,9 @@
 import { debug, setFailed, setOutput } from '@actions/core';
 import { startTunnel } from '@stablyhq/runner-sdk';
-import { runTestSuite } from './api';
+import { runTestSuite, TestStatus } from './api';
 import { upsertGitHubComment } from './github_comment';
 import { parseInput } from './input';
 import { fetchMetadata } from './fetch-metadata';
-
-export type RunResponse = {
-  projectId: string;
-  testSuiteRunId: string;
-  testSuiteName: string;
-  results: { testId: string; testName: string; success?: boolean }[];
-};
 
 /**
  * The main function for the action.
@@ -52,7 +45,9 @@ export async function run(): Promise<void> {
 
     try {
       const runResult = await runResultPromise;
-      const success = runResult.results.every(x => x.success);
+      const success = runResult.results.every(
+        x => x.status === TestStatus.PASSED
+      );
       setOutput('success', success);
 
       // Github Comment Code

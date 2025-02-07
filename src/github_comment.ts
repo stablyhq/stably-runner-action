@@ -1,6 +1,6 @@
 import { context, getOctokit } from '@actions/github';
 import dedent from 'ts-dedent';
-import { RunResponse } from './main';
+import { RunResponse, TestStatus } from './api';
 
 export async function upsertGitHubComment(
   testSuiteId: string,
@@ -13,9 +13,11 @@ export async function upsertGitHubComment(
   const testSuiteRunId = resp.result?.testSuiteRunId || '';
   const testSuiteName = resp.result?.testSuiteName || '';
   const results = resp.result?.results || [];
-  const failedTests = results.filter(x => x.success === false);
-  const successTests = results.filter(x => x.success === true);
-  const undefinedTests = results.filter(x => x.success === undefined);
+  const failedTests = results.filter(x => x.status === TestStatus.FAILED);
+  const successTests = results.filter(
+    x => x.status === TestStatus.PASSED || x.status === TestStatus.FLAKY
+  );
+  const undefinedTests = results.filter(x => x.status === TestStatus.ERROR);
 
   const commentIdentiifer = `<!-- stably_${testSuiteId} -->`;
   const suiteRunDashboardUrl = `https://app.stably.ai/project/${projectId}/history/g_${testSuiteRunId}`;
