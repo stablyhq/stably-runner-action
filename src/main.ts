@@ -5,13 +5,6 @@ import { upsertGitHubComment } from './github_comment';
 import { parseInput } from './input';
 import { fetchMetadata } from './fetch-metadata';
 
-export type RunResponse = {
-  projectId: string;
-  testSuiteRunId: string;
-  testSuiteName: string;
-  results: { testId: string; testName: string; success?: boolean }[];
-};
-
 /**
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
@@ -52,7 +45,12 @@ export async function run(): Promise<void> {
 
     try {
       const runResult = await runResultPromise;
-      const success = runResult.results.every(x => x.success);
+      const success = runResult.results.every(
+        x =>
+          x.status === 'PASSED' ||
+          x.status === 'FLAKY' ||
+          x.status === 'SKIPPED'
+      );
       setOutput('success', success);
 
       // Github Comment Code

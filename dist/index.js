@@ -29346,9 +29346,9 @@ async function upsertGitHubComment(testSuiteId, githubToken, resp) {
     const testSuiteRunId = resp.result?.testSuiteRunId || '';
     const testSuiteName = resp.result?.testSuiteName || '';
     const results = resp.result?.results || [];
-    const failedTests = results.filter(x => x.success === false);
-    const successTests = results.filter(x => x.success === true);
-    const undefinedTests = results.filter(x => x.success === undefined);
+    const failedTests = results.filter(x => x.status === 'FAILED');
+    const successTests = results.filter(x => x.status === 'PASSED' || x.status === 'FLAKY');
+    const undefinedTests = results.filter(x => x.status === 'ERROR');
     const commentIdentiifer = `<!-- stably_${testSuiteId} -->`;
     const suiteRunDashboardUrl = `https://app.stably.ai/project/${projectId}/history/g_${testSuiteRunId}`;
     // prettier-ignore
@@ -29537,7 +29537,9 @@ async function run() {
         }
         try {
             const runResult = await runResultPromise;
-            const success = runResult.results.every(x => x.success);
+            const success = runResult.results.every(x => x.status === 'PASSED' ||
+                x.status === 'FLAKY' ||
+                x.status === 'SKIPPED');
             (0, core_1.setOutput)('success', success);
             // Github Comment Code
             if (githubComment && githubToken) {
