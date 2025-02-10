@@ -1,6 +1,6 @@
 import { debug, setFailed, setOutput } from '@actions/core';
 import { startTunnel } from '@stablyhq/runner-sdk';
-import { runTestSuite, TestStatus } from './api';
+import { runTestSuite } from './api';
 import { upsertGitHubComment } from './github_comment';
 import { parseInput } from './input';
 import { fetchMetadata } from './fetch-metadata';
@@ -46,7 +46,10 @@ export async function run(): Promise<void> {
     try {
       const runResult = await runResultPromise;
       const success = runResult.results.every(
-        x => x.status === TestStatus.PASSED
+        x =>
+          x.status === 'PASSED' ||
+          x.status === 'FLAKY' ||
+          x.status === 'SKIPPED'
       );
       setOutput('success', success);
 

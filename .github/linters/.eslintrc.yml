@@ -34,7 +34,8 @@ extends:
   - plugin:github/recommended
   - plugin:jest/recommended
 
-rules: {
+rules:
+  {
     'github/no-then': 'off',
     'camelcase': 'off',
     'eslint-comments/no-use': 'off',
@@ -77,9 +78,5 @@ rules: {
     '@typescript-eslint/restrict-plus-operands': 'error',
     '@typescript-eslint/space-before-function-paren': 'off',
     '@typescript-eslint/type-annotation-spacing': 'error',
-    '@typescript-eslint/unbound-method': 'error',
-
-    # Fixes enum linting
-    'no-shadow': 'off',
-    '@typescript-eslint/no-shadow': 'error'
+    '@typescript-eslint/unbound-method': 'error'
   }

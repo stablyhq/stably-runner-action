@@ -29258,20 +29258,10 @@ function wrappy (fn, cb) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.runTestSuite = exports.TestStatus = void 0;
+exports.runTestSuite = void 0;
 const core_1 = __nccwpck_require__(2186);
 const http_client_1 = __nccwpck_require__(6255);
 const auth_1 = __nccwpck_require__(5526);
-var TestStatus;
-(function (TestStatus) {
-    TestStatus["PASSED"] = "PASSED";
-    TestStatus["FAILED"] = "FAILED";
-    TestStatus["RUNNING"] = "RUNNING";
-    TestStatus["ERROR"] = "ERROR";
-    TestStatus["FLAKY"] = "FLAKY";
-    TestStatus["CANCELLED"] = "CANCELLED";
-    TestStatus["SKIPPED"] = "SKIPPED";
-})(TestStatus || (exports.TestStatus = TestStatus = {}));
 const API_ENDPOINT = 'https://api.stably.ai';
 async function runTestSuite({ testSuiteId, apiKey, options, githubMetadata }) {
     const httpClient = new http_client_1.HttpClient('github-action', [new auth_1.BearerCredentialHandler(apiKey)], { socketTimeout: 24 * 60 * 60 * 1000 } // 24h timeout
@@ -29350,16 +29340,15 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.upsertGitHubComment = void 0;
 const github_1 = __nccwpck_require__(5438);
 const ts_dedent_1 = __importDefault(__nccwpck_require__(3604));
-const api_1 = __nccwpck_require__(8229);
 async function upsertGitHubComment(testSuiteId, githubToken, resp) {
     const octokit = (0, github_1.getOctokit)(githubToken);
     const projectId = resp.result?.projectId || '';
     const testSuiteRunId = resp.result?.testSuiteRunId || '';
     const testSuiteName = resp.result?.testSuiteName || '';
     const results = resp.result?.results || [];
-    const failedTests = results.filter(x => x.status === api_1.TestStatus.FAILED);
-    const successTests = results.filter(x => x.status === api_1.TestStatus.PASSED || x.status === api_1.TestStatus.FLAKY);
-    const undefinedTests = results.filter(x => x.status === api_1.TestStatus.ERROR);
+    const failedTests = results.filter(x => x.status === 'FAILED');
+    const successTests = results.filter(x => x.status === 'PASSED' || x.status === 'FLAKY');
+    const undefinedTests = results.filter(x => x.status === 'ERROR');
     const commentIdentiifer = `<!-- stably_${testSuiteId} -->`;
     const suiteRunDashboardUrl = `https://app.stably.ai/project/${projectId}/history/g_${testSuiteRunId}`;
     // prettier-ignore
@@ -29548,7 +29537,9 @@ async function run() {
         }
         try {
             const runResult = await runResultPromise;
-            const success = runResult.results.every(x => x.status === api_1.TestStatus.PASSED);
+            const success = runResult.results.every(x => x.status === 'PASSED' ||
+                x.status === 'FLAKY' ||
+                x.status === 'SKIPPED');
             (0, core_1.setOutput)('success', success);
             // Github Comment Code
             if (githubComment && githubToken) {

@@ -3,15 +3,14 @@ import { HttpClient } from '@actions/http-client';
 import { BearerCredentialHandler } from '@actions/http-client/lib/auth';
 import { GithubMetadata } from './fetch-metadata';
 
-export enum TestStatus {
-  PASSED = 'PASSED',
-  FAILED = 'FAILED',
-  RUNNING = 'RUNNING',
-  ERROR = 'ERROR',
-  FLAKY = 'FLAKY',
-  CANCELLED = 'CANCELLED',
-  SKIPPED = 'SKIPPED'
-}
+export type TestStatus =
+  | 'PASSED'
+  | 'FAILED'
+  | 'RUNNING'
+  | 'ERROR'
+  | 'FLAKY'
+  | 'CANCELLED'
+  | 'SKIPPED';
 
 export type RunResponse = {
   projectId: string;
