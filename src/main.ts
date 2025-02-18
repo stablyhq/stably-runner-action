@@ -42,7 +42,7 @@ export async function run(): Promise<void> {
     if (runInAsyncMode) {
       // Make sure that we give enough time for the API call to be sent to the server
       // we expect the timeout to always resolve first.
-      await Promise.any([
+      await Promise.race([
         runResultPromise,
         new Promise(resolve => {
           setTimeout(() => {
