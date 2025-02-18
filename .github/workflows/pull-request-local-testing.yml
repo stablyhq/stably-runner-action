@@ -20,28 +20,13 @@ jobs:
       - name: Start nginx
         run: docker compose -f test/docker-compose.yaml up -d
 
-      # - name: Test changes
-      #   uses: ./
-      #   with:
-      #     api-key: ${{ secrets.API_KEY }}
-      #     test-suite-id: cm51jnwks0001l103b5lrprjs
-      #     github-comment: true
-      #     githubToken: ${{ secrets.GITHUB_TOKEN }}
-      #     url-replacement: |-
-      #       https://nginx.com
-      #       http://localhost:8080
-
       - name: Test changes
         uses: ./
         with:
           api-key: ${{ secrets.API_KEY }}
-          async: true
           test-suite-id: cm51jnwks0001l103b5lrprjs
           github-comment: true
           githubToken: ${{ secrets.GITHUB_TOKEN }}
           url-replacement: |-
             https://nginx.com
             http://localhost:8080
-      
-      - name: Wait 60s to see if the async test is complete
-        run: sleep 60
