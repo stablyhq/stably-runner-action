@@ -29533,6 +29533,16 @@ async function run() {
             githubMetadata
         });
         if (runInAsyncMode) {
+            // Make sure that we give enough time for the API call to be sent to the server
+            // we expect the timeout to always resolve first.
+            await Promise.any([
+                runResultPromise,
+                new Promise(resolve => {
+                    setTimeout(() => {
+                        resolve(null);
+                    }, 5000);
+                })
+            ]);
             return;
         }
         try {
