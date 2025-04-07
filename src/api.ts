@@ -1,6 +1,4 @@
 import { debug } from '@actions/core';
-import { HttpClient } from '@actions/http-client';
-import { BearerCredentialHandler } from '@actions/http-client/lib/auth';
 import { GithubMetadata } from './fetch-metadata';
 
 export type TestStatus =
@@ -35,12 +33,6 @@ export async function runTestSuite({
   };
   githubMetadata?: GithubMetadata;
 }): Promise<RunResponse> {
-  const httpClient = new HttpClient(
-    'github-action',
-    [new BearerCredentialHandler(apiKey)],
-    { socketTimeout: 24 * 60 * 60 * 1000 } // 24h timeout
-  );
-
   debug(`Github Metadata: ${JSON.stringify(githubMetadata)}`);
 
   const body = options.urlReplacement
@@ -48,27 +40,30 @@ export async function runTestSuite({
     : {};
 
   const url = new URL(`/v1/testSuite/${testSuiteId}/run`, API_ENDPOINT).href;
-  const response = await httpClient.post(url, JSON.stringify(body), {
-    'Content-Type': 'application/json'
-  });
-  const result = await response.readBody();
+  // 24h timeout
+  const timeout = 24 * 60 * 60 * 1000;
+  const signal = AbortSignal.timeout(timeout);
 
-  debug(`runTestSuite Response StatusCode: ${response.message.statusCode}`);
-  // Check for invalid status code or no result
-  if (
-    (response.message.statusCode &&
-      (response.message.statusCode < 200 ||
-        response.message.statusCode >= 300)) ||
-    !result
-  ) {
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(body),
+    signal
+  });
+
+  debug(`runTestSuite Response StatusCode: ${response.status}`);
+
+  // Check for invalid status code
+  if (!response.ok) {
     // Throw nicer message for auth issues
-    if (response.message.statusCode === 401) {
+    if (response.status === 401) {
       throw new Error('Invalid API key (unable to authenticate)');
     }
-    throw new Error(
-      `runTestSuite failed with status code ${response.message.statusCode}`
-    );
+    throw new Error(`runTestSuite failed with status code ${response.status}`);
   }
 
-  return JSON.parse(result);
+  return response.json();
 }
