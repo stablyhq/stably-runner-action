@@ -27,6 +27,3 @@ jobs:
           test-suite-id: cluikotlj000113mzj16udtno
           github-comment: true
           githubToken: ${{ secrets.GITHUB_TOKEN }}
-          url-replacement: |-
-            https://nginx.com
-            http://localhost:8080
