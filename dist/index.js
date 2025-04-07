@@ -29264,8 +29264,10 @@ const http_client_1 = __nccwpck_require__(6255);
 const auth_1 = __nccwpck_require__(5526);
 const API_ENDPOINT = 'https://api.stably.ai';
 async function runTestSuite({ testSuiteId, apiKey, options, githubMetadata }) {
-    const httpClient = new http_client_1.HttpClient('github-action', [new auth_1.BearerCredentialHandler(apiKey)], { socketTimeout: 24 * 60 * 60 * 1000 } // 24h timeout
-    );
+    const httpClient = new http_client_1.HttpClient('github-action', [new auth_1.BearerCredentialHandler(apiKey)], {
+        socketTimeout: 24 * 60 * 60 * 1000,
+        keepAlive: true
+    });
     (0, core_1.debug)(`Github Metadata: ${JSON.stringify(githubMetadata)}`);
     const body = options.urlReplacement
         ? { urlReplacements: [options.urlReplacement] }
