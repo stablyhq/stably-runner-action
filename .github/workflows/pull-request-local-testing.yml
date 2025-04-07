@@ -17,9 +17,6 @@ jobs:
         id: checkout
         uses: actions/checkout@v4
 
-      - name: Start nginx
-        run: docker compose -f test/docker-compose.yaml up -d
-
       - name: Test changes
         uses: ./
         with:
