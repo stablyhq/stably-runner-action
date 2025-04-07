@@ -38,7 +38,10 @@ export async function runTestSuite({
   const httpClient = new HttpClient(
     'github-action',
     [new BearerCredentialHandler(apiKey)],
-    { socketTimeout: 24 * 60 * 60 * 1000 } // 24h timeout
+    {
+      socketTimeout: 24 * 60 * 60 * 1000, // 24h timeout
+      keepAlive: true
+    }
   );
 
   debug(`Github Metadata: ${JSON.stringify(githubMetadata)}`);
