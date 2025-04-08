@@ -29333,7 +29333,6 @@ async function runTestSuite({ testSuiteId, apiKey, options, githubMetadata }) {
     const statusUrl = new URL(`/v1/testSuiteRun/${testSuiteRunId}/status`, API_ENDPOINT).href;
     // Start polling for status
     const pollStartEpochMs = Date.now(); // Record the start time
-    // eslint-disable-next-line no-constant-condition
     while (true) {
         // Check for timeout
         if (Date.now() - pollStartEpochMs > POLLING_TIMEOUT_MS) {
