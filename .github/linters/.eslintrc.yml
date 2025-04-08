@@ -36,6 +36,7 @@ extends:
 
 rules:
   {
+    'no-constant-condition': 'off',
     'github/no-then': 'off',
     'camelcase': 'off',
     'eslint-comments/no-use': 'off',

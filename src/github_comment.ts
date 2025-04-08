@@ -1,11 +1,11 @@
 import { context, getOctokit } from '@actions/github';
 import dedent from 'ts-dedent';
-import { RunResponse } from './api';
+import { ResultResponse } from './api';
 
 export async function upsertGitHubComment(
   testSuiteId: string,
   githubToken: string,
-  resp: { result?: RunResponse; error?: boolean }
+  resp: { result?: ResultResponse; error?: boolean }
 ) {
   const octokit = getOctokit(githubToken);
 
