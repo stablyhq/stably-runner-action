@@ -27,6 +27,7 @@ type StatusResponse = {
 };
 
 const API_ENDPOINT = 'https://api.stably.ai';
+const POLLING_TIMEOUT_MS = 24 * 60 * 60 * 1000; // 24 hours
 
 const unpackOrThrow = <T>(
   { statusCode, result }: { statusCode: number; result: T | null },
@@ -95,7 +96,15 @@ export async function runTestSuite({
   ).href;
 
   // Start polling for status
+  const pollStartEpochMs = Date.now(); // Record the start time
   while (true) {
+    // Check for timeout
+    if (Date.now() - pollStartEpochMs > POLLING_TIMEOUT_MS) {
+      throw new Error(
+        `Polling for test suite run status timed out after 24 hours for testSuiteRunId: ${testSuiteRunId}`
+      );
+    }
+
     const testSuiteRunStatusResponse =
       await httpClient.getJson<StatusResponse>(statusUrl);
     const testSuiteRunStatus = unpackOrThrow(
