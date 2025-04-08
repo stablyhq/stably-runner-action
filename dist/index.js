@@ -29330,6 +29330,7 @@ async function runTestSuite({ testSuiteId, apiKey, options, githubMetadata }) {
         };
     }
     const { testSuiteRunId } = runResult;
+    (0, core_1.debug)(`Starting to poll for testSuiteRunId: ${testSuiteRunId}`);
     const statusUrl = new URL(`/v1/testSuiteRun/${testSuiteRunId}/status`, API_ENDPOINT).href;
     // Start polling for status
     const pollStartEpochMs = Date.now(); // Record the start time
