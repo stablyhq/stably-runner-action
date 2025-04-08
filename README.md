@@ -15,9 +15,10 @@ Use this GitHub action to run tests on [stably.ai](https://stably.ai)
 
 ## Outputs
 
-| **Name** | **Description**            |
-| -------- | -------------------------- |
-| success  | Bool if run was successful |
+| **Name**       | **Description**            |
+| -------------- | -------------------------- |
+| success        | Bool if run was successful |
+| testSuiteRunId | The test suite run id      |
 
 ## Example Usage
 
