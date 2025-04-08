@@ -55,15 +55,18 @@ export async function upsertGitHubComment(
 `;
 
   // Check if existing comment exists
+  const commitSha = context.payload.after || context.sha;
   const { data: comments } = context.payload.pull_request
     ? await octokit.rest.issues.listComments({
         ...context.repo,
         issue_number: context.payload.pull_request.number
       })
-    : await octokit.rest.repos.listCommentsForCommit({
-        ...context.repo,
-        commit_sha: context.payload.after
-      });
+    : commitSha
+      ? await octokit.rest.repos.listCommentsForCommit({
+          ...context.repo,
+          commit_sha: context.payload.after
+        })
+      : { data: [] };
   const existingCommentId = comments.find(
     comment => comment?.body?.startsWith(commentIdentiifer)
   )?.id;
@@ -83,7 +86,7 @@ export async function upsertGitHubComment(
         issue_number: context.payload.pull_request.number
       });
     }
-  } else if (context.eventName === 'push') {
+  } else if (commitSha) {
     if (existingCommentId) {
       await octokit.rest.repos.updateCommitComment({
         ...context.repo,
@@ -94,7 +97,7 @@ export async function upsertGitHubComment(
       await octokit.rest.repos.createCommitComment({
         ...context.repo,
         body,
-        commit_sha: context.payload.after
+        commit_sha: commitSha
       });
     }
   }
