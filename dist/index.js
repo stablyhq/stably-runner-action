@@ -29440,15 +29440,18 @@ async function upsertGitHubComment(testSuiteId, githubToken, resp) {
   _This comment was generated from [stably-runner-action](https://github.com/marketplace/actions/stably-runner)_
 `;
     // Check if existing comment exists
+    const commitSha = github_1.context.payload.after || github_1.context.sha;
     const { data: comments } = github_1.context.payload.pull_request
         ? await octokit.rest.issues.listComments({
             ...github_1.context.repo,
             issue_number: github_1.context.payload.pull_request.number
         })
-        : await octokit.rest.repos.listCommentsForCommit({
-            ...github_1.context.repo,
-            commit_sha: github_1.context.payload.after
-        });
+        : commitSha
+            ? await octokit.rest.repos.listCommentsForCommit({
+                ...github_1.context.repo,
+                commit_sha: github_1.context.payload.after
+            })
+            : { data: [] };
     const existingCommentId = comments.find(comment => comment?.body?.startsWith(commentIdentiifer))?.id;
     // Create or update commit/PR comment
     if (github_1.context.payload.pull_request) {
@@ -29467,7 +29470,7 @@ async function upsertGitHubComment(testSuiteId, githubToken, resp) {
             });
         }
     }
-    else if (github_1.context.eventName === 'push') {
+    else if (commitSha) {
         if (existingCommentId) {
             await octokit.rest.repos.updateCommitComment({
                 ...github_1.context.repo,
@@ -29479,7 +29482,7 @@ async function upsertGitHubComment(testSuiteId, githubToken, resp) {
             await octokit.rest.repos.createCommitComment({
                 ...github_1.context.repo,
                 body,
-                commit_sha: github_1.context.payload.after
+                commit_sha: commitSha
             });
         }
     }
