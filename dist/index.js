@@ -29442,14 +29442,22 @@ async function upsertGitHubComment(testSuiteId, githubToken, resp) {
     // Check if existing comment exists
     const commitSha = github_1.context.payload.after || github_1.context.sha;
     const { data: comments } = github_1.context.payload.pull_request
-        ? await octokit.rest.issues.listComments({
+        ? await octokit.rest.issues
+            .listComments({
             ...github_1.context.repo,
             issue_number: github_1.context.payload.pull_request.number
         })
+            .catch(() => {
+            return { data: [] };
+        })
         : commitSha
-            ? await octokit.rest.repos.listCommentsForCommit({
+            ? await octokit.rest.repos
+                .listCommentsForCommit({
                 ...github_1.context.repo,
                 commit_sha: github_1.context.payload.after
+            })
+                .catch(() => {
+                return { data: [] };
             })
             : { data: [] };
     const existingCommentId = comments.find(comment => comment?.body?.startsWith(commentIdentiifer))?.id;

@@ -57,15 +57,23 @@ export async function upsertGitHubComment(
   // Check if existing comment exists
   const commitSha = context.payload.after || context.sha;
   const { data: comments } = context.payload.pull_request
-    ? await octokit.rest.issues.listComments({
-        ...context.repo,
-        issue_number: context.payload.pull_request.number
-      })
-    : commitSha
-      ? await octokit.rest.repos.listCommentsForCommit({
+    ? await octokit.rest.issues
+        .listComments({
           ...context.repo,
-          commit_sha: context.payload.after
+          issue_number: context.payload.pull_request.number
         })
+        .catch(() => {
+          return { data: [] };
+        })
+    : commitSha
+      ? await octokit.rest.repos
+          .listCommentsForCommit({
+            ...context.repo,
+            commit_sha: context.payload.after
+          })
+          .catch(() => {
+            return { data: [] };
+          })
       : { data: [] };
   const existingCommentId = comments.find(
     comment => comment?.body?.startsWith(commentIdentiifer)
