@@ -89,6 +89,7 @@ export async function runTestSuite({
     };
   }
   const { testSuiteRunId } = runResult;
+  debug(`Starting to poll for testSuiteRunId: ${testSuiteRunId}`);
 
   const statusUrl = new URL(
     `/v1/testSuiteRun/${testSuiteRunId}/status`,
