@@ -97,6 +97,7 @@ export async function runTestSuite({
 
   // Start polling for status
   const pollStartEpochMs = Date.now(); // Record the start time
+  // eslint-disable-next-line no-constant-condition
   while (true) {
     // Check for timeout
     if (Date.now() - pollStartEpochMs > POLLING_TIMEOUT_MS) {
