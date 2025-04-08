@@ -29292,7 +29292,7 @@ function wrappy (fn, cb) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.runTestSuite = void 0;
+exports.waitForTestSuiteRunResult = exports.startTestSuite = void 0;
 const core_1 = __nccwpck_require__(2186);
 const http_client_1 = __nccwpck_require__(6255);
 const auth_1 = __nccwpck_require__(5526);
@@ -29310,9 +29310,10 @@ const unpackOrThrow = ({ statusCode, result }, apiName) => {
     }
     return result;
 };
-async function runTestSuite({ testSuiteId, apiKey, options, githubMetadata }) {
-    const httpClient = new http_client_1.HttpClient('github-action', [new auth_1.BearerCredentialHandler(apiKey)], { socketTimeout: 24 * 60 * 60 * 1000, keepAlive: true } // 24h timeout
-    );
+async function startTestSuite({ testSuiteId, apiKey, options, githubMetadata }) {
+    const httpClient = new http_client_1.HttpClient('github-action', [
+        new auth_1.BearerCredentialHandler(apiKey)
+    ]);
     (0, core_1.debug)(`Github Metadata: ${JSON.stringify(githubMetadata)}`);
     const body = options.urlReplacement
         ? { urlReplacements: [options.urlReplacement] }
@@ -29321,15 +29322,13 @@ async function runTestSuite({ testSuiteId, apiKey, options, githubMetadata }) {
     const runResponse = await httpClient.postJson(runUrl, body, {
         'Content-Type': 'application/json'
     });
-    const runResult = unpackOrThrow(runResponse, 'testSuiteRun');
-    // Don't poll (wait for result) if async mode is enabled
-    if (options.asyncMode) {
-        return {
-            ...runResult,
-            results: []
-        };
-    }
-    const { testSuiteRunId } = runResult;
+    return unpackOrThrow(runResponse, 'testSuiteRun');
+}
+exports.startTestSuite = startTestSuite;
+async function waitForTestSuiteRunResult({ testSuiteRunId, apiKey }) {
+    const httpClient = new http_client_1.HttpClient('github-action', [
+        new auth_1.BearerCredentialHandler(apiKey)
+    ]);
     (0, core_1.debug)(`Starting to poll for testSuiteRunId: ${testSuiteRunId}`);
     const statusUrl = new URL(`/v1/testSuiteRun/${testSuiteRunId}/status`, API_ENDPOINT).href;
     // Start polling for status
@@ -29353,7 +29352,7 @@ async function runTestSuite({ testSuiteId, apiKey, options, githubMetadata }) {
     const testSuiteRunResultResponse = await httpClient.getJson(resultUrl);
     return unpackOrThrow(testSuiteRunResultResponse, 'testSuiteRunResult');
 }
-exports.runTestSuite = runTestSuite;
+exports.waitForTestSuiteRunResult = waitForTestSuiteRunResult;
 
 
 /***/ }),
@@ -29571,9 +29570,9 @@ exports.run = void 0;
 const core_1 = __nccwpck_require__(2186);
 const runner_sdk_1 = __nccwpck_require__(906);
 const api_1 = __nccwpck_require__(8229);
+const fetch_metadata_1 = __nccwpck_require__(829);
 const github_comment_1 = __nccwpck_require__(8205);
 const input_1 = __nccwpck_require__(6747);
-const fetch_metadata_1 = __nccwpck_require__(829);
 /**
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
@@ -29588,7 +29587,7 @@ async function run() {
             urlReplacement.replacement = tunnel.url;
         }
         const githubMetadata = await (0, fetch_metadata_1.fetchMetadata)(githubToken);
-        const runResultPromise = (0, api_1.runTestSuite)({
+        const { testSuiteRunId } = await (0, api_1.startTestSuite)({
             testSuiteId,
             apiKey,
             options: {
@@ -29596,21 +29595,15 @@ async function run() {
             },
             githubMetadata
         });
+        (0, core_1.setOutput)('testSuiteRunId', testSuiteRunId);
         if (runInAsyncMode) {
-            // Make sure that we give enough time for the API call to be sent to the server
-            // we expect the timeout to always resolve first.
-            await Promise.race([
-                runResultPromise,
-                new Promise(resolve => {
-                    setTimeout(() => {
-                        resolve(null);
-                    }, 5000);
-                })
-            ]);
             return;
         }
         try {
-            const runResult = await runResultPromise;
+            const runResult = await (0, api_1.waitForTestSuiteRunResult)({
+                testSuiteRunId,
+                apiKey
+            });
             const success = runResult.results.every(x => x.status === 'PASSED' ||
                 x.status === 'FLAKY' ||
                 x.status === 'SKIPPED');
