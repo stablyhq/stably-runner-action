@@ -14,7 +14,9 @@ export async function upsertGitHubComment(
   const testSuiteName = resp.result?.testSuiteName || '';
   const results = resp.result?.results || [];
   const failedTests = results.filter(x => x.status === 'FAILED');
-  const successTests = results.filter(x => x.status === 'PASSED' || x.status === 'FLAKY');
+  const successTests = results.filter(
+    x => x.status === 'PASSED' || x.status === 'FLAKY'
+  );
   const undefinedTests = results.filter(x => x.status === 'ERROR');
 
   const commentIdentiifer = `<!-- stably_${testSuiteId} -->`;
@@ -62,7 +64,9 @@ export async function upsertGitHubComment(
         ...context.repo,
         commit_sha: context.payload.after
       });
-  const existingCommentId = comments.find(comment => comment?.body?.startsWith(commentIdentiifer))?.id;
+  const existingCommentId = comments.find(
+    comment => comment?.body?.startsWith(commentIdentiifer)
+  )?.id;
 
   // Create or update commit/PR comment
   if (context.payload.pull_request) {
@@ -104,5 +108,10 @@ function listTestMarkDown(
   }[],
   projectId: string
 ) {
-  return tests.map(x => `  * [${x.testName}](http://app.stably.ai/project/${projectId}/test/${x.testId})`).join('\n');
+  return tests
+    .map(
+      x =>
+        `  * [${x.testName}](http://app.stably.ai/project/${projectId}/test/${x.testId})`
+    )
+    .join('\n');
 }

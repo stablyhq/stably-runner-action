@@ -62,11 +62,12 @@ jobs:
 
 ## Testing containerized/localized applications
 
-You can use the `url-replacement` option to enable containrized/local testing by replacing the original URL with a
-localhost URL.
+You can use the `url-replacement` option to enable containrized/local testing by
+replacing the original URL with a localhost URL.
 
-Considering we have an existing test suite that we run in production (`https://example.com`), you can test your local
-application running in your CI at `http://localhost:3000` using this configuration:
+Considering we have an existing test suite that we run in production
+(`https://example.com`), you can test your local application running in your CI
+at `http://localhost:3000` using this configuration:
 
 ```yaml
 - name: Stably Runner Action
@@ -94,12 +95,15 @@ permissions:
 
 You can declare these at the top of your workflow.
 
-Alternativly, you can modify all workflow permissions by going to `Settings > Actions > General > Workflow permissions`
-and enabling read and write permissions.
+Alternativly, you can modify all workflow permissions by going to
+`Settings > Actions > General > Workflow permissions` and enabling read and
+write permissions.
 
-Note: For organizations, you'll have to first set this set/allow these permissions at the organization level
+Note: For organizations, you'll have to first set this set/allow these
+permissions at the organization level
 
-See more info here: https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
+See more info here:
+https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
 
 <details>
 
@@ -151,19 +155,23 @@ See more info here: https://docs.github.com/en/actions/using-jobs/assigning-perm
 
 6. Release
 
-   1. Draft a release via the GitHub UI and ensure you select to also publish to the marketplace. Use SEMVAR
-   2. Make the new release available to those binding to the major version tag: Move the major version tag (v1, v2,
-      etc.) to point to the ref of the current releas
+   1. Draft a release via the GitHub UI and ensure you select to also publish to
+      the marketplace. Use SEMVAR
+   2. Make the new release available to those binding to the major version tag:
+      Move the major version tag (v1, v2, etc.) to point to the ref of the
+      current releas
 
       ```bash
       git tag -fa v3 -m "Update v3 tag"
       git push origin v3 --force
       ```
 
-   For information more info see [Versioning](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md)
+   For information more info see
+   [Versioning](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md)
 
 ## Validating the Action
 
-[`ci.yml`](./.github/workflows/ci.yml) is a workflow that runs and validates the action
+[`ci.yml`](./.github/workflows/ci.yml) is a workflow that runs and validates the
+action
 
 </details>

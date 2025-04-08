@@ -29313,7 +29313,9 @@ async function runTestSuite({ testSuiteId, apiKey, options, githubMetadata }) {
     const httpClient = new http_client_1.HttpClient('github-action', [new auth_1.BearerCredentialHandler(apiKey)], { socketTimeout: 24 * 60 * 60 * 1000, keepAlive: true } // 24h timeout
     );
     (0, core_1.debug)(`Github Metadata: ${JSON.stringify(githubMetadata)}`);
-    const body = options.urlReplacement ? { urlReplacements: [options.urlReplacement] } : {};
+    const body = options.urlReplacement
+        ? { urlReplacements: [options.urlReplacement] }
+        : {};
     const runUrl = new URL(`/v1/testSuite/${testSuiteId}/run`, API_ENDPOINT).href;
     const runResponse = await httpClient.postJson(runUrl, body, {
         'Content-Type': 'application/json'
@@ -29478,7 +29480,9 @@ async function upsertGitHubComment(testSuiteId, githubToken, resp) {
 }
 exports.upsertGitHubComment = upsertGitHubComment;
 function listTestMarkDown(tests, projectId) {
-    return tests.map(x => `  * [${x.testName}](http://app.stably.ai/project/${projectId}/test/${x.testId})`).join('\n');
+    return tests
+        .map(x => `  * [${x.testName}](http://app.stably.ai/project/${projectId}/test/${x.testId})`)
+        .join('\n');
 }
 
 
@@ -29519,8 +29523,11 @@ function parseInput() {
     // @deprecated
     const deprecatedRawUrlReplacementInput = getList('domain-override');
     const newRawUrlReplacementInput = getList('url-replacement');
-    const rawUrlReplacementInput = newRawUrlReplacementInput.length > 0 ? newRawUrlReplacementInput : deprecatedRawUrlReplacementInput;
-    if (rawUrlReplacementInput.length > 0 && rawUrlReplacementInput.length !== 2) {
+    const rawUrlReplacementInput = newRawUrlReplacementInput.length > 0
+        ? newRawUrlReplacementInput
+        : deprecatedRawUrlReplacementInput;
+    if (rawUrlReplacementInput.length > 0 &&
+        rawUrlReplacementInput.length !== 2) {
         (0, core_1.setFailed)(`URL replacment can only be given as a single pair. Given: ${JSON.stringify(rawUrlReplacementInput)}`);
     }
     const [urlReplacementOriginal, urlReplacementNew] = rawUrlReplacementInput;
@@ -29567,7 +29574,8 @@ const fetch_metadata_1 = __nccwpck_require__(829);
 async function run() {
     try {
         const { apiKey, urlReplacement, githubComment, githubToken, testSuiteId, runInAsyncMode } = (0, input_1.parseInput)();
-        const shouldTunnel = urlReplacement && new URL(urlReplacement.replacement).hostname === 'localhost';
+        const shouldTunnel = urlReplacement &&
+            new URL(urlReplacement.replacement).hostname === 'localhost';
         if (urlReplacement && shouldTunnel) {
             const tunnel = await (0, runner_sdk_1.startTunnel)(urlReplacement.replacement);
             urlReplacement.replacement = tunnel.url;
@@ -29596,7 +29604,9 @@ async function run() {
         }
         try {
             const runResult = await runResultPromise;
-            const success = runResult.results.every(x => x.status === 'PASSED' || x.status === 'FLAKY' || x.status === 'SKIPPED');
+            const success = runResult.results.every(x => x.status === 'PASSED' ||
+                x.status === 'FLAKY' ||
+                x.status === 'SKIPPED');
             (0, core_1.setOutput)('success', success);
             // Github Comment Code
             if (githubComment && githubToken) {

@@ -19,7 +19,8 @@ export function parseInput() {
   const testSuiteIdInput = getInput('test-suite-id');
   const runGroupIdsInput = getList('run-group-ids');
   const testGroupIdInput = getInput('test-group-id');
-  const testSuiteId = testSuiteIdInput || testGroupIdInput || runGroupIdsInput.at(0);
+  const testSuiteId =
+    testSuiteIdInput || testGroupIdInput || runGroupIdsInput.at(0);
   if (!testSuiteId) {
     debug(`testGroupId: ${testSuiteId}`);
     debug(`testSuiteId: ${testSuiteIdInput}`);
@@ -33,9 +34,18 @@ export function parseInput() {
   const deprecatedRawUrlReplacementInput = getList('domain-override');
   const newRawUrlReplacementInput = getList('url-replacement');
   const rawUrlReplacementInput =
-    newRawUrlReplacementInput.length > 0 ? newRawUrlReplacementInput : deprecatedRawUrlReplacementInput;
-  if (rawUrlReplacementInput.length > 0 && rawUrlReplacementInput.length !== 2) {
-    setFailed(`URL replacment can only be given as a single pair. Given: ${JSON.stringify(rawUrlReplacementInput)}`);
+    newRawUrlReplacementInput.length > 0
+      ? newRawUrlReplacementInput
+      : deprecatedRawUrlReplacementInput;
+  if (
+    rawUrlReplacementInput.length > 0 &&
+    rawUrlReplacementInput.length !== 2
+  ) {
+    setFailed(
+      `URL replacment can only be given as a single pair. Given: ${JSON.stringify(
+        rawUrlReplacementInput
+      )}`
+    );
   }
   const [urlReplacementOriginal, urlReplacementNew] = rawUrlReplacementInput;
   const urlReplacement =

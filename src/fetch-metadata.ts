@@ -9,7 +9,9 @@ export type GithubMetadata = {
   };
 };
 
-export async function fetchMetadata(githubToken?: string): Promise<GithubMetadata | undefined> {
+export async function fetchMetadata(
+  githubToken?: string
+): Promise<GithubMetadata | undefined> {
   if (!githubToken) {
     return;
   }

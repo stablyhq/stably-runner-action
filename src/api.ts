@@ -3,7 +3,14 @@ import { HttpClient } from '@actions/http-client';
 import { BearerCredentialHandler } from '@actions/http-client/lib/auth';
 import { GithubMetadata } from './fetch-metadata';
 
-export type TestStatus = 'PASSED' | 'FAILED' | 'RUNNING' | 'ERROR' | 'FLAKY' | 'CANCELLED' | 'SKIPPED';
+export type TestStatus =
+  | 'PASSED'
+  | 'FAILED'
+  | 'RUNNING'
+  | 'ERROR'
+  | 'FLAKY'
+  | 'CANCELLED'
+  | 'SKIPPED';
 
 type RunResponse = {
   projectId: string;
@@ -21,7 +28,10 @@ type StatusResponse = {
 
 const API_ENDPOINT = 'https://api.stably.ai';
 
-const unpackOrThrow = <T>({ statusCode, result }: { statusCode: number; result: T | null }, apiName?: string) => {
+const unpackOrThrow = <T>(
+  { statusCode, result }: { statusCode: number; result: T | null },
+  apiName?: string
+) => {
   debug(`${apiName || 'API call'} Response StatusCode: ${statusCode}`);
 
   // Check for invalid status code or no result
@@ -30,7 +40,9 @@ const unpackOrThrow = <T>({ statusCode, result }: { statusCode: number; result: 
     if (statusCode === 401) {
       throw new Error('Invalid API key (unable to authenticate)');
     }
-    throw new Error(`${apiName || 'API call'} failed with status code ${statusCode}`);
+    throw new Error(
+      `${apiName || 'API call'} failed with status code ${statusCode}`
+    );
   }
 
   return result;
@@ -58,7 +70,9 @@ export async function runTestSuite({
 
   debug(`Github Metadata: ${JSON.stringify(githubMetadata)}`);
 
-  const body = options.urlReplacement ? { urlReplacements: [options.urlReplacement] } : {};
+  const body = options.urlReplacement
+    ? { urlReplacements: [options.urlReplacement] }
+    : {};
 
   const runUrl = new URL(`/v1/testSuite/${testSuiteId}/run`, API_ENDPOINT).href;
   const runResponse = await httpClient.postJson<RunResponse>(runUrl, body, {
@@ -75,12 +89,19 @@ export async function runTestSuite({
   }
   const { testSuiteRunId } = runResult;
 
-  const statusUrl = new URL(`/v1/testSuiteRun/${testSuiteRunId}/status`, API_ENDPOINT).href;
+  const statusUrl = new URL(
+    `/v1/testSuiteRun/${testSuiteRunId}/status`,
+    API_ENDPOINT
+  ).href;
 
   // Start polling for status
   while (true) {
-    const testSuiteRunStatusResponse = await httpClient.getJson<StatusResponse>(statusUrl);
-    const testSuiteRunStatus = unpackOrThrow(testSuiteRunStatusResponse, 'testSuiteRunStatus');
+    const testSuiteRunStatusResponse =
+      await httpClient.getJson<StatusResponse>(statusUrl);
+    const testSuiteRunStatus = unpackOrThrow(
+      testSuiteRunStatusResponse,
+      'testSuiteRunStatus'
+    );
 
     if (testSuiteRunStatus.status === 'FINISHED') {
       break; // Exit loop if finished
@@ -92,7 +113,11 @@ export async function runTestSuite({
   }
   // At this point, testSuiteRunStatus.status is 'FINISHED'
 
-  const resultUrl = new URL(`/v1/testSuiteRun/${testSuiteRunId}/result`, API_ENDPOINT).href;
-  const testSuiteRunResultResponse = await httpClient.getJson<ResultResponse>(resultUrl);
+  const resultUrl = new URL(
+    `/v1/testSuiteRun/${testSuiteRunId}/result`,
+    API_ENDPOINT
+  ).href;
+  const testSuiteRunResultResponse =
+    await httpClient.getJson<ResultResponse>(resultUrl);
   return unpackOrThrow(testSuiteRunResultResponse, 'testSuiteRunResult');
 }

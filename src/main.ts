@@ -11,9 +11,18 @@ import { fetchMetadata } from './fetch-metadata';
  */
 export async function run(): Promise<void> {
   try {
-    const { apiKey, urlReplacement, githubComment, githubToken, testSuiteId, runInAsyncMode } = parseInput();
+    const {
+      apiKey,
+      urlReplacement,
+      githubComment,
+      githubToken,
+      testSuiteId,
+      runInAsyncMode
+    } = parseInput();
 
-    const shouldTunnel = urlReplacement && new URL(urlReplacement.replacement).hostname === 'localhost';
+    const shouldTunnel =
+      urlReplacement &&
+      new URL(urlReplacement.replacement).hostname === 'localhost';
 
     if (urlReplacement && shouldTunnel) {
       const tunnel = await startTunnel(urlReplacement.replacement);
@@ -47,7 +56,10 @@ export async function run(): Promise<void> {
     try {
       const runResult = await runResultPromise;
       const success = runResult.results.every(
-        x => x.status === 'PASSED' || x.status === 'FLAKY' || x.status === 'SKIPPED'
+        x =>
+          x.status === 'PASSED' ||
+          x.status === 'FLAKY' ||
+          x.status === 'SKIPPED'
       );
       setOutput('success', success);
 
