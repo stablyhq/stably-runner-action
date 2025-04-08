@@ -49,7 +49,7 @@ const unpackOrThrow = <T>(
   return result;
 };
 
-export async function runTestSuite({
+export async function startTestSuite({
   testSuiteId,
   apiKey,
   options,
@@ -59,15 +59,12 @@ export async function runTestSuite({
   apiKey: string;
   options: {
     urlReplacement?: { original: string; replacement: string };
-    asyncMode?: boolean;
   };
   githubMetadata?: GithubMetadata;
-}): Promise<ResultResponse> {
-  const httpClient = new HttpClient(
-    'github-action',
-    [new BearerCredentialHandler(apiKey)],
-    { socketTimeout: 24 * 60 * 60 * 1000, keepAlive: true } // 24h timeout
-  );
+}): Promise<RunResponse> {
+  const httpClient = new HttpClient('github-action', [
+    new BearerCredentialHandler(apiKey)
+  ]);
 
   debug(`Github Metadata: ${JSON.stringify(githubMetadata)}`);
 
@@ -79,16 +76,20 @@ export async function runTestSuite({
   const runResponse = await httpClient.postJson<RunResponse>(runUrl, body, {
     'Content-Type': 'application/json'
   });
-  const runResult = unpackOrThrow(runResponse, 'testSuiteRun');
+  return unpackOrThrow(runResponse, 'testSuiteRun');
+}
 
-  // Don't poll (wait for result) if async mode is enabled
-  if (options.asyncMode) {
-    return {
-      ...runResult,
-      results: []
-    };
-  }
-  const { testSuiteRunId } = runResult;
+export async function waitForTestSuiteRunResult({
+  testSuiteRunId,
+  apiKey
+}: {
+  testSuiteRunId: string;
+  apiKey: string;
+}): Promise<ResultResponse> {
+  const httpClient = new HttpClient('github-action', [
+    new BearerCredentialHandler(apiKey)
+  ]);
+
   debug(`Starting to poll for testSuiteRunId: ${testSuiteRunId}`);
 
   const statusUrl = new URL(

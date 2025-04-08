@@ -1,9 +1,9 @@
 import { debug, setFailed, setOutput } from '@actions/core';
 import { startTunnel } from '@stablyhq/runner-sdk';
-import { runTestSuite } from './api';
+import { startTestSuite, waitForTestSuiteRunResult } from './api';
+import { fetchMetadata } from './fetch-metadata';
 import { upsertGitHubComment } from './github_comment';
 import { parseInput } from './input';
-import { fetchMetadata } from './fetch-metadata';
 
 /**
  * The main function for the action.
@@ -30,7 +30,7 @@ export async function run(): Promise<void> {
     }
 
     const githubMetadata = await fetchMetadata(githubToken);
-    const runResultPromise = runTestSuite({
+    const { testSuiteRunId } = await startTestSuite({
       testSuiteId,
       apiKey,
       options: {
@@ -38,23 +38,17 @@ export async function run(): Promise<void> {
       },
       githubMetadata
     });
+    setOutput('testSuiteRunId', testSuiteRunId);
 
     if (runInAsyncMode) {
-      // Make sure that we give enough time for the API call to be sent to the server
-      // we expect the timeout to always resolve first.
-      await Promise.race([
-        runResultPromise,
-        new Promise(resolve => {
-          setTimeout(() => {
-            resolve(null);
-          }, 5000);
-        })
-      ]);
       return;
     }
 
     try {
-      const runResult = await runResultPromise;
+      const runResult = await waitForTestSuiteRunResult({
+        testSuiteRunId,
+        apiKey
+      });
       const success = runResult.results.every(
         x =>
           x.status === 'PASSED' ||
