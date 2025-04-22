@@ -26,7 +26,7 @@ type StatusResponse = {
   status: 'RUNNING' | 'FINISHED';
 };
 
-const API_ENDPOINT = 'https://api.stably.ai';
+const API_ENDPOINT = process.env.STABLY_API_ENDPOINT || 'https://api.stably.ai';
 const POLLING_TIMEOUT_MS = 24 * 60 * 60 * 1000; // 24 hours
 
 const unpackOrThrow = <T>(
