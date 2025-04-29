@@ -30039,6 +30039,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.upsertGitHubComment = void 0;
 const github_1 = __nccwpck_require__(5438);
 const ts_dedent_1 = __importDefault(__nccwpck_require__(3604));
+const url_1 = __nccwpck_require__(6437);
 async function upsertGitHubComment(testSuiteId, githubToken, resp) {
     const octokit = (0, github_1.getOctokit)(githubToken);
     const projectId = resp.result?.projectId || '';
@@ -30049,7 +30050,10 @@ async function upsertGitHubComment(testSuiteId, githubToken, resp) {
     const successTests = results.filter(x => x.status === 'PASSED' || x.status === 'FLAKY');
     const undefinedTests = results.filter(x => x.status === 'ERROR');
     const commentIdentiifer = `<!-- stably_${testSuiteId} -->`;
-    const suiteRunDashboardUrl = `https://app.stably.ai/project/${projectId}/history/g_${testSuiteRunId}`;
+    const suiteRunDashboardUrl = (0, url_1.getSuiteRunDashboardUrl)({
+        projectId,
+        testSuiteRunId
+    });
     // prettier-ignore
     const body = (0, ts_dedent_1.default) `${commentIdentiifer}
   # [Stably](https://stably.ai/) Runner - [Test Suite - '${testSuiteName}'](https://app.stably.ai/project/${projectId}/testSuite/${testSuiteId})
@@ -30220,6 +30224,7 @@ const api_1 = __nccwpck_require__(8229);
 const fetch_metadata_1 = __nccwpck_require__(829);
 const github_comment_1 = __nccwpck_require__(8205);
 const input_1 = __nccwpck_require__(6747);
+const url_1 = __nccwpck_require__(6437);
 /**
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
@@ -30251,10 +30256,15 @@ async function run() {
                 testSuiteRunId,
                 apiKey
             });
-            const success = runResult.results.every(x => x.status === 'PASSED' ||
-                x.status === 'FLAKY' ||
-                x.status === 'SKIPPED');
-            (0, core_1.setOutput)('success', success);
+            const numFailedTests = runResult.results.filter(({ status }) => status === 'FAILED').length;
+            (0, core_1.setOutput)('success', numFailedTests === 0);
+            if (numFailedTests > 0) {
+                const suiteRunDashboardUrl = (0, url_1.getSuiteRunDashboardUrl)({
+                    projectId: runResult.projectId,
+                    testSuiteRunId
+                });
+                (0, core_1.setFailed)(`Test suite run failed (${numFailedTests}/${runResult.results.length} tests). [Dashboard](${suiteRunDashboardUrl})`);
+            }
             // Github Comment Code
             if (githubComment && githubToken) {
                 await (0, github_comment_1.upsertGitHubComment)(testSuiteId, githubToken, {
@@ -30279,6 +30289,19 @@ async function run() {
     }
 }
 exports.run = run;
+
+
+/***/ }),
+
+/***/ 6437:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getSuiteRunDashboardUrl = void 0;
+const getSuiteRunDashboardUrl = ({ projectId, testSuiteRunId }) => `https://app.stably.ai/project/${projectId}/history/g_${testSuiteRunId}`;
+exports.getSuiteRunDashboardUrl = getSuiteRunDashboardUrl;
 
 
 /***/ }),

@@ -1,6 +1,7 @@
 import { context, getOctokit } from '@actions/github';
 import dedent from 'ts-dedent';
 import { ResultResponse } from './api';
+import { getSuiteRunDashboardUrl } from './url';
 
 export async function upsertGitHubComment(
   testSuiteId: string,
@@ -20,7 +21,10 @@ export async function upsertGitHubComment(
   const undefinedTests = results.filter(x => x.status === 'ERROR');
 
   const commentIdentiifer = `<!-- stably_${testSuiteId} -->`;
-  const suiteRunDashboardUrl = `https://app.stably.ai/project/${projectId}/history/g_${testSuiteRunId}`;
+  const suiteRunDashboardUrl = getSuiteRunDashboardUrl({
+    projectId,
+    testSuiteRunId
+  });
 
   // prettier-ignore
   const body = dedent`${commentIdentiifer}

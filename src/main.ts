@@ -4,6 +4,7 @@ import { startTestSuite, waitForTestSuiteRunResult } from './api';
 import { fetchMetadata } from './fetch-metadata';
 import { upsertGitHubComment } from './github_comment';
 import { parseInput } from './input';
+import { getSuiteRunDashboardUrl } from './url';
 
 /**
  * The main function for the action.
@@ -49,13 +50,20 @@ export async function run(): Promise<void> {
         testSuiteRunId,
         apiKey
       });
-      const success = runResult.results.every(
-        x =>
-          x.status === 'PASSED' ||
-          x.status === 'FLAKY' ||
-          x.status === 'SKIPPED'
-      );
-      setOutput('success', success);
+      const numFailedTests = runResult.results.filter(
+        ({ status }) => status === 'FAILED'
+      ).length;
+      setOutput('success', numFailedTests === 0);
+      if (numFailedTests > 0) {
+        const suiteRunDashboardUrl = getSuiteRunDashboardUrl({
+          projectId: runResult.projectId,
+          testSuiteRunId
+        });
+
+        setFailed(
+          `Test suite run failed (${numFailedTests}/${runResult.results.length} tests). [Dashboard](${suiteRunDashboardUrl})`
+        );
+      }
 
       // Github Comment Code
       if (githubComment && githubToken) {
