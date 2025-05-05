@@ -29282,7 +29282,12 @@ async function startTestSuite({ testSuiteId, apiKey, options, githubMetadata }) 
     ]);
     (0, core_1.debug)(`Github Metadata: ${JSON.stringify(githubMetadata)}`);
     const body = options.urlReplacement
-        ? { urlReplacements: [options.urlReplacement] }
+        ? {
+            urlReplacements: [options.urlReplacement],
+            metadata: githubMetadata
+                ? { git: { branch: githubMetadata.branch } }
+                : undefined
+        }
         : {};
     const runUrl = new URL(`/v1/testSuite/${testSuiteId}/run`, API_ENDPOINT).href;
     const runResponse = await httpClient.postJson(runUrl, body, {
@@ -29332,9 +29337,6 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.fetchMetadata = void 0;
 const github_1 = __nccwpck_require__(5438);
 async function fetchMetadata(githubToken) {
-    if (!githubToken) {
-        return;
-    }
     const octokit = (0, github_1.getOctokit)(githubToken);
     const branchName = github_1.context.ref.replace('refs/heads/', '');
     const commitSha = github_1.context.sha;
@@ -29568,7 +29570,9 @@ async function run() {
             const tunnel = await (0, runner_sdk_1.startTunnel)(urlReplacement.replacement);
             urlReplacement.replacement = tunnel.url;
         }
-        const githubMetadata = await (0, fetch_metadata_1.fetchMetadata)(githubToken);
+        const githubMetadata = githubToken
+            ? await (0, fetch_metadata_1.fetchMetadata)(githubToken)
+            : undefined;
         const { testSuiteRunId } = await (0, api_1.startTestSuite)({
             testSuiteId,
             apiKey,
