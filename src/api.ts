@@ -68,9 +68,14 @@ export async function startTestSuite({
 
   debug(`Github Metadata: ${JSON.stringify(githubMetadata)}`);
 
-  const body = options.urlReplacement
-    ? { urlReplacements: [options.urlReplacement] }
-    : {};
+  const body = {
+    urlReplacements: options.urlReplacement
+      ? [options.urlReplacement]
+      : undefined,
+    metadata: githubMetadata
+      ? { git: { branch: githubMetadata.branch } }
+      : undefined
+  };
 
   const runUrl = new URL(`/v1/testSuite/${testSuiteId}/run`, API_ENDPOINT).href;
   const runResponse = await httpClient.postJson<RunResponse>(runUrl, body, {

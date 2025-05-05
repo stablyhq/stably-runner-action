@@ -10,12 +10,8 @@ export type GithubMetadata = {
 };
 
 export async function fetchMetadata(
-  githubToken?: string
+  githubToken: string
 ): Promise<GithubMetadata | undefined> {
-  if (!githubToken) {
-    return;
-  }
-
   const octokit = getOctokit(githubToken);
 
   const branchName = context.ref.replace('refs/heads/', '');

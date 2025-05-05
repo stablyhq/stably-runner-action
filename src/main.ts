@@ -30,7 +30,9 @@ export async function run(): Promise<void> {
       urlReplacement.replacement = tunnel.url;
     }
 
-    const githubMetadata = await fetchMetadata(githubToken);
+    const githubMetadata = githubToken
+      ? await fetchMetadata(githubToken)
+      : undefined;
     const { testSuiteRunId } = await startTestSuite({
       testSuiteId,
       apiKey,
