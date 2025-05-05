@@ -29281,14 +29281,14 @@ async function startTestSuite({ testSuiteId, apiKey, options, githubMetadata }) 
         new auth_1.BearerCredentialHandler(apiKey)
     ]);
     (0, core_1.debug)(`Github Metadata: ${JSON.stringify(githubMetadata)}`);
-    const body = options.urlReplacement
-        ? {
-            urlReplacements: [options.urlReplacement],
-            metadata: githubMetadata
-                ? { git: { branch: githubMetadata.branch } }
-                : undefined
-        }
-        : {};
+    const body = {
+        urlReplacements: options.urlReplacement
+            ? [options.urlReplacement]
+            : undefined,
+        metadata: githubMetadata
+            ? { git: { branch: githubMetadata.branch } }
+            : undefined
+    };
     const runUrl = new URL(`/v1/testSuite/${testSuiteId}/run`, API_ENDPOINT).href;
     const runResponse = await httpClient.postJson(runUrl, body, {
         'Content-Type': 'application/json'
