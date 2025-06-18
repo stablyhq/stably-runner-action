@@ -60,6 +60,12 @@ export function parseInput() {
   const githubComment = getBoolInput('github-comment');
 
   const runInAsyncMode = getBoolInput('async');
+  const environment = getInput('environment');
+  const variableOverridesJson = getInput('variable-overrides');
+  const variableOverrides = parseObjectInput(
+    'variable-overrides',
+    variableOverridesJson
+  );
 
   return {
     apiKey,
@@ -67,6 +73,17 @@ export function parseInput() {
     urlReplacement,
     githubToken: githubToken || process.env.GITHUB_TOKEN,
     githubComment,
-    runInAsyncMode
+    runInAsyncMode,
+    environment,
+    variableOverrides
   };
+}
+
+function parseObjectInput(fieldName: string, json: string) {
+  try {
+    return JSON.parse(json);
+  } catch (e) {
+    setFailed(`${fieldName} contains an invalid object: ${e}`);
+    throw e;
+  }
 }
