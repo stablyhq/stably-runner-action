@@ -1,0 +1,44 @@
+name: Test Variables
+
+on:
+  workflow_dispatch:
+    inputs:
+      test_suite_id:
+        description: 'Test Suite ID'
+        required: true
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
+
+      - name: Run Stably Tests
+        uses: ./
+        with:
+          api-key: ${{ secrets.API_KEY }}
+          test_suite_id: ${{ inputs.test_suite_id }}
+          environment: PRODUCTION
+          variable-overrides: |
+            {
+              "SIMPLE_VARIABLE": "simple value",
+              "SENSITIVE_VARIABLE": {
+                "value": "sensitive value",
+                "sensitive": true
+              },
+              "JSON_VARIABLE": {
+                "value": {
+                  "key": "value",
+                  "key2": "value2"
+                },
+                "sensitive": false
+              },
+              "SECRET_JSON_VARIABLE": {
+                "value": {
+                  "key": "value",
+                  "key2": "value2"
+                },
+                "sensitive": true
+              }
+            }
