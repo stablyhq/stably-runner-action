@@ -18,7 +18,9 @@ export async function run(): Promise<void> {
       githubComment,
       githubToken,
       testSuiteId,
-      runInAsyncMode
+      runInAsyncMode,
+      environment,
+      variableOverrides
     } = parseInput();
 
     const shouldTunnel =
@@ -37,7 +39,9 @@ export async function run(): Promise<void> {
       testSuiteId,
       apiKey,
       options: {
-        urlReplacement
+        urlReplacement,
+        environment,
+        variableOverrides
       },
       githubMetadata
     });

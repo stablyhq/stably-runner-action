@@ -29287,6 +29287,10 @@ async function startTestSuite({ testSuiteId, apiKey, options, githubMetadata }) 
             : undefined,
         metadata: githubMetadata
             ? { git: { branch: githubMetadata.branch } }
+            : undefined,
+        environment: options.environment ? options.environment : undefined,
+        variableOverrides: options.variableOverrides
+            ? options.variableOverrides
             : undefined
     };
     const runUrl = new URL(`/v1/testSuite/${testSuiteId}/run`, API_ENDPOINT).href;
@@ -29529,16 +29533,30 @@ function parseInput() {
     const githubToken = (0, core_1.getInput)('github-token');
     const githubComment = getBoolInput('github-comment');
     const runInAsyncMode = getBoolInput('async');
+    const environment = (0, core_1.getInput)('environment');
+    const variableOverridesJson = (0, core_1.getInput)('variable-overrides');
+    const variableOverrides = parseObjectInput('variable-overrides', variableOverridesJson);
     return {
         apiKey,
         testSuiteId,
         urlReplacement,
         githubToken: githubToken || process.env.GITHUB_TOKEN,
         githubComment,
-        runInAsyncMode
+        runInAsyncMode,
+        environment,
+        variableOverrides
     };
 }
 exports.parseInput = parseInput;
+function parseObjectInput(fieldName, json) {
+    try {
+        return JSON.parse(json);
+    }
+    catch (e) {
+        (0, core_1.setFailed)(`${fieldName} contains an invalid object: ${e}`);
+        throw e;
+    }
+}
 
 
 /***/ }),
@@ -29563,7 +29581,7 @@ const url_1 = __nccwpck_require__(6437);
  */
 async function run() {
     try {
-        const { apiKey, urlReplacement, githubComment, githubToken, testSuiteId, runInAsyncMode } = (0, input_1.parseInput)();
+        const { apiKey, urlReplacement, githubComment, githubToken, testSuiteId, runInAsyncMode, environment, variableOverrides } = (0, input_1.parseInput)();
         const shouldTunnel = urlReplacement &&
             new URL(urlReplacement.replacement).hostname === 'localhost';
         if (urlReplacement && shouldTunnel) {
@@ -29577,7 +29595,9 @@ async function run() {
             testSuiteId,
             apiKey,
             options: {
-                urlReplacement
+                urlReplacement,
+                environment,
+                variableOverrides
             },
             githubMetadata
         });
