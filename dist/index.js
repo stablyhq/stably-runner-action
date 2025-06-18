@@ -29287,6 +29287,10 @@ async function startTestSuite({ testSuiteId, apiKey, options, githubMetadata }) 
             : undefined,
         metadata: githubMetadata
             ? { git: { branch: githubMetadata.branch } }
+            : undefined,
+        environment: options.environment ? options.environment : undefined,
+        variableOverrides: options.variableOverrides
+            ? options.variableOverrides
             : undefined
     };
     const runUrl = new URL(`/v1/testSuite/${testSuiteId}/run`, API_ENDPOINT).href;
