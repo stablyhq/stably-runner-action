@@ -29583,8 +29583,6 @@ const url_1 = __nccwpck_require__(6437);
 async function run() {
     try {
         const { apiKey, urlReplacement, githubComment, githubToken, testSuiteId, runInAsyncMode, environment, variableOverrides } = (0, input_1.parseInput)();
-        (0, core_1.debug)(`Environment: ${environment}`);
-        (0, core_1.debug)(`Variable Overrides: ${JSON.stringify(variableOverrides, null, 2)}`);
         const shouldTunnel = urlReplacement &&
             new URL(urlReplacement.replacement).hostname === 'localhost';
         if (urlReplacement && shouldTunnel) {
