@@ -48,7 +48,7 @@ inputs:
     default: 'false'
   environment:
     description: |-
-      The environment to run the tests in.
+      The environment to inherit variables from.
       Defaults to 'PRODUCTION'.
     default: 'PRODUCTION'
   variable-overrides:
