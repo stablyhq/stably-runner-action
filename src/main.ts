@@ -23,9 +23,6 @@ export async function run(): Promise<void> {
       variableOverrides
     } = parseInput();
 
-    debug(`Environment: ${environment}`);
-    debug(`Variable Overrides: ${JSON.stringify(variableOverrides, null, 2)}`);
-
     const shouldTunnel =
       urlReplacement &&
       new URL(urlReplacement.replacement).hostname === 'localhost';
