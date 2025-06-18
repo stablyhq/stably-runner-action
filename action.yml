@@ -31,6 +31,8 @@ inputs:
     description: |-
       Newline-separated tuple (pair) with original first as first line and the replacement second.
       Use to replace website URLs when running tests
+    deprecationMessage:
+      'URL replacement is deprecated. Please use environment variables instead.'
   github-comment:
     description: |-
       If enabled, will leave a comment on either the commit or PR with relevant test results.
