@@ -26,7 +26,6 @@ jobs:
           githubToken: ${{ secrets.GITHUB_TOKEN }}
           test-suite-id: ${{ inputs.test_suite_id }}
           environment: PRODUCTION
-          debug: true
           variable-overrides: |
             {
               "SIMPLE_VARIABLE": "simple value",
