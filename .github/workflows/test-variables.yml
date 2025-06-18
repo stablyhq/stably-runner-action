@@ -11,8 +11,8 @@ jobs:
   test:
     runs-on: ubuntu-latest
     permissions:
-        pull-requests: write
-        contents: write
+      pull-requests: write
+      contents: write
     steps:
       - name: Checkout
         id: checkout
@@ -22,6 +22,7 @@ jobs:
         uses: ./
         with:
           api-key: ${{ secrets.API_KEY }}
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
           test-suite-id: ${{ inputs.test_suite_id }}
           environment: PRODUCTION
           debug: true
