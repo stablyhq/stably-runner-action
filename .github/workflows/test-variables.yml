@@ -7,13 +7,12 @@ on:
         description: 'Test Suite ID'
         required: true
 
-permissions:
-  pull-requests: write
-  contents: write
-
 jobs:
   test:
     runs-on: ubuntu-latest
+    permissions:
+        pull-requests: write
+        contents: write
     steps:
       - name: Checkout
         id: checkout
