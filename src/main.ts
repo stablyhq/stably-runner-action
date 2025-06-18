@@ -1,4 +1,4 @@
-import { debug, setFailed, setOutput } from '@actions/core';
+import { debug, setFailed, setOutput, warning } from '@actions/core';
 import { startTunnel } from '@stablyhq/runner-sdk';
 import { startTestSuite, waitForTestSuiteRunResult } from './api';
 import { fetchMetadata } from './fetch-metadata';
@@ -22,6 +22,11 @@ export async function run(): Promise<void> {
       environment,
       variableOverrides
     } = parseInput();
+
+    warning(`Environment: ${environment}`);
+    warning(
+      `Variable Overrides: ${JSON.stringify(variableOverrides, null, 2)}`
+    );
 
     const shouldTunnel =
       urlReplacement &&
