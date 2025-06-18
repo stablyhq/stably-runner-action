@@ -59,6 +59,12 @@ export async function startTestSuite({
   apiKey: string;
   options: {
     urlReplacement?: { original: string; replacement: string };
+    asyncMode?: boolean;
+    environment?: string;
+    variableOverrides?: Record<
+      string,
+      string | { value: string | object; sensitive?: boolean }
+    >;
   };
   githubMetadata?: GithubMetadata;
 }): Promise<RunResponse> {
@@ -74,6 +80,10 @@ export async function startTestSuite({
       : undefined,
     metadata: githubMetadata
       ? { git: { branch: githubMetadata.branch } }
+      : undefined,
+    environment: options.environment ? options.environment : undefined,
+    variableOverrides: options.variableOverrides
+      ? options.variableOverrides
       : undefined
   };
 

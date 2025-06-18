@@ -46,6 +46,17 @@ inputs:
       If set, will launch the tests but not wait for them to finish and the action will always output success.
       Note: Github comments will not function if this is set
     default: 'false'
+  environment:
+    description: |-
+      The environment to run the tests in.
+      Defaults to 'PRODUCTION'.
+    default: 'PRODUCTION'
+  variable-overrides:
+    description: |-
+      A JSON object of variable overrides to pass to the tests.
+      The key is the variable name and the value is the value to override it with.
+      The value can be a string or an object with a 'value' property and an optional 'sensitive' property.
+    default: '{}'
 
 # Define your outputs here.
 outputs:
