@@ -18,7 +18,7 @@ jobs:
         uses: ./
         with:
           api-key: ${{ secrets.API_KEY }}
-          test_suite_id: ${{ inputs.test_suite_id }}
+          test-suite-id: ${{ inputs.test_suite_id }}
           environment: PRODUCTION
           variable-overrides: |
             {
