@@ -59,7 +59,6 @@ export async function startTestSuite({
   apiKey: string;
   options: {
     urlReplacement?: { original: string; replacement: string };
-    asyncMode?: boolean;
     environment?: string;
     variableOverrides?: Record<
       string,
