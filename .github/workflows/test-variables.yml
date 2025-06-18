@@ -8,8 +8,8 @@ on:
         required: true
 
 permissions:
-    pull-requests: write
-    contents: write
+  pull-requests: write
+  contents: write
 
 jobs:
   test:

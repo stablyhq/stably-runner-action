@@ -29293,7 +29293,6 @@ async function startTestSuite({ testSuiteId, apiKey, options, githubMetadata }) 
             ? options.variableOverrides
             : undefined
     };
-    console.log(`Body: ${JSON.stringify(body)}`);
     const runUrl = new URL(`/v1/testSuite/${testSuiteId}/run`, API_ENDPOINT).href;
     const runResponse = await httpClient.postJson(runUrl, body, {
         'Content-Type': 'application/json'
