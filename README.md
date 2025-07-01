@@ -8,7 +8,6 @@ Use this GitHub action to run tests on [stably.ai](https://stably.ai)
 | ------------------ | ------------ | --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | api-key            | ✅           |                       | Your API key                                                                                                                                                                                                                                                                                       |
 | test-suite-id      | ✅           |                       | Identifier for the test suite to execute.                                                                                                                                                                                                                                                          |
-| url-replacement    |              |                       | Newline-separated tuple (pair) with original first as first line and the replacement second. Use to replace website URLs when running tests.                                                                                                                                                       |
 | github-comment     |              | true                  | When enabled, will leave a comment on either the commit or PR with relevant test results. Requires proper permissions (see #Permissions section below).                                                                                                                                            |
 | github-token       |              | `${{ github.token }}` | This token is used for used for leaving the comments on PRs/commits. By default, we'll use the GitHub actions bot token, but you can override this a repository scoped [PAT](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens). |
 | async              |              | false                 | If set, will launch the tests but not wait for them to finish and the action will always output success. Note: Github comments will not function if this is set                                                                                                                                    |
@@ -53,10 +52,11 @@ jobs:
         with:
           api-key: ${{ secrets.API_KEY }}
           test-suite-id: TEST_SUITE_ID
-          # setting a URL replacement is optional
-          url-replacement: |-
-            ORIGINAL_WEBSITE_URL
-            REPLACEMENT_WEBSITE_URL
+          # setting variable overrides is optional
+          variable-overrides: |
+            {
+              "APP_URL": "https://example.com",
+            }
 
       - name: Print Output
         id: output
@@ -65,12 +65,10 @@ jobs:
 
 ## Testing containerized/localized applications
 
-You can use the `url-replacement` option to enable containrized/local testing by
+You can use the `variable-overrides` option to enable containrized/local testing by
 replacing the original URL with a localhost URL.
 
-Considering we have an existing test suite that we run in production
-(`https://example.com`), you can test your local application running in your CI
-at `http://localhost:3000` using this configuration:
+Considering we have an existing test suite that we run in production with tests using an envrionment variables `APP_URL`, you can test your local application running in your CI at `http://localhost:3000` using this configuration:
 
 ```yaml
 - name: Stably Runner Action
@@ -79,9 +77,11 @@ at `http://localhost:3000` using this configuration:
    with:
       api-key: ${{ secrets.API_KEY }}
       test-suite-id: TEST_SUITE_ID
-      url-replacement: |-
-         https://example.com
-         http://localhost:3000
+      variable-overrides: |
+        {
+          "APP_URL": "http://localhost:3000",
+        }
+
 ```
 
 ## Permissions
